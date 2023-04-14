@@ -1,6 +1,6 @@
 import logging
 
-from env import settings
+from core.config import settings
 
 logger = logging.getLogger()
 formatter = logging.Formatter("%(message)s")

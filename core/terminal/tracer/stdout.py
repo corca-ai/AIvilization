@@ -1,8 +1,8 @@
 import os
-import time
 import subprocess
+import time
 from datetime import datetime
-from typing import Callable, Literal, Optional, Union, Tuple
+from typing import Callable, Literal, Optional, Tuple, Union
 
 PipeType = Union[Literal["stdout"], Literal["stderr"]]
 
