@@ -5,15 +5,13 @@ import readline
 import subprocess
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Optional
 
 import openai
-from ansi import ANSI, Color, Style
-from logger import logger
 from pydantic import BaseModel
 
-from env import settings
-from stdout import StdoutTracer
+from core.config import settings
+from core.logging import ANSI, Color, Style, logger
+from core.terminal.tracer import StdoutTracer
 
 openai.api_key = settings["OPENAI_API_KEY"]
 
