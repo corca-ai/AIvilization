@@ -3,7 +3,8 @@ import readline
 from core.civilization import Civilization
 from core.logging import logger
 
-if __name__ == "__main__":
+
+def main():
     civilization = Civilization({})
     while True:
         try:
@@ -17,3 +18,7 @@ if __name__ == "__main__":
         except EOFError:
             logger.info("Bye!")
             break
+
+
+if __name__ == "__main__":
+    main()
