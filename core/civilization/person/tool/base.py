@@ -27,7 +27,7 @@ class UseParams(BaseModel):
         return UseParams(input=content)
 
 
-class BaseTool(BaseModel, ABC, arbitrary_types_allowed=True):
+class BaseTool(BaseModel, ABC):
     name: str
     instruction: str
     color: Color = Color.rgb(g=128)

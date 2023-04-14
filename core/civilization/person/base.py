@@ -26,7 +26,7 @@ class TalkParams(BaseModel):
         return TalkParams(attachment=[])
 
 
-class BasePerson(BaseModel, arbitrary_types_allowed=True):
+class BasePerson(BaseModel):
     name: str
     instruction: str
     params: CreateParams

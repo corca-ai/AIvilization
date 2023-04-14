@@ -4,13 +4,13 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class Code:
+class Code(BaseModel):
     value: int
 
     def __init__(self, value: int):
-        self.value = value
+        super().__init__(value=value)
 
-    def __repr__(self):
+    def __str__(self):
         return "%d" % self.value
 
 
