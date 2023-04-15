@@ -1,1 +1,1 @@
-# Artificial Growing Civilization (AGC)
+# AIvilization (Artificial Civilization)
