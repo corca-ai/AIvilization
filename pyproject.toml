@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "agc"
+name = "AIvilization"
 version = "0.1.0"
-description = "Artificial Growing Civilization"
+description = "Artificial Civilization"
 authors = ["Taeho Lee <taeho@corca.ai>", "Chung Hwan Han <hanch@corca.ai>"]
 readme = "README.md"
 
 [tool.poetry.scripts]
-start = "agc.main:main"
+start = "aivilization.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.11"

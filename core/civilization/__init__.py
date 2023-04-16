@@ -2,7 +2,7 @@ from core.config import settings
 
 from .person import CreateParams
 from .person.action import Action, ActionType
-from .person.default import DefaultPerson as Person
+from .person.default import Person as Person
 from .person.tool import BaseTool
 
 

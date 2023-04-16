@@ -10,7 +10,7 @@ from .tool import BuildParams, UseParams
 from .tool.coded import CodedTool as Tool
 
 
-class DefaultPerson(BasePerson):
+class Person(BasePerson):
     def __init__(
         self, name: str, instruction: str, params: CreateParams, referee: BasePerson
     ):
@@ -33,7 +33,7 @@ class DefaultPerson(BasePerson):
         while True:
             idea = self.organize(prompt)
             thought = self.brain.think(idea)
-            actions = DefaultPerson.parse_thought(thought)
+            actions = Person.parse_thought(thought)
             next_action = actions[0]
             result = self.act(next_action)
             if next_action.type == ActionType.Answer:
@@ -76,9 +76,7 @@ class DefaultPerson(BasePerson):
         if name in self.friends:
             return System.error(f"Friend {name} already exists.")
 
-        friend = DefaultPerson(
-            name, instruction, CreateParams.from_str(extra), referee=self
-        )
+        friend = Person(name, instruction, CreateParams.from_str(extra), referee=self)
         self.friends[name] = friend
 
         return (
@@ -105,7 +103,9 @@ class DefaultPerson(BasePerson):
         if name in self.friends:
             return System.error(f"Tool {name} already exists.")
 
-        self.tools[name] = Tool(name, instruction, BuildParams.from_str(extra))
+        self.tools[name] = Tool(name=name, instruction=instruction)
+        self.tools[name].build(BuildParams.from_str(extra))
+
         return (
             f"{name}'s result\n{System.PROMPT_SEPARATOR}\n"
             + f"You have built a tool named {name}. Test if you can use the tool well."

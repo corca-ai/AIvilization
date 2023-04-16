@@ -1,13 +1,12 @@
 _TEMPLATE = """Your response should be in the following schema:
-
-Plan: Each plan should be concise and clear to achieve the goal.
+Plan:
 - [ ] plan #1
 - [ ] plan #2
 
-Type:
-Name:
-Instruction:
-Extra:
+Type: action type
+Name: action name
+Instruction: action instruction
+Extra: action extra
 
 The action types you can use are:
 Type | Description | Name | Instruction | Extra
