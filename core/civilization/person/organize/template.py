@@ -27,6 +27,8 @@ Answer | Answer to {referee} | {referee} | Answer | Attachment File List
 Your friends:{friends}
 Your tools:{tools}
 
+Our final goal is to fulfill the user's request: "{final_goal}"
+
 {prompt}
 """
 
@@ -41,7 +43,10 @@ class TemplateOrganize(BaseOrganize):
         friend_names = ", ".join([name for name in person.friends.keys()])
         tool_names = ", ".join([name for name in person.tools.keys()])
         friends = "".join(
-            [f"\n    {name}: {friend.instruction}" for name, friend in person.friends.items()]
+            [
+                f"\n    {name}: {friend.instruction}"
+                for name, friend in person.friends.items()
+            ]
         )
         tools = "".join(
             [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
@@ -52,6 +57,7 @@ class TemplateOrganize(BaseOrganize):
             friends=friends,
             tools=tools,
             prompt=prompt,
+            final_goal=person.final_goal,
             referee=person.referee.name,
         )
 

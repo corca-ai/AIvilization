@@ -30,6 +30,7 @@ class TalkParams(BaseModel):
 class BasePerson(BaseModel):
     name: str
     instruction: str
+    final_goal: str
     params: CreateParams
     referee: Optional["BasePerson"] = None
     color: Color = Color.rgb(r=128)

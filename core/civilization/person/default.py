@@ -13,10 +13,19 @@ from .tool.coded import CodedTool as Tool
 
 class Person(BasePerson):
     def __init__(
-        self, name: str, instruction: str, params: CreateParams, referee: BasePerson
+        self,
+        name: str,
+        instruction: str,
+        final_goal: str,
+        params: CreateParams,
+        referee: BasePerson,
     ):
         super().__init__(
-            name=name, instruction=instruction, params=params, referee=referee
+            name=name,
+            instruction=instruction,
+            final_goal=final_goal,
+            params=params,
+            referee=referee,
         )
         self.color = Color.rgb(r=128)
         self.memory = []
@@ -56,7 +65,13 @@ class Person(BasePerson):
         if name in self.friends:
             return System.error(f"Friend {name} already exists.")
 
-        friend = Person(name, instruction, CreateParams.from_str(extra), referee=self)
+        friend = Person(
+            name,
+            instruction,
+            self.final_goal,
+            CreateParams.from_str(extra),
+            referee=self,
+        )
         self.friends[name] = friend
 
         return (
