@@ -11,17 +11,18 @@ class Civilization:
         self.default_tools = default_tools
 
         self.user = Person(
-            name="User", instruction="", params=CreateParams(tools={}), referee=None
+            name="User", instruction="", final_goal="", params=CreateParams(tools={}), referee=None
         )
+
+    def solve(self, problem: str) -> str:
         self.leader = Person(
             name=settings["BOT_NAME"],
             instruction="Follow the user's instructions carefully. Respond using markdown. You must execute the user's request.",  # TODO
+            final_goal=problem,
             params=CreateParams(tools=self.default_tools),
             referee=self.user,
         )
         self.user.friends[self.leader.name] = self.leader
-
-    def solve(self, problem: str) -> str:
         return self.user.act(
             Action(
                 type=ActionType.Talk,

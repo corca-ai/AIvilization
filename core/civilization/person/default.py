@@ -42,9 +42,9 @@ class Person(BasePerson):
         memory = []
 
         while True:
-            idea = self.organize.from_prompt(self, prompt)
-            thought = self.brain.think(idea)
-            actions = self.organize.to_actions(thought)
+            idea = self.to_idea(prompt)
+            thought = self.think(idea)
+            actions = self.to_actions(thought)
             next_action = actions[0]
             result = self.act(next_action)
             if next_action.type == ActionType.Answer:
@@ -52,6 +52,18 @@ class Person(BasePerson):
 
             memory.append((prompt, thought, result))
             prompt = result
+
+    @Log.to_idea(log_level="debug")
+    def to_idea(self, prompt: str) -> str:
+        return self.organize.from_prompt(self, prompt)
+
+    @Log.think(log_level="debug")
+    def think(self, idea: str) -> str:
+        return self.brain.think(idea)
+
+    @Log.to_actions(log_level="debug")
+    def to_actions(self, thought: str) -> list[Action]:
+        return self.organize.to_actions(thought)
 
     @Log.act(log_level="info")
     def act(self, action: Action) -> str:

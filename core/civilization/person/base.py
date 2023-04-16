@@ -47,16 +47,53 @@ class BasePerson(BaseModel):
 
 
 class Log:
-    def organize(log_level: str):
+    def to_idea(log_level: str):
         def decorator(func):
             def wrapper(self, prompt: str):
                 idea = func(self, prompt)
                 try:
-                    getattr(logger, log_level)(ANSI(idea).to(Color.rgb(144, 144, 144)))
+                    getattr(logger, log_level)(
+                        ANSI("[idea] ").to(Color.rgb(0xF6, 0xBA, 0x6F)) + idea
+                    )
                 except KeyError as e:
-                    logger.error("Failed to log organize: " + str(e))
+                    logger.error("Failed to log to_idea: " + str(e))
 
                 return idea
+
+            return wrapper
+
+        return decorator
+
+    def think(log_level: str):
+        def decorator(func):
+            def wrapper(self, idea: str):
+                thought = func(self, idea)
+                try:
+                    getattr(logger, log_level)(
+                        ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4))+ thought
+                    )
+                except KeyError as e:
+                    logger.error("Failed to log think: " + str(e))
+
+                return thought
+
+            return wrapper
+
+        return decorator
+
+    def to_actions(log_level: str):
+        def decorator(func):
+            def wrapper(self, thought: str):
+                actions = func(self, thought)
+                try:
+                    getattr(logger, log_level)(
+                        ANSI("[actions] ").to(Color.rgb(0xAD, 0xE4, 0xDB))
+                        + ", ".join([str(action.type) for action in actions])
+                    )
+                except KeyError as e:
+                    logger.error("Failed to log to_actions: " + str(e))
+
+                return actions
 
             return wrapper
 
@@ -127,22 +164,6 @@ class Log:
                         logger.error("Failed to log act: " + str(e))
 
                 return result
-
-            return wrapper
-
-        return decorator
-
-    def parse_thought(log_level: str):
-        def decorator(func):
-            def wrapper(thought: str):
-                try:
-                    getattr(logger, log_level)(
-                        ANSI(thought).to(Color.rgb(208, 208, 208))
-                    )
-                except KeyError as e:
-                    logger.error("Failed to log parse_thought: " + str(e))
-
-                return func(thought)
 
             return wrapper
 
