@@ -32,7 +32,7 @@ Our final goal is to fulfill the user's request: "{final_goal}"
 {prompt}
 """
 
-_ACTION_PATTERN = r"Type:\s+(\w+)\s+Name:\s+(\w+)\s+Instruction:\s+((?:(?!\nExtra:).)+)\nExtra:\s*((?:(?!\nType:).)*)"
+_ACTION_PATTERN = r"Type:\s+(\w+)\s+Name:\s+(\w+)\s+Instruction:\s+((?:(?!\nExtra:).)+)\n(Extra:\s*((?:(?!\nType:).)*))?"
 
 
 class TemplateOrganize(BaseOrganize):
