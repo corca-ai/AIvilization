@@ -6,6 +6,7 @@ from core.logging import ANSI, Color, Style, logger
 
 from .action import Action, ActionType
 from .brain import BaseBrain
+from .organize import BaseOrganize
 from .tool import BaseTool
 
 
@@ -36,6 +37,7 @@ class BasePerson(BaseModel):
     tools: dict[str, BaseTool] = {}
     brain: BaseBrain = None
     friends: dict[str, "BasePerson"] = {}
+    organize: BaseOrganize = None
 
     def __str__(self):
         return ANSI((f"{self.name}({self.__class__.__name__})").center(20)).to(
