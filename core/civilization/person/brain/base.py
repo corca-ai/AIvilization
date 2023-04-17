@@ -3,11 +3,13 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel
 
 from .llm import BaseLLM
+from .memory import BaseMemory
 
 
 class BaseBrain(BaseModel, ABC):
     llm: BaseLLM = None
-    stm: list[dict] = []
+    ltm: BaseMemory = None  # Long term memory
+    stm: list[dict] = []  # Short term memory
 
     @abstractmethod
     def think(self, prompt: str) -> str:

@@ -2,6 +2,7 @@ import re
 
 from core.civilization.person import BasePerson
 from core.civilization.person.action import Action, ActionType
+from core.logging import ANSI, Color, logger
 
 from .base import BaseOrganize
 
@@ -51,7 +52,7 @@ class TemplateOrganize(BaseOrganize):
         tools = "".join(
             [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
         )
-        return self.template.format(
+        idea = self.template.format(
             friend_names=friend_names,
             tool_names=tool_names,
             friends=friends,
@@ -60,6 +61,7 @@ class TemplateOrganize(BaseOrganize):
             final_goal=person.final_goal,
             referee=person.referee.name,
         )
+        return idea
 
     def to_actions(self, thought: str) -> list[Action]:
         matches = re.findall(self.pattern, thought, re.DOTALL)

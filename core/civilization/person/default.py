@@ -5,7 +5,7 @@ from core.logging import Color
 
 from .action import Action, ActionType
 from .base import BasePerson, CreateParams, Log, TalkParams
-from .brain.default import DefaultBrain as Brain
+from .brain.default import Brain as Brain
 from .organize.template import TemplateOrganize as Organize
 from .tool import BuildParams, UseParams
 from .tool.coded import CodedTool as Tool
@@ -29,7 +29,7 @@ class Person(BasePerson):
         )
         self.color = Color.rgb(r=128)
         self.memory = []
-        self.tools: dict[str, Tool] = params.tools
+        self.tools: dict[str, BaseTool] = params.tools
         # self.channels: list[str] = kwargs["channels"] # TODO
 
         self.brain = Brain(name, instruction, self.memory)
@@ -111,7 +111,7 @@ class Person(BasePerson):
             return System.error(f"Tool {name} already exists.")
 
         self.tools[name] = Tool(name=name, instruction=instruction)
-        self.tools[name].build(BuildParams.from_str(extra))
+        self.tools[name].build(params=BuildParams.from_str(extra))
 
         return (
             f"{name}'s result\n{System.PROMPT_SEPARATOR}\n"
