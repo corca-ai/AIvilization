@@ -46,21 +46,6 @@ class BasePerson(BaseModel):
 
 
 class Log:
-    def organize(log_level: str):
-        def decorator(func):
-            def wrapper(self, prompt: str):
-                idea = func(self, prompt)
-                try:
-                    getattr(logger, log_level)(ANSI(idea).to(Color.rgb(144, 144, 144)))
-                except KeyError as e:
-                    logger.error("Failed to log organize: " + str(e))
-
-                return idea
-
-            return wrapper
-
-        return decorator
-
     def respond(log_level: str):
         def decorator(func):
             def wrapper(
@@ -126,22 +111,6 @@ class Log:
                         logger.error("Failed to log act: " + str(e))
 
                 return result
-
-            return wrapper
-
-        return decorator
-
-    def parse_thought(log_level: str):
-        def decorator(func):
-            def wrapper(thought: str):
-                try:
-                    getattr(logger, log_level)(
-                        ANSI(thought).to(Color.rgb(208, 208, 208))
-                    )
-                except KeyError as e:
-                    logger.error("Failed to log parse_thought: " + str(e))
-
-                return func(thought)
 
             return wrapper
 

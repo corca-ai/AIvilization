@@ -2,6 +2,7 @@ import re
 
 from core.civilization.person import BasePerson
 from core.civilization.person.action import Action, ActionType
+from core.logging import ANSI, Color, logger
 
 from .base import BaseOrganize
 
@@ -41,12 +42,15 @@ class TemplateOrganize(BaseOrganize):
         friend_names = ", ".join([name for name in person.friends.keys()])
         tool_names = ", ".join([name for name in person.tools.keys()])
         friends = "".join(
-            [f"\n    {name}: {friend.instruction}" for name, friend in person.friends.items()]
+            [
+                f"\n    {name}: {friend.instruction}"
+                for name, friend in person.friends.items()
+            ]
         )
         tools = "".join(
             [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
         )
-        return self.template.format(
+        idea = self.template.format(
             friend_names=friend_names,
             tool_names=tool_names,
             friends=friends,
@@ -55,7 +59,13 @@ class TemplateOrganize(BaseOrganize):
             referee=person.referee.name,
         )
 
+        logger.debug(ANSI(idea).to(Color.rgb(144, 144, 144)))
+
+        return idea
+
     def to_actions(self, thought: str) -> list[Action]:
+        logger.debug(ANSI(thought).to(Color.rgb(208, 208, 208)))
+
         matches = re.findall(self.pattern, thought, re.DOTALL)
 
         if len(matches) == 0:
