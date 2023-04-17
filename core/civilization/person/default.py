@@ -8,7 +8,8 @@ from .base import BasePerson, CreateParams, Log, TalkParams
 from .brain.default import Brain as Brain
 from .organize.template import TemplateOrganize as Organize
 from .tool import BuildParams, UseParams
-from .tool.coded import CodedTool as Tool
+from .tool.base import BaseTool
+from .tool.coded import CodedTool
 
 
 class Person(BasePerson):
@@ -18,7 +19,6 @@ class Person(BasePerson):
         super().__init__(
             name=name, instruction=instruction, params=params, referee=referee
         )
-        self.color = Color.rgb(r=128)
         self.memory = []
         self.tools: dict[str, BaseTool] = params.tools
         # self.channels: list[str] = kwargs["channels"] # TODO
@@ -56,53 +56,51 @@ class Person(BasePerson):
         if name in self.friends:
             return System.error(f"Friend {name} already exists.")
 
-        friend = Person(name, instruction, CreateParams.from_str(extra), referee=self)
+        friend = Person(
+            name, instruction, CreateParams.from_str(extra, self.tools), referee=self
+        )
         self.friends[name] = friend
 
-        return (
-            f"{name}'s talk\n{System.PROMPT_SEPARATOR}\n"
-            + "Hello, I am "
-            + name
-            + ".\n"
-        )
+        return System.greeting(name)
 
     def talk(self, name: str, instruction: str, extra: str) -> str:
         # TODO: break a relationship with a friend
         if name not in self.friends:
             return System.error(f"Friend {name} not found.")
 
-        return f"{name}'s talk\n{System.PROMPT_SEPARATOR}\n" + self.friends[
-            name
-        ].respond(
-            self,
-            f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n" + instruction,
-            TalkParams.from_str(extra),
+        return System.talk(
+            speaker=name,
+            message=self.friends[name].respond(
+                self,
+                System.talk(speaker=self.name, message=instruction),
+                TalkParams.from_str(extra),
+            ),
         )
 
     def build(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:
             return System.error(f"Tool {name} already exists.")
 
-        self.tools[name] = Tool(name=name, instruction=instruction)
+        self.tools[name] = CodedTool(name=name, instruction=instruction)
         self.tools[name].build(params=BuildParams.from_str(extra))
 
-        return (
-            f"{name}'s result\n{System.PROMPT_SEPARATOR}\n"
-            + f"You have built a tool named {name}. Test if you can use the tool well."
-        )
+        return System.build(tool_name=name)
 
     def use(self, name: str, instruction: str, extra: str) -> str:
         if name not in self.tools:
             return System.error(f"Tool {name} not found.")
 
         # TODO: delete tool by instruction
-        return f"{name}'s result\n{System.PROMPT_SEPARATOR}\n" + self.tools[name].use(
-            instruction,
-            UseParams.from_str(extra),
+        return System.use(
+            tool_name=name,
+            result=self.tools[name].use(
+                instruction,
+                UseParams.from_str(extra),
+            ),
         )
 
     def answer(self, name: str, instruction: str, extra: str):
-        return f"{instruction}"
+        return f"{instruction}\nExtra: {extra}"
 
     def invite(self, channel: str):  # TODO
         pass
