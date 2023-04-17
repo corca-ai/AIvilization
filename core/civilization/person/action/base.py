@@ -7,7 +7,7 @@ from core.logging import ANSI, Color, Style
 
 class ActionType(Enum):
     Respond = "Respond"
-    Create = "Create"
+    Invite = "Invite"
     Talk = "Talk"
     Build = "Build"
     Use = "Use"

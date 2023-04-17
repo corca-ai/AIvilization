@@ -1,3 +1,3 @@
-from .base import BasePerson, CreateParams, TalkParams
+from .base import BasePerson, InviteParams, TalkParams
 
-__all__ = ["BasePerson", "CreateParams", "TalkParams"]
+__all__ = ["BasePerson", "InviteParams", "TalkParams"]

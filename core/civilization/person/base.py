@@ -2,6 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from core.civilization.god import System
 from core.logging import ANSI, Color, Style, logger
 
 from .action import Action, ActionType
@@ -10,7 +11,7 @@ from .organize import BaseOrganize
 from .tool import BaseTool
 
 
-class CreateParams(BaseModel):
+class InviteParams(BaseModel):
     tools: dict[str, BaseTool]
     # channels: list[str] # TODO
 
@@ -21,7 +22,7 @@ class CreateParams(BaseModel):
             tool = tool.strip()
             if tool in tools.keys():
                 given_tools[tool] = tools[tool]
-        return CreateParams(tools=given_tools)
+        return InviteParams(tools=given_tools)
 
     class Config:
         arbitrary_types_allowed = True
@@ -35,10 +36,23 @@ class TalkParams(BaseModel):
         return TalkParams(attachment=[])
 
 
-class BasePerson(BaseModel):
+class PersonMessageFormat:
+    def greeting(self) -> str:
+        return (
+            f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n"
+            + "Hello, I am "
+            + self.name
+            + ".\nI was invited from you."
+        )
+
+    def to_format(self, message: str) -> str:
+        return f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n" + message
+
+
+class BasePerson(BaseModel, PersonMessageFormat):
     name: str
     instruction: str
-    params: CreateParams
+    params: InviteParams
     referee: Optional["BasePerson"] = None
     color: Color = Color.rgb(g=255)
     memory: list = []
@@ -86,7 +100,7 @@ class Log:
 
     def act(log_level: str):
         def get_target(self, type: ActionType, name: str):
-            if type in [ActionType.Create, ActionType.Talk]:
+            if type in [ActionType.Invite, ActionType.Talk]:
                 return self.friends[name]
             elif type in [ActionType.Build, ActionType.Use]:
                 return self.tools[name]
@@ -113,7 +127,7 @@ class Log:
 
                 result = func(self, action)
 
-                if action.type in [ActionType.Create, ActionType.Build]:
+                if action.type in [ActionType.Invite, ActionType.Build]:
                     try:
                         getattr(logger, log_level)(
                             f(get_target(self, action.type, action.name))

@@ -4,7 +4,7 @@ from core.civilization.god.system import System
 from core.logging import Color
 
 from .action import Action, ActionType
-from .base import BasePerson, CreateParams, Log, TalkParams
+from .base import BasePerson, InviteParams, Log, TalkParams
 from .brain.default import Brain as Brain
 from .organize.template import TemplateOrganize as Organize
 from .tool import BuildParams, UseParams
@@ -14,7 +14,7 @@ from .tool.coded import CodedTool
 
 class Person(BasePerson):
     def __init__(
-        self, name: str, instruction: str, params: CreateParams, referee: BasePerson
+        self, name: str, instruction: str, params: InviteParams, referee: "Person"
     ):
         super().__init__(
             name=name, instruction=instruction, params=params, referee=referee
@@ -25,11 +25,11 @@ class Person(BasePerson):
 
         self.brain = Brain(name, instruction, self.memory)
 
-        self.friends: dict[str, BasePerson] = {}
+        self.friends: dict[str, "Person"] = {}
         self.organize = Organize()
 
     @Log.respond(log_level="info")
-    def respond(self, sender: BasePerson, prompt: str, params: TalkParams) -> str:
+    def respond(self, sender: "Person", prompt: str, params: TalkParams) -> str:
         memory = []
 
         while True:
@@ -39,7 +39,7 @@ class Person(BasePerson):
             next_action = actions[0]
             result = self.act(next_action)
             if next_action.type == ActionType.Answer:
-                return result
+                return self.to_format(result)
 
             memory.append((prompt, thought, result))
             prompt = result
@@ -52,52 +52,48 @@ class Person(BasePerson):
         except KeyError:
             raise ValueError(f"Unknown action type '{type}'")
 
-    def create(self, name: str, instruction: str, extra: str) -> str:
+    def invite(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:
             return System.error(f"Friend {name} already exists.")
 
         friend = Person(
-            name, instruction, CreateParams.from_str(extra, self.tools), referee=self
+            name, instruction, InviteParams.from_str(extra, self.tools), referee=self
         )
         self.friends[name] = friend
 
-        return System.greeting(name)
+        return friend.greeting()
 
     def talk(self, name: str, instruction: str, extra: str) -> str:
         # TODO: break a relationship with a friend
         if name not in self.friends:
             return System.error(f"Friend {name} not found.")
 
-        return System.talk(
-            speaker=name,
-            message=self.friends[name].respond(
-                self,
-                System.talk(speaker=self.name, message=instruction),
-                TalkParams.from_str(extra),
-            ),
+        friend = self.friends[name]
+
+        return friend.respond(
+            self,
+            self.to_format(instruction),
+            TalkParams.from_str(extra),
         )
 
     def build(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:
             return System.error(f"Tool {name} already exists.")
 
-        self.tools[name] = CodedTool(name=name, instruction=instruction)
-        self.tools[name].build(params=BuildParams.from_str(extra))
+        tool = CodedTool(name=name, instruction=instruction)
+        tool.build(params=BuildParams.from_str(extra))
+        self.tools[name] = tool
 
-        return System.build(tool_name=name)
+        return tool.greeting()
 
     def use(self, name: str, instruction: str, extra: str) -> str:
         if name not in self.tools:
             return System.error(f"Tool {name} not found.")
 
         # TODO: delete tool by instruction
-        return System.use(
-            tool_name=name,
-            result=self.tools[name].use(
-                instruction,
-                UseParams.from_str(extra),
-            ),
-        )
+        tool = self.tools[name]
+        result = tool.use(instruction, UseParams.from_str(extra))
+        return tool.to_format(result)
 
     def answer(self, name: str, instruction: str, extra: str):
         return f"{instruction}\nExtra: {extra}"
