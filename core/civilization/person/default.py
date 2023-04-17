@@ -7,7 +7,7 @@ from .action import Action, ActionType
 from .base import BasePerson, CreateParams, Log, TalkParams
 from .brain.default import Brain as Brain
 from .organize.template import TemplateOrganize as Organize
-from .tool import BuildParams, UseParams
+from .tool import BaseTool, BuildParams, UseParams
 from .tool.coded import CodedTool as Tool
 
 
