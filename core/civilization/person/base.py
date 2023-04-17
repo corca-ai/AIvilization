@@ -11,12 +11,20 @@ from .tool import BaseTool
 
 
 class CreateParams(BaseModel):
-    tools: dict
+    tools: dict[str, BaseTool]
     # channels: list[str] # TODO
 
     @staticmethod
-    def from_str(content: str):
-        return CreateParams(tools={})
+    def from_str(content: str, tools: dict[str, BaseTool] = {}):
+        given_tools = {}
+        for tool in content.split(","):
+            tool = tool.strip()
+            if tool in tools.keys():
+                given_tools[tool] = tools[tool]
+        return CreateParams(tools=given_tools)
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class TalkParams(BaseModel):
@@ -32,7 +40,7 @@ class BasePerson(BaseModel):
     instruction: str
     params: CreateParams
     referee: Optional["BasePerson"] = None
-    color: Color = Color.rgb(r=128)
+    color: Color = Color.rgb(g=255)
     memory: list = []
     tools: dict[str, BaseTool] = {}
     brain: BaseBrain = None
@@ -43,6 +51,9 @@ class BasePerson(BaseModel):
         return ANSI((f"{self.name}({self.__class__.__name__})").center(20)).to(
             self.color, Style.bold()
         )
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class Log:

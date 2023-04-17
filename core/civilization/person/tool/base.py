@@ -27,10 +27,11 @@ class UseParams(BaseModel):
         return UseParams(input=content)
 
 
-class BaseTool(BaseModel, ABC):
-    name: str
-    instruction: str
-    color: Color = Color.rgb(g=128)
+class BaseTool(ABC):
+    def __init__(self, name: str, instruction: str):
+        self.name = name
+        self.instruction = instruction
+        self.color = Color.rgb(g=0)
 
     def __str__(self):
         return ANSI((f"{self.name}({self.__class__.__name__})").center(20)).to(

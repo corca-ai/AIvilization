@@ -5,7 +5,7 @@ from core.logging import logger
 
 
 def main():
-    civilization = Civilization({})
+    civilization = Civilization()
     while True:
         try:
             problem = input(">>> ")

@@ -10,3 +10,21 @@ class System:
     @staticmethod
     def announcement(message: str) -> str:
         return System.ANNOUNCEMENT_MESSAGE + System.PROMPT_SEPARATOR + "\n" + message
+
+    @staticmethod
+    def greeting(name: str) -> str:
+        (
+            f"{name}'s talk\n{System.PROMPT_SEPARATOR}\n"
+            + "Hello, I am "
+            + name
+            + ".\nI was created from you."
+        )
+
+    @staticmethod
+    def talk(listener: str, message: str) -> str:
+        (
+            f"{name}'s talk\n{System.PROMPT_SEPARATOR}\n"
+            + "Hello, I am "
+            + name
+            + ".\nI was created from you."
+        )
