@@ -17,14 +17,12 @@ class Person(BasePerson):
         self,
         name: str,
         instruction: str,
-        final_goal: str,
         params: InviteParams,
         referee: BasePerson,
     ):
         super().__init__(
             name=name,
             instruction=instruction,
-            final_goal=final_goal,
             params=params,
             referee=referee,
         )
@@ -77,7 +75,6 @@ class Person(BasePerson):
         friend = Person(
             name,
             instruction,
-            self.final_goal,
             InviteParams.from_str(extra, self.tools),
             referee=self,
         )

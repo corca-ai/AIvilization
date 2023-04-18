@@ -2,7 +2,6 @@ import re
 
 from core.civilization.person import BasePerson
 from core.civilization.person.action import Action, ActionType
-from core.logging import ANSI, Color, logger
 
 from .base import BaseOrganize
 
@@ -25,8 +24,6 @@ Use | Use one of your tools. | Tool's Name (should be one of [{tool_names}]) | T
 
 Your friends:{friends}
 Your tools:{tools}
-
-Our final goal is to fulfill the user's request: "{final_goal}"
 
 {prompt}
 """
@@ -56,7 +53,6 @@ class TemplateOrganize(BaseOrganize):
             friends=friends,
             tools=tools,
             prompt=prompt,
-            final_goal=person.final_goal,
             referee=person.referee.name,
         )
         return idea

@@ -59,7 +59,6 @@ class PersonMessageFormat:
 class BasePerson(BaseModel, PersonMessageFormat):
     name: str
     instruction: str
-    final_goal: str
     params: InviteParams
     referee: Optional["BasePerson"] = None
     color: Color = Color.rgb(g=255)
@@ -85,7 +84,8 @@ class Log:
                 idea = func(self, prompt)
                 try:
                     getattr(logger, log_level)(
-                        ANSI("[idea] ").to(Color.rgb(0xF6, 0xBA, 0x6F)) + idea
+                        ANSI("[idea] ").to(Color.rgb(0xF6, 0xBA, 0x6F))
+                        + ANSI(idea).to(Style.dim())
                     )
                 except KeyError as e:
                     logger.error("Failed to log to_idea: " + str(e))
@@ -102,7 +102,8 @@ class Log:
                 thought = func(self, idea)
                 try:
                     getattr(logger, log_level)(
-                        ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4)) + thought
+                        ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4))
+                        + ANSI(thought).to(Style.dim())
                     )
                 except KeyError as e:
                     logger.error("Failed to log think: " + str(e))
@@ -120,7 +121,9 @@ class Log:
                 try:
                     getattr(logger, log_level)(
                         ANSI("[actions] ").to(Color.rgb(0xAD, 0xE4, 0xDB))
-                        + ", ".join([str(action.type) for action in actions])
+                        + ANSI(", ".join([str(action.type) for action in actions])).to(
+                            Style.dim()
+                        )
                     )
                 except KeyError as e:
                     logger.error("Failed to log to_actions: " + str(e))

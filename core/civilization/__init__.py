@@ -12,7 +12,6 @@ class Civilization:
         self.user = Person(
             name="User",
             instruction="",
-            final_goal="",
             params=InviteParams(tools={}),
             referee=None,
         )
@@ -21,7 +20,6 @@ class Civilization:
         self.leader = Person(
             name=settings["BOT_NAME"],
             instruction="Follow the user's instructions carefully. Respond using markdown. You must fulfill the user's request.",  # TODO
-            final_goal=problem,
             params=InviteParams(tools=default_tools),
             referee=self.user,
         )
