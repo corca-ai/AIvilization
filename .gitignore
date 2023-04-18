@@ -3,4 +3,5 @@ __pycache__/
 
 .env
 
+playground/
 tools/

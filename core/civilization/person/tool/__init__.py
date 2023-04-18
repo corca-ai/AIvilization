@@ -9,7 +9,7 @@ default_tools = {
         (
             "Executes commands in a terminal. "
             "If linux errno occurs, we have to solve the problem with the terminal. "
-            "Input should be one valid command. "
+            "Input should be one valid command. (ex. pip install numpy) "
             "Extra args should be empty. "
             "Output will be any output from running that command."
         ),

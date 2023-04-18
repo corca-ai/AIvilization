@@ -28,31 +28,26 @@ class Person(BasePerson):
             params=params,
             referee=referee,
         )
-        self.memory = []
         self.tools: dict[str, BaseTool] = params.tools
         self.color = Color.rgb(g=255)
 
         self.brain = Brain(name, instruction, self.memory)
 
         self.friends: dict[str, "Person"] = {}
+        if referee:
+            self.friends[referee.name] = referee
         self.organize = Organize()
 
     @Log.respond(log_level="info")
     def respond(self, sender: "Person", prompt: str, params: TalkParams) -> str:
-        memory = []
-
         while True:
             idea = self.to_idea(prompt)
             thought = self.think(idea)
             actions = self.to_actions(thought)
             next_action = actions[0]
-
             if next_action.type == ActionType.Talk and next_action.name == sender.name:
                 return self.to_format(next_action.instruction)
-
             result = self.act(next_action)
-
-            memory.append((prompt, thought, result))
             prompt = result
 
     @Log.to_idea(log_level="debug")

@@ -18,9 +18,9 @@ Extra: action extra
 The action types you can use are:
 Type | Description | Name | Instruction | Extra
 -|-|-|-|-
-Invite | Invite a friend who can do your work for you. | Friend's Name (usual person name) | Friend's Personality | Tools that your friend needs among the tools you have. ex. tool_name1, tool_name2
+Invite | Invite person who can do your work for you and are not your friends. | Usual Person Name | Personality | Tools that the person needs among the tools you have. ({tool_names})
 Talk |  Talk to your friends. | Friend's Name (should be one of [{friend_names}]) | Message | Attachment File List
-Build | Build or rebuild a reusable tool when you can't do it yourself. It must have stdout, stderr messages. It should be executable with the following schema of commands: `python tools/example.py input extra_args` | Tool's Name (snake_case) | Tool's objective, input format, extra args format, output format | Python Code for Building Tools
+Build | Build or rebuild a reusable tool when you can't do it yourself. It must have stdout, stderr messages. It should be executable with the following schema of commands: `python tools/example.py input extra_args` | Tool's Name (snake_case) | Tool's description that includes objective, input format, extra args format, output format | Python Code for Building Tools (format: ```pythonprint("hello world")```)
 Use | Use one of your tools. | Tool's Name (should be one of [{tool_names}]) | Tool Input for using tool | Extra Args
 
 Your friends:{friends}
@@ -31,7 +31,7 @@ Our final goal is to fulfill the user's request: "{final_goal}"
 {prompt}
 """
 
-_ACTION_PATTERN = r"Type:\s*(\w+)\s+Name:\s*(\w+)\s+Instruction:\s*((?:(?!Extra:).)+)\s+Extra:\s*((?:(?!Type:).)*)\s*"
+_ACTION_PATTERN = r"Type:\s*((?:\w| )+)\s+Name:\s*((?:\w| )+)\s+Instruction:\s*((?:(?!Extra:).)+)\s+Extra:\s*((?:(?!Type:).)*)\s*"
 
 
 class TemplateOrganize(BaseOrganize):
