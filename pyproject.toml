@@ -16,6 +16,9 @@ pydantic = "^1.10.7"
 pinecone-client = "^2.2.1"
 
 
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
