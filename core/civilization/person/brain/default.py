@@ -18,6 +18,7 @@ class Brain(BaseBrain):
     def __init__(self, name: str, instruction: str, memory: list[dict]):
         pinecone.init(api_key=settings["PINECONE_API_KEY"], environment="us-east1-gcp")
         index = pinecone.Index(settings["PINECONE_INDEX"])
+        # index.delete(delete_all=True)
 
         super().__init__(
             llm=OpenAILLM(),

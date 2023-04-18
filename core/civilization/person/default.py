@@ -4,12 +4,13 @@ from core.civilization.god.system import System
 from core.logging import Color
 
 from .action import Action, ActionType
-from .base import BasePerson, InviteParams, Log, TalkParams
+from .base import BasePerson, InviteParams, TalkParams
 from .brain.default import Brain as Brain
 from .organize.template import TemplateOrganize as Organize
 from .tool import BaseTool, BuildParams, UseParams
 from .tool.base import BaseTool
 from .tool.coded import CodedTool
+from .tracer import Trace
 
 
 class Person(BasePerson):
@@ -37,7 +38,7 @@ class Person(BasePerson):
         self.friends: dict[str, "Person"] = {}
         self.organize = Organize()
 
-    @Log.respond(log_level="info")
+    @Trace.respond(log_level="info")
     def respond(self, sender: "Person", prompt: str, params: TalkParams) -> str:
         memory = []
 
@@ -55,19 +56,19 @@ class Person(BasePerson):
             memory.append((prompt, thought, result))
             prompt = result
 
-    @Log.to_idea(log_level="debug")
+    @Trace.to_idea(log_level="debug")
     def to_idea(self, prompt: str) -> str:
         return self.organize.from_prompt(self, prompt)
 
-    @Log.think(log_level="debug")
+    @Trace.think(log_level="debug")
     def think(self, idea: str) -> str:
         return self.brain.think(idea)
 
-    @Log.to_actions(log_level="debug")
+    @Trace.to_actions(log_level="debug")
     def to_actions(self, thought: str) -> list[Action]:
         return self.organize.to_actions(self, thought)
 
-    @Log.act(log_level="info")
+    @Trace.act(log_level="info")
     def act(self, action: Action) -> str:
         try:
             method = getattr(self, action.type.value.lower())
