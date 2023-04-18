@@ -13,7 +13,7 @@ class Terminal(BaseTool):
 
     def use(self, prompt: str, params: UseParams) -> str:
         process = subprocess.Popen(
-            prompt,
+            prompt.split(" "),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
