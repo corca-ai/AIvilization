@@ -61,14 +61,14 @@ class TemplateOrganize(BaseOrganize):
         )
         return idea
 
-    def to_actions(self, thought: str) -> list[Action]:
+    def to_actions(self, person: BasePerson, thought: str) -> list[Action]:
         matches = re.findall(self.action_pattern, thought, re.DOTALL)
 
         if len(matches) == 0:
             return [
                 Action(
                     type=ActionType.Talk,
-                    name=self.referee.name,
+                    name=person.referee.name,
                     instruction=thought,
                     extra="",
                 )

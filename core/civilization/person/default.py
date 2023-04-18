@@ -65,7 +65,7 @@ class Person(BasePerson):
 
     @Log.to_actions(log_level="debug")
     def to_actions(self, thought: str) -> list[Action]:
-        return self.organize.to_actions(thought)
+        return self.organize.to_actions(self, thought)
 
     @Log.act(log_level="info")
     def act(self, action: Action) -> str:

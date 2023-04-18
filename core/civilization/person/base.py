@@ -102,7 +102,7 @@ class Log:
                 thought = func(self, idea)
                 try:
                     getattr(logger, log_level)(
-                        ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4))+ thought
+                        ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4)) + thought
                     )
                 except KeyError as e:
                     logger.error("Failed to log think: " + str(e))
