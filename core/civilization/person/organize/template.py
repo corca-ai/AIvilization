@@ -8,8 +8,7 @@ from .base import BaseOrganize
 
 _THINK_TEMPLATE = """Your response should be in the following schema:
 Plan:
-- [ ] plan #1
-- [ ] plan #2
+Write your plan in Markdown todo format.
 
 Type: action type
 Name: action name
@@ -19,7 +18,7 @@ Extra: action extra
 The action types you can use are:
 Type | Description | Name | Instruction | Extra
 -|-|-|-|-
-Invite | Invite a friend you need. | Friend's Name (usual person name) | Friend's Personality | Tools that your friend needs among the tools you have. ex. tool_name1, tool_name2
+Invite | Invite a friend who can do your work for you. | Friend's Name (usual person name) | Friend's Personality | Tools that your friend needs among the tools you have. ex. tool_name1, tool_name2
 Talk |  Talk to your friends. | Friend's Name (should be one of [{friend_names}]) | Message | Attachment File List
 Build | Build or rebuild a new tool when you can't do it yourself. It must have stdout, stderr messages. It should be executable with the following schema of commands: `python tools/example.py input extra_args` | Tool's Name (snake_case) | Tool's objective, instruction format, extra format, output format | Python Code for Building Tools
 Use | Use one of your tools. | Tool's Name (should be one of [{tool_names}]) | Tool Input | Extra Args

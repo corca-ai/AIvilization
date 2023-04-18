@@ -1,3 +1,4 @@
+from core.civilization.god.system import System
 from core.config import settings
 
 from .person import InviteParams
@@ -19,8 +20,8 @@ class Civilization:
         )
         self.user.friends[self.leader.name] = self.leader
 
-    def solve(self, problem: str) -> str:
-        return self.user.act(
+    def solve(self, problem: str):
+        self.user.act(
             Action(
                 type=ActionType.Talk,
                 name=self.leader.name,

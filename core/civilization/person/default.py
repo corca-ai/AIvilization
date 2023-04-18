@@ -21,7 +21,7 @@ class Person(BasePerson):
         )
         self.memory = []
         self.tools: dict[str, BaseTool] = params.tools
-        # self.channels: list[str] = kwargs["channels"] # TODO
+        self.color = Color.rgb(g=255)
 
         self.brain = Brain(name, instruction, self.memory)
 
@@ -96,4 +96,4 @@ class Person(BasePerson):
         return tool.to_format(result)
 
     def answer(self, name: str, instruction: str, extra: str):
-        return f"{instruction}\nExtra: {extra}"
+        return f"{instruction}" + (f"\n{extra}" if extra else "")

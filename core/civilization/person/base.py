@@ -86,7 +86,7 @@ class Log:
                 prompt: str,
                 params: TalkParams,
             ):
-                result = func(self, sender, prompt, params)
+                result: str = func(self, sender, prompt, params)
 
                 try:
                     getattr(logger, log_level)(
@@ -94,7 +94,9 @@ class Log:
                         + str(ActionType.Respond)
                         + str(sender)
                         + " | "
-                        + ANSI(result).to(Color.white())
+                        + ANSI(result.split(System.PROMPT_SEPARATOR)[1].strip()).to(
+                            Color.white()
+                        )
                     )
                 except KeyError as e:
                     logger.error("Failed to log respond: " + str(e))
