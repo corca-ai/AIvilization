@@ -7,11 +7,10 @@ from core.logging import ANSI, Color, Style
 
 class ActionType(Enum):
     Respond = "Respond"
-    Create = "Create"
+    Invite = "Invite"
     Talk = "Talk"
     Build = "Build"
     Use = "Use"
-    Answer = "Answer"
 
     def __str__(self):
         return ANSI((self.value.lower() + "s ").center(12)).to(

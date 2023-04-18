@@ -2,6 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from core.civilization.god.system import System
 from core.logging import ANSI, Color, Style, logger
 
 from .action import Action, ActionType
@@ -10,13 +11,21 @@ from .organize import BaseOrganize
 from .tool import BaseTool
 
 
-class CreateParams(BaseModel):
-    tools: dict
+class InviteParams(BaseModel):
+    tools: dict[str, BaseTool]
     # channels: list[str] # TODO
 
     @staticmethod
-    def from_str(content: str):
-        return CreateParams(tools={})
+    def from_str(content: str, tools: dict[str, BaseTool] = {}):
+        given_tools = {}
+        for tool in content.split(","):
+            tool = tool.strip()
+            if tool in tools.keys():
+                given_tools[tool] = tools[tool]
+        return InviteParams(tools=given_tools)
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class TalkParams(BaseModel):
@@ -27,13 +36,33 @@ class TalkParams(BaseModel):
         return TalkParams(attachment=[])
 
 
-class BasePerson(BaseModel):
+class PersonMessageFormat:
+    def greeting(self) -> str:
+        return (
+            System.MESSAGE_SEPARATOR
+            + "\n"
+            + f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n"
+            + "Hello, I am "
+            + self.name
+            + ".\nI was invited from you."
+        )
+
+    def to_format(self, message: str) -> str:
+        return (
+            System.MESSAGE_SEPARATOR
+            + "\n"
+            + f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n"
+            + message
+        )
+
+
+class BasePerson(BaseModel, PersonMessageFormat):
     name: str
     instruction: str
     final_goal: str
-    params: CreateParams
+    params: InviteParams
     referee: Optional["BasePerson"] = None
-    color: Color = Color.rgb(r=128)
+    color: Color = Color.rgb(g=255)
     memory: list = []
     tools: dict[str, BaseTool] = {}
     brain: BaseBrain = None
@@ -44,6 +73,9 @@ class BasePerson(BaseModel):
         return ANSI((f"{self.name}({self.__class__.__name__})").center(20)).to(
             self.color, Style.bold()
         )
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class Log:
@@ -107,7 +139,7 @@ class Log:
                 prompt: str,
                 params: TalkParams,
             ):
-                result = func(self, sender, prompt, params)
+                result: str = func(self, sender, prompt, params)
 
                 try:
                     getattr(logger, log_level)(
@@ -115,7 +147,9 @@ class Log:
                         + str(ActionType.Respond)
                         + str(sender)
                         + " | "
-                        + ANSI(result).to(Color.white())
+                        + ANSI(result.split(System.PROMPT_SEPARATOR)[1].strip()).to(
+                            Color.white()
+                        )
                     )
                 except KeyError as e:
                     logger.error("Failed to log respond: " + str(e))
@@ -128,7 +162,7 @@ class Log:
 
     def act(log_level: str):
         def get_target(self, type: ActionType, name: str):
-            if type in [ActionType.Create, ActionType.Talk]:
+            if type in [ActionType.Invite, ActionType.Talk]:
                 return self.friends[name]
             elif type in [ActionType.Build, ActionType.Use]:
                 return self.tools[name]
@@ -155,7 +189,7 @@ class Log:
 
                 result = func(self, action)
 
-                if action.type in [ActionType.Create, ActionType.Build]:
+                if action.type in [ActionType.Invite, ActionType.Build]:
                     try:
                         getattr(logger, log_level)(
                             f(get_target(self, action.type, action.name))

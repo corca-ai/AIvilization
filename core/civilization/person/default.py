@@ -4,11 +4,12 @@ from core.civilization.god.system import System
 from core.logging import Color
 
 from .action import Action, ActionType
-from .base import BasePerson, CreateParams, Log, TalkParams
+from .base import BasePerson, InviteParams, Log, TalkParams
 from .brain.default import Brain as Brain
 from .organize.template import TemplateOrganize as Organize
 from .tool import BaseTool, BuildParams, UseParams
-from .tool.coded import CodedTool as Tool
+from .tool.base import BaseTool
+from .tool.coded import CodedTool
 
 
 class Person(BasePerson):
@@ -17,7 +18,7 @@ class Person(BasePerson):
         name: str,
         instruction: str,
         final_goal: str,
-        params: CreateParams,
+        params: InviteParams,
         referee: BasePerson,
     ):
         super().__init__(
@@ -27,18 +28,17 @@ class Person(BasePerson):
             params=params,
             referee=referee,
         )
-        self.color = Color.rgb(r=128)
         self.memory = []
         self.tools: dict[str, BaseTool] = params.tools
-        # self.channels: list[str] = kwargs["channels"] # TODO
+        self.color = Color.rgb(g=255)
 
         self.brain = Brain(name, instruction, self.memory)
 
-        self.friends: dict[str, BasePerson] = {}
+        self.friends: dict[str, "Person"] = {}
         self.organize = Organize()
 
     @Log.respond(log_level="info")
-    def respond(self, sender: BasePerson, prompt: str, params: TalkParams) -> str:
+    def respond(self, sender: "Person", prompt: str, params: TalkParams) -> str:
         memory = []
 
         while True:
@@ -46,9 +46,11 @@ class Person(BasePerson):
             thought = self.think(idea)
             actions = self.to_actions(thought)
             next_action = actions[0]
+
+            if next_action.type == ActionType.Talk and next_action.name == sender.name:
+                return self.to_format(next_action.instruction)
+
             result = self.act(next_action)
-            if next_action.type == ActionType.Answer:
-                return result
 
             memory.append((prompt, thought, result))
             prompt = result
@@ -73,7 +75,7 @@ class Person(BasePerson):
         except KeyError:
             raise ValueError(f"Unknown action type '{type}'")
 
-    def create(self, name: str, instruction: str, extra: str) -> str:
+    def invite(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:
             return System.error(f"Friend {name} already exists.")
 
@@ -81,28 +83,23 @@ class Person(BasePerson):
             name,
             instruction,
             self.final_goal,
-            CreateParams.from_str(extra),
+            InviteParams.from_str(extra, self.tools),
             referee=self,
         )
         self.friends[name] = friend
 
-        return (
-            f"{name}'s talk\n{System.PROMPT_SEPARATOR}\n"
-            + "Hello, I am "
-            + name
-            + ".\n"
-        )
+        return friend.greeting()
 
     def talk(self, name: str, instruction: str, extra: str) -> str:
         # TODO: break a relationship with a friend
         if name not in self.friends:
             return System.error(f"Friend {name} not found.")
 
-        return f"{name}'s talk\n{System.PROMPT_SEPARATOR}\n" + self.friends[
-            name
-        ].respond(
+        friend = self.friends[name]
+
+        return friend.respond(
             self,
-            f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n" + instruction,
+            self.to_format(instruction),
             TalkParams.from_str(extra),
         )
 
@@ -110,26 +107,17 @@ class Person(BasePerson):
         if name in self.friends:
             return System.error(f"Tool {name} already exists.")
 
-        self.tools[name] = Tool(name=name, instruction=instruction)
-        self.tools[name].build(params=BuildParams.from_str(extra))
+        tool = CodedTool(name=name, instruction=instruction)
+        tool.build(params=BuildParams.from_str(extra))
+        self.tools[name] = tool
 
-        return (
-            f"{name}'s result\n{System.PROMPT_SEPARATOR}\n"
-            + f"You have built a tool named {name}. Test if you can use the tool well."
-        )
+        return tool.greeting()
 
     def use(self, name: str, instruction: str, extra: str) -> str:
         if name not in self.tools:
             return System.error(f"Tool {name} not found.")
 
         # TODO: delete tool by instruction
-        return f"{name}'s result\n{System.PROMPT_SEPARATOR}\n" + self.tools[name].use(
-            instruction,
-            UseParams.from_str(extra),
-        )
-
-    def answer(self, name: str, instruction: str, extra: str):
-        return f"{instruction}"
-
-    def invite(self, channel: str):  # TODO
-        pass
+        tool = self.tools[name]
+        result = tool.use(instruction, UseParams.from_str(extra))
+        return tool.to_format(result)
