@@ -67,9 +67,16 @@ class TemplateOrganize(BaseOrganize):
         matches = re.findall(self.action_pattern, thought, re.DOTALL)
 
         if len(matches) == 0:
-            raise Exception("parse error")
+            return [
+                Action(
+                    type=ActionType.Talk,
+                    name=self.referee.name,
+                    instruction=thought,
+                    extra="",
+                )
+            ]
 
-        result = [
+        return [
             Action(
                 type=ActionType[match[0]],
                 name=match[1],
@@ -78,5 +85,3 @@ class TemplateOrganize(BaseOrganize):
             )
             for match in matches
         ]
-
-        return result
