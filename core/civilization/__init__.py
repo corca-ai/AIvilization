@@ -10,13 +10,17 @@ from .person.tool import default_tools
 class Civilization:
     def __init__(self):
         self.user = Person(
-            name="User", instruction="", final_goal="", params=InviteParams(tools={}), referee=None
+            name="User",
+            instruction="",
+            final_goal="",
+            params=InviteParams(tools={}),
+            referee=None,
         )
 
     def solve(self, problem: str) -> str:
         self.leader = Person(
             name=settings["BOT_NAME"],
-            instruction="Follow the user's instructions carefully. Respond using markdown. You must execute the user's request.",  # TODO
+            instruction="Follow the user's instructions carefully. Respond using markdown. You must fulfill the user's request.",  # TODO
             final_goal=problem,
             params=InviteParams(tools=default_tools),
             referee=self.user,
