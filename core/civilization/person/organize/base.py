@@ -17,5 +17,5 @@ class BaseOrganize(BaseModel, ABC):
         pass
 
     @abstractmethod
-    def to_actions(self, thought: str) -> list[Action]:
+    def to_actions(self, person: BasePerson, thought: str) -> list[Action]:
         pass

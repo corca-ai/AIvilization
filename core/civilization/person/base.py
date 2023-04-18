@@ -59,6 +59,7 @@ class PersonMessageFormat:
 class BasePerson(BaseModel, PersonMessageFormat):
     name: str
     instruction: str
+    final_goal: str
     params: InviteParams
     referee: Optional["BasePerson"] = None
     color: Color = Color.rgb(g=255)
@@ -78,6 +79,58 @@ class BasePerson(BaseModel, PersonMessageFormat):
 
 
 class Log:
+    def to_idea(log_level: str):
+        def decorator(func):
+            def wrapper(self, prompt: str):
+                idea = func(self, prompt)
+                try:
+                    getattr(logger, log_level)(
+                        ANSI("[idea] ").to(Color.rgb(0xF6, 0xBA, 0x6F)) + idea
+                    )
+                except KeyError as e:
+                    logger.error("Failed to log to_idea: " + str(e))
+
+                return idea
+
+            return wrapper
+
+        return decorator
+
+    def think(log_level: str):
+        def decorator(func):
+            def wrapper(self, idea: str):
+                thought = func(self, idea)
+                try:
+                    getattr(logger, log_level)(
+                        ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4)) + thought
+                    )
+                except KeyError as e:
+                    logger.error("Failed to log think: " + str(e))
+
+                return thought
+
+            return wrapper
+
+        return decorator
+
+    def to_actions(log_level: str):
+        def decorator(func):
+            def wrapper(self, thought: str):
+                actions = func(self, thought)
+                try:
+                    getattr(logger, log_level)(
+                        ANSI("[actions] ").to(Color.rgb(0xAD, 0xE4, 0xDB))
+                        + ", ".join([str(action.type) for action in actions])
+                    )
+                except KeyError as e:
+                    logger.error("Failed to log to_actions: " + str(e))
+
+                return actions
+
+            return wrapper
+
+        return decorator
+
     def respond(log_level: str):
         def decorator(func):
             def wrapper(

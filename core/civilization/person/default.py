@@ -7,17 +7,26 @@ from .action import Action, ActionType
 from .base import BasePerson, InviteParams, Log, TalkParams
 from .brain.default import Brain as Brain
 from .organize.template import TemplateOrganize as Organize
-from .tool import BuildParams, UseParams
+from .tool import BaseTool, BuildParams, UseParams
 from .tool.base import BaseTool
 from .tool.coded import CodedTool
 
 
 class Person(BasePerson):
     def __init__(
-        self, name: str, instruction: str, params: InviteParams, referee: "Person"
+        self,
+        name: str,
+        instruction: str,
+        final_goal: str,
+        params: InviteParams,
+        referee: BasePerson,
     ):
         super().__init__(
-            name=name, instruction=instruction, params=params, referee=referee
+            name=name,
+            instruction=instruction,
+            final_goal=final_goal,
+            params=params,
+            referee=referee,
         )
         self.memory = []
         self.tools: dict[str, BaseTool] = params.tools
@@ -33,9 +42,9 @@ class Person(BasePerson):
         memory = []
 
         while True:
-            idea = self.organize.from_prompt(self, prompt)
-            thought = self.brain.think(idea)
-            actions = self.organize.to_actions(thought)
+            idea = self.to_idea(prompt)
+            thought = self.think(idea)
+            actions = self.to_actions(thought)
             next_action = actions[0]
 
             if next_action.type == ActionType.Talk and next_action.name == sender.name:
@@ -45,6 +54,18 @@ class Person(BasePerson):
 
             memory.append((prompt, thought, result))
             prompt = result
+
+    @Log.to_idea(log_level="debug")
+    def to_idea(self, prompt: str) -> str:
+        return self.organize.from_prompt(self, prompt)
+
+    @Log.think(log_level="debug")
+    def think(self, idea: str) -> str:
+        return self.brain.think(idea)
+
+    @Log.to_actions(log_level="debug")
+    def to_actions(self, thought: str) -> list[Action]:
+        return self.organize.to_actions(self, thought)
 
     @Log.act(log_level="info")
     def act(self, action: Action) -> str:
@@ -59,7 +80,11 @@ class Person(BasePerson):
             return System.error(f"Friend {name} already exists.")
 
         friend = Person(
-            name, instruction, InviteParams.from_str(extra, self.tools), referee=self
+            name,
+            instruction,
+            self.final_goal,
+            InviteParams.from_str(extra, self.tools),
+            referee=self,
         )
         self.friends[name] = friend
 

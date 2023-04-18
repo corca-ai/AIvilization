@@ -26,6 +26,8 @@ Use | Use one of your tools. | Tool's Name (should be one of [{tool_names}]) | T
 Your friends:{friends}
 Your tools:{tools}
 
+Our final goal is to fulfill the user's request: "{final_goal}"
+
 {prompt}
 """
 
@@ -54,23 +56,19 @@ class TemplateOrganize(BaseOrganize):
             friends=friends,
             tools=tools,
             prompt=prompt,
+            final_goal=person.final_goal,
             referee=person.referee.name,
         )
-
-        logger.debug(ANSI(idea).to(Color.rgb(144, 144, 144)))
-
         return idea
 
-    def to_actions(self, thought: str) -> list[Action]:
-        logger.debug(ANSI(thought).to(Color.rgb(208, 208, 208)))
-
+    def to_actions(self, person: BasePerson, thought: str) -> list[Action]:
         matches = re.findall(self.action_pattern, thought, re.DOTALL)
 
         if len(matches) == 0:
             return [
                 Action(
                     type=ActionType.Talk,
-                    name=self.referee.name,
+                    name=person.referee.name,
                     instruction=thought,
                     extra="",
                 )
