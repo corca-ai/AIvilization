@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from pydantic import BaseModel
+from typing import TYPE_CHECKING, Type
 
 from core.civilization.person.action import Action
 
@@ -12,11 +10,15 @@ if TYPE_CHECKING:
 from .base import BasePersonTracer
 
 
-class PersonTracerWrapper(BaseModel):
+class PersonTracerWrapper(BasePersonTracer):
     tracers: list[BasePersonTracer] = []
 
-    def add(self, tracer: BasePersonTracer):
-        self.tracers.append(tracer)
+    def __init__(self, person: BasePerson, tracers: list[Type[BasePersonTracer]] = []):
+        super().__init__(person)
+        self.tracers = tracers
+
+    def add(self, Tracer: Type[BasePersonTracer]):
+        self.tracers.append(Tracer(person=self.person))
 
     def on_request(self, sender: BasePerson, prompt: str, params: TalkParams):
         for tracer in self.tracers:
@@ -30,9 +32,9 @@ class PersonTracerWrapper(BaseModel):
         for tracer in self.tracers:
             tracer.on_thought(thought)
 
-    def on_actions(self, action: list[Action]):
+    def on_actions(self, actions: list[Action]):
         for tracer in self.tracers:
-            tracer.on_actions(action)
+            tracer.on_actions(actions)
 
     def on_act(self, action: Action):
         for tracer in self.tracers:

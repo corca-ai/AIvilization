@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Type
 
 from pydantic import BaseModel
 
@@ -68,13 +68,17 @@ class BasePerson(BaseModel, PersonMessageFormat):
     brain: BaseBrain = None
     friends: dict[str, "BasePerson"] = {}
     organize: BaseOrganize = None
-    tracer: PersonTracerWrapper = PersonTracerWrapper()
+    tracer: PersonTracerWrapper = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.set_tracers(tracers=[])
 
     def set_tracers(self, tracers: list[BasePersonTracer]):
-        self.tracer = PersonTracerWrapper(tracers=tracers)
+        self.tracer = PersonTracerWrapper(person=self, tracers=tracers)
 
-    def add_tracer(self, tracer: BasePersonTracer):
-        self.tracer.add(tracer)
+    def add_tracer(self, Tracer: Type[BasePersonTracer]):
+        self.tracer.add(Tracer)
 
     def __str__(self):
         return ANSI((f"{self.name}({self.__class__.__name__})").center(20)).to(

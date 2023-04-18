@@ -1,10 +1,10 @@
-from core.civilization.god.system import System
 from core.config import settings
 
 from .person import InviteParams
 from .person.action import Action, ActionType
 from .person.default import Person as Person
 from .person.tool import default_tools
+from .person.tracer.log import LogTracer
 
 
 class Civilization:
@@ -16,6 +16,7 @@ class Civilization:
             params=InviteParams(tools={}),
             referee=None,
         )
+        self.user.add_tracer(LogTracer)
 
     def solve(self, problem: str) -> str:
         self.leader = Person(
@@ -25,6 +26,8 @@ class Civilization:
             params=InviteParams(tools=default_tools),
             referee=self.user,
         )
+        self.leader.add_tracer(LogTracer)
+
         self.user.friends[self.leader.name] = self.leader
         return self.user.act(
             Action(

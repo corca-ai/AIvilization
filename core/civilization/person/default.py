@@ -38,7 +38,7 @@ class Person(BasePerson):
         self.friends: dict[str, "Person"] = {}
         self.organize = Organize()
 
-    @Trace.respond(log_level="info")
+    @Trace.respond()
     def respond(self, sender: "Person", prompt: str, params: TalkParams) -> str:
         memory = []
 
@@ -56,19 +56,19 @@ class Person(BasePerson):
             memory.append((prompt, thought, result))
             prompt = result
 
-    @Trace.to_idea(log_level="debug")
+    @Trace.to_idea()
     def to_idea(self, prompt: str) -> str:
         return self.organize.from_prompt(self, prompt)
 
-    @Trace.think(log_level="debug")
+    @Trace.think()
     def think(self, idea: str) -> str:
         return self.brain.think(idea)
 
-    @Trace.to_actions(log_level="debug")
+    @Trace.to_actions()
     def to_actions(self, thought: str) -> list[Action]:
         return self.organize.to_actions(self, thought)
 
-    @Trace.act(log_level="info")
+    @Trace.act()
     def act(self, action: Action) -> str:
         try:
             method = getattr(self, action.type.value.lower())

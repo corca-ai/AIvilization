@@ -2,15 +2,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel
-
 from core.civilization.person.action import Action
 
 if TYPE_CHECKING:
     from core.civilization.person import BasePerson, TalkParams
 
 
-class BasePersonTracer(BaseModel):
+class BasePersonTracer:
+    person: BasePerson
+
+    def __init__(self, person: BasePerson):
+        self.person = person
+
     def on_request(self, sender: BasePerson, prompt: str, params: TalkParams):
         pass
 
@@ -20,7 +23,7 @@ class BasePersonTracer(BaseModel):
     def on_thought(self, thought: str):
         pass
 
-    def on_actions(self, action: list[Action]):
+    def on_actions(self, actions: list[Action]):
         pass
 
     def on_act(self, action: Action):
