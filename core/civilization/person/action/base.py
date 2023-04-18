@@ -11,7 +11,6 @@ class ActionType(Enum):
     Talk = "Talk"
     Build = "Build"
     Use = "Use"
-    Answer = "Answer"
 
     def __str__(self):
         return ANSI((self.value.lower() + "s ").center(12)).to(

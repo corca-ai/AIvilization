@@ -37,9 +37,11 @@ class Person(BasePerson):
             thought = self.brain.think(idea)
             actions = self.organize.to_actions(thought)
             next_action = actions[0]
+
+            if next_action.type == ActionType.Talk and next_action.name == sender.name:
+                return self.to_format(next_action.instruction)
+
             result = self.act(next_action)
-            if next_action.type == ActionType.Answer:
-                return self.to_format(result)
 
             memory.append((prompt, thought, result))
             prompt = result
@@ -94,6 +96,3 @@ class Person(BasePerson):
         tool = self.tools[name]
         result = tool.use(instruction, UseParams.from_str(extra))
         return tool.to_format(result)
-
-    def answer(self, name: str, instruction: str, extra: str):
-        return f"{instruction}" + (f"\n{extra}" if extra else "")
