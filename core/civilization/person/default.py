@@ -97,6 +97,3 @@ class Person(BasePerson):
 
     def answer(self, name: str, instruction: str, extra: str):
         return f"{instruction}\nExtra: {extra}"
-
-    def invite(self, channel: str):  # TODO
-        pass

@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from core.civilization.god import System
+from core.civilization.god.system import System
 from core.logging import ANSI, Color, Style, logger
 
 from .action import Action, ActionType
@@ -39,14 +39,21 @@ class TalkParams(BaseModel):
 class PersonMessageFormat:
     def greeting(self) -> str:
         return (
-            f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n"
+            System.MESSAGE_SEPARATOR
+            + "\n"
+            + f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n"
             + "Hello, I am "
             + self.name
             + ".\nI was invited from you."
         )
 
     def to_format(self, message: str) -> str:
-        return f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n" + message
+        return (
+            System.MESSAGE_SEPARATOR
+            + "\n"
+            + f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n"
+            + message
+        )
 
 
 class BasePerson(BaseModel, PersonMessageFormat):

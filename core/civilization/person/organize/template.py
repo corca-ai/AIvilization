@@ -19,9 +19,9 @@ Extra: action extra
 The action types you can use are:
 Type | Description | Name | Instruction | Extra
 -|-|-|-|-
-Invite | Invite a friend you need. | Friend's Name (usual person name) | Friend's Personality | The tool list that you have to give to your friend. ex. tool1, tool2
+Invite | Invite a friend you need. | Friend's Name (usual person name) | Friend's Personality | Tools that your friend needs among the tools you have. ex. tool_name1, tool_name2
 Talk |  Talk to your friends. | Friend's Name (should be one of [{friend_names}]) | Message | Attachment File List
-Build | Build or rebuild a new tool when you can't do it yourself. It must have stdout, stderr messages. It should be executable with the following schema of commands: `python tools/example.py input extra_args` | Tool's Name (snake_case) | Tool's objective, input format, output format | Python Code for Building Tools
+Build | Build or rebuild a new tool when you can't do it yourself. It must have stdout, stderr messages. It should be executable with the following schema of commands: `python tools/example.py input extra_args` | Tool's Name (snake_case) | Tool's objective, instruction format, extra format, output format | Python Code for Building Tools
 Use | Use one of your tools. | Tool's Name (should be one of [{tool_names}]) | Tool Input | Extra Args
 Answer | Answer to {referee} | {referee} | Answer Text | Attachment File List
 
@@ -36,7 +36,7 @@ _ACTION_PATTERN = r"Type:\s+(\w+)\s+Name:\s+(\w+)\s+Instruction:\s+((?:(?!\nExtr
 
 class TemplateOrganize(BaseOrganize):
     template = _THINK_TEMPLATE
-    pattern = _ACTION_PATTERN
+    action_pattern = _ACTION_PATTERN
 
     def from_prompt(self, person: BasePerson, prompt: str) -> str:
         friend_names = ", ".join([name for name in person.friends.keys()])
@@ -66,7 +66,7 @@ class TemplateOrganize(BaseOrganize):
     def to_actions(self, thought: str) -> list[Action]:
         logger.debug(ANSI(thought).to(Color.rgb(208, 208, 208)))
 
-        matches = re.findall(self.pattern, thought, re.DOTALL)
+        matches = re.findall(self.action_pattern, thought, re.DOTALL)
 
         if len(matches) == 0:
             raise Exception("parse error")
@@ -80,4 +80,5 @@ class TemplateOrganize(BaseOrganize):
             )
             for match in matches
         ]
+
         return result

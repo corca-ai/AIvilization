@@ -33,9 +33,12 @@ class CodeWriter(BaseTool):
         pass
 
     def use(self, prompt: str, params: UseParams) -> str:
-        dir_path = os.path.dirname(self.filepath)
-        if dir_path:
-            os.makedirs(dir_path, exist_ok=True)
-        with open(self.filepath, "w") as f:
-            f.write(params.input)
-        return self.content
+        try:
+            dir_path = os.path.dirname(prompt)
+            if dir_path:
+                os.makedirs(dir_path, exist_ok=True)
+            with open(prompt, "w") as f:
+                f.write(params.input)
+        except Exception as e:
+            return str(e)
+        return "Success!"

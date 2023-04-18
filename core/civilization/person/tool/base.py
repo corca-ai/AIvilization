@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 from pydantic import BaseModel
 
-from core.civilization.god import System
+from core.civilization.god.system import System
 from core.logging import ANSI, Color, Style
 
 
@@ -29,16 +29,20 @@ class UseParams(BaseModel):
 
 
 class ToolMessageFormat:
-    @staticmethod
     def greeting(self) -> str:
         return (
-            f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n"
+            System.MESSAGE_SEPARATOR
+            + "\n"
+            + f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n"
             + f"You have built a tool named {self.name}. Test if you can use the tool well."
         )
 
-    @staticmethod
     def to_format(self, result: str) -> str:
-        return f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n{result}"
+        return (
+            System.MESSAGE_SEPARATOR
+            + "\n"
+            + f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n{result}"
+        )
 
 
 class BaseTool(ABC, ToolMessageFormat):

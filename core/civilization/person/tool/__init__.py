@@ -9,7 +9,8 @@ default_tools = {
         (
             "Executes commands in a terminal. "
             "If linux errno occurs, we have to solve the problem with the terminal. "
-            "Input should be one valid command. "
+            "Instruction should be one valid command. "
+            "Extra should be empty. "
             "Output will be any output from running that command."
         ),
     ),
@@ -17,7 +18,8 @@ default_tools = {
         "code_writer",
         (
             "Write code for anything. "
-            "Tool Input should be the code, extra Args should be none. "
+            "Instruction should be a path to a file. "
+            "Extra should be a valid python code. "
             "Output will be the 'success' or 'error'. "
         ),
     ),
