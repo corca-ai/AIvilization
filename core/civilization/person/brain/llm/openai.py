@@ -15,10 +15,7 @@ class OpenAILLM(BaseLLM, BaseModel):
     model: str = "gpt-4"
 
     def chat_completion(self, messages: list[dict]) -> str:
-        level = logger.level
-        logger.setLevel(logging.ERROR)
         result = openai.ChatCompletion.create(
             model=self.model, messages=messages, temperature=0.7, max_tokens=2048
         )["choices"][0]["message"]["content"]
-        logger.setLevel(level)
         return result
