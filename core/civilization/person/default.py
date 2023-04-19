@@ -5,7 +5,7 @@ from core.logging import Color
 
 from .action import Action, ActionType
 from .base import BasePerson, InviteParams, Log, TalkParams
-from .brain.default import Brain as Brain
+from .brain.default import Brain
 from .organize.template import TemplateOrganize as Organize
 from .tool import BaseTool, BuildParams, UseParams
 from .tool.base import BaseTool
@@ -29,7 +29,7 @@ class Person(BasePerson):
         self.tools: dict[str, BaseTool] = params.tools
         self.color = Color.rgb(g=255)
 
-        self.brain = Brain(name, instruction, self.memory)
+        self.brain = Brain(name, instruction)
 
         self.friends: dict[str, "Person"] = {}
         if referee:

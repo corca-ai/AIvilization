@@ -1,23 +1,33 @@
 from abc import ABC, abstractmethod
+from typing import List
 
-import pinecone
 from pydantic import BaseModel
 
 from .llm import BaseLLM
-from .vector import BaseVector
+from .memory import BaseMemory
 
 
 class BaseBrain(BaseModel, ABC):
     llm: BaseLLM = None
-    vector: BaseVector = None
-    stm: list[dict] = []  # Short term memory
-    ltm: pinecone.Index = None  # Long term memory
-    name: str = None
-    instruction: str = None
+    memory: List[BaseMemory] = None
+    # If much earlier,  much closer to LLM. load last and save first.
 
     @abstractmethod
     def think(self, prompt: str) -> str:
         pass
 
-    class Config:
-        arbitrary_types_allowed = True
+    @classmethod
+    def use_memory(cls, func):
+        def wrapper(self: BaseBrain, idea: str) -> str:
+            decorated_idea = idea
+            for m in self.memory:
+                decorated_idea = m.load(decorated_idea)
+
+            thought = func(self, decorated_idea)
+
+            for m in self.memory[::-1]:
+                m.save(idea, thought)
+
+            return thought
+
+        return wrapper
