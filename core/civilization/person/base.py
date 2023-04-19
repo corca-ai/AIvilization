@@ -44,7 +44,7 @@ class PersonMessageFormat:
             + f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n"
             + "Hello, I am "
             + self.name
-            + ".\nI was invited from you."
+            + ".\nYou invited me."
         )
 
     def to_format(self, message: str) -> str:

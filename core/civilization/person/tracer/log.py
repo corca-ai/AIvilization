@@ -66,7 +66,7 @@ class LogTracer(BasePersonTracer):
     def on_act_result(self, action: Action, result: str):
         if action.type in [ActionType.Invite, ActionType.Build]:
             logger.info(self.format_act(action))
-        logger.info(ANSI(action.name + " result: ").to(Color.cyan()) + result)
+        logger.debug(ANSI(action.name + " result: ").to(Color.cyan()) + result)
 
     def on_response(self, sender: BasePerson, response: str):
         logger.info(
