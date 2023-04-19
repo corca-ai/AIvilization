@@ -1,4 +1,3 @@
-from core.civilization.god.system import System
 from core.config import settings
 
 from .person import InviteParams
@@ -18,7 +17,10 @@ class Civilization:
 
         self.leader = Person(
             name=settings["BOT_NAME"],
-            instruction="Follow the user's instructions carefully. Respond using markdown. You must fulfill the user's request.",  # TODO
+            instruction=(
+                "Follow the user's instructions carefully. "
+                "Respond using markdown. You must fulfill the user's request.",  # TODO
+            ),
             params=InviteParams(tools=default_tools),
             referee=self.user,
         )

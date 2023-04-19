@@ -9,7 +9,7 @@ _THINK_TEMPLATE = """Your response should be in the following schema:
 Plan: # Write your plan in markdown todo format.
 - [ ] 
 
-# Write your remaining plans.
+# Write down a plan that I can execute immediately, without the need to complete any other plans first.
 Type: action type
 Name: action name
 Instruction: action instruction

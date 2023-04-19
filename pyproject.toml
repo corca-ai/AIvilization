@@ -18,7 +18,11 @@ pinecone-client = "^2.2.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
+ruff = "^0.0.261"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff.per-file-ignores]
+"template.py" = ["E501"]

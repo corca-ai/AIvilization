@@ -31,18 +31,17 @@ class UseParams(BaseModel):
 class ToolMessageFormat:
     def greeting(self) -> str:
         return (
-            System.MESSAGE_SEPARATOR
-            + "\n"
-            + f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n"
-            + f"You have built a tool named {self.name}. Test if you can use the tool well."
+            f"{System.MESSAGE_SEPARATOR}\n"
+            f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n"
+            f"You have built a tool named {self.name}."
+            "Test if you can use the tool well."
         )
 
     def to_format(self, result: str) -> str:
         return (
-            System.MESSAGE_SEPARATOR
-            + "\n"
-            + f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n{result}\n\n"
-            + "Look at the tool's response and think about what action you should take."
+            f"{System.MESSAGE_SEPARATOR}\n"
+            f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n{result}\n\n"
+            "Look at the tool's response and think about what action you should take."
         )
 
 

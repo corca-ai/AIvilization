@@ -1,5 +1,3 @@
-import re
-
 from core.civilization.god.system import System
 from core.logging import Color
 
@@ -7,9 +5,7 @@ from .action import Action, ActionType
 from .base import BasePerson, InviteParams, Log, TalkParams
 from .brain.default import Brain
 from .organize.template import TemplateOrganize as Organize
-from .tool import BaseTool, BuildParams, UseParams
-from .tool.base import BaseTool
-from .tool.coded import CodedTool
+from .tool import BaseTool, BuildParams, CodedTool, UseParams
 
 
 class Person(BasePerson):

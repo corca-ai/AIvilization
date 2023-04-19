@@ -1,14 +1,16 @@
 from .base import BaseTool, BuildParams, UseParams
+from .coded import CodedTool
 from .default import CodeWriter, Terminal
 
-__all__ = ["BaseTool", "BuildParams", "UseParams", "default_tools"]
+__all__ = ["BaseTool", "CodedTool", "BuildParams", "UseParams", "default_tools"]
 
 default_tools = {
     "terminal": Terminal(
         "terminal",
         (
             "Executes commands in a computer terminal. "
-            "If linux errno occurs, we have to solve the problem with the computer terminal. "
+            "If linux errno occurs, we have to solve "
+            "the problem with the computer terminal. "
             "Instruction should be one valid command. (ex. pip install numpy) "
             "Extra should be empty. "
             "Output will be any output from running that command."

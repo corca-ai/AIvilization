@@ -1,8 +1,7 @@
-from typing import List
 
 from .base import BaseBrain
 from .llm.openai import OpenAILLM
-from .memory import BaseMemory, LongTermMemory, ShortTermMemory
+from .memory import LongTermMemory, ShortTermMemory
 
 
 class Brain(BaseBrain):
@@ -17,7 +16,6 @@ class Brain(BaseBrain):
 
     @BaseBrain.use_memory
     def think(self, idea: str) -> str:
-        print(idea)
         return self.llm.chat_completion(idea)
 
     def memo(self, plan: list[str]) -> str:

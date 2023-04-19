@@ -1,5 +1,4 @@
 import os
-import re
 import subprocess
 
 from core.logging import ANSI, Style, logger

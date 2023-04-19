@@ -171,15 +171,16 @@ class Log:
 
         def decorator(func):
             def wrapper(self, action: Action):
-                f = lambda target: (
-                    str(self)
-                    + str(action.type)
-                    + ANSI(str(target)).to(Color.green(), Style.bold())
-                    + " | "
-                    + ANSI(action.instruction).to(Color.white())
-                    + "\n"
-                    + ANSI(action.extra).to(Style.dim())
-                )
+                def f(target):
+                    return (
+                        str(self)
+                        + str(action.type)
+                        + ANSI(str(target)).to(Color.green(), Style.bold())
+                        + " | "
+                        + ANSI(action.instruction).to(Color.white())
+                        + "\n"
+                        + ANSI(action.extra).to(Style.dim())
+                    )
 
                 if action.type in [ActionType.Talk, ActionType.Use]:
                     try:
