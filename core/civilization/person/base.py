@@ -59,11 +59,9 @@ class PersonMessageFormat:
 class BasePerson(BaseModel, PersonMessageFormat):
     name: str
     instruction: str
-    final_goal: str
     params: InviteParams
     referee: Optional["BasePerson"] = None
     color: Color = Color.rgb(g=255)
-    memory: list = []
     tools: dict[str, BaseTool] = {}
     brain: BaseBrain = None
     friends: dict[str, "BasePerson"] = {}

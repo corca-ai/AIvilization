@@ -12,24 +12,26 @@ class Civilization:
         self.user = Person(
             name="User",
             instruction="",
-            final_goal="",
             params=InviteParams(tools={}),
             referee=None,
         )
         self.user.add_tracer(LogTracer)
 
-    def solve(self, problem: str) -> str:
         self.leader = Person(
             name=settings["BOT_NAME"],
-            instruction="Follow the user's instructions carefully. Respond using markdown. You must fulfill the user's request.",  # TODO
-            final_goal=problem,
+            instruction=(
+                "Follow the user's instructions carefully. "
+                "Respond using markdown. You must fulfill the user's request.",  # TODO
+            ),
             params=InviteParams(tools=default_tools),
             referee=self.user,
         )
         self.leader.add_tracer(LogTracer)
 
         self.user.friends[self.leader.name] = self.leader
-        return self.user.act(
+
+    def solve(self, problem: str):
+        self.user.act(
             Action(
                 type=ActionType.Talk,
                 name=self.leader.name,

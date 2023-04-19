@@ -1,15 +1,11 @@
-import re
-
 from core.civilization.god.system import System
 from core.logging import Color
 
 from .action import Action, ActionType
 from .base import BasePerson, InviteParams, TalkParams
-from .brain.default import Brain as Brain
+from .brain.default import Brain
 from .organize.template import TemplateOrganize as Organize
-from .tool import BaseTool, BuildParams, UseParams
-from .tool.base import BaseTool
-from .tool.coded import CodedTool
+from .tool import BaseTool, BuildParams, CodedTool, UseParams
 from .tracer import Trace
 
 
@@ -18,42 +14,35 @@ class Person(BasePerson):
         self,
         name: str,
         instruction: str,
-        final_goal: str,
         params: InviteParams,
         referee: BasePerson,
     ):
         super().__init__(
             name=name,
             instruction=instruction,
-            final_goal=final_goal,
             params=params,
             referee=referee,
         )
-        self.memory = []
         self.tools: dict[str, BaseTool] = params.tools
         self.color = Color.rgb(g=255)
 
-        self.brain = Brain(name, instruction, self.memory)
+        self.brain = Brain(name, instruction)
 
         self.friends: dict[str, "Person"] = {}
+        if referee:
+            self.friends[referee.name] = referee
         self.organize = Organize()
 
     @Trace.respond()
     def respond(self, sender: "Person", prompt: str, params: TalkParams) -> str:
-        memory = []
-
         while True:
             idea = self.to_idea(prompt)
             thought = self.think(idea)
             actions = self.to_actions(thought)
             next_action = actions[0]
-
             if next_action.type == ActionType.Talk and next_action.name == sender.name:
                 return self.to_format(next_action.instruction)
-
             result = self.act(next_action)
-
-            memory.append((prompt, thought, result))
             prompt = result
 
     @Trace.to_idea()
@@ -74,7 +63,7 @@ class Person(BasePerson):
             method = getattr(self, action.type.value.lower())
             return method(action.name, action.instruction, action.extra)
         except KeyError:
-            raise ValueError(f"Unknown action type '{type}'")
+            return f"Unknown action type '{action.type}'"
 
     def invite(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:
@@ -83,7 +72,6 @@ class Person(BasePerson):
         friend = Person(
             name,
             instruction,
-            self.final_goal,
             InviteParams.from_str(extra, self.tools),
             referee=self,
         )
