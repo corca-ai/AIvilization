@@ -4,6 +4,7 @@ import openai
 import pinecone
 
 from core.config import settings
+from core.logging import logger
 
 from .base import BaseMemory
 from .vector.openai import OpenAIVector
@@ -41,7 +42,10 @@ class LongTermMemory(BaseMemory):
             for i, plan in enumerate(plans)
         ]
         if vectors:
-            self.storage.upsert(vectors=vectors)
+            try:
+                self.storage.upsert(vectors=vectors)
+            except Exception as e:
+                logger.exception(e)
 
     @staticmethod
     def get_plan_id(name: str, index: int) -> str:
