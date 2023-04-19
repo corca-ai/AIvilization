@@ -38,12 +38,13 @@ class CodeWriter(BaseTool):
 
     def use(self, prompt: str, params: UseParams) -> str:
         file_path = os.path.join(PLAYGROUND_DIR, prompt)
+        code = BuildParams.from_str(params.input).code
         try:
             dir_path = os.path.dirname(file_path)
             if dir_path:
                 os.makedirs(dir_path, exist_ok=True)
             with open(file_path, "w") as f:
-                f.write(params.input)
+                f.write(code)
         except Exception as e:
             return str(e)
         return "Success!"
