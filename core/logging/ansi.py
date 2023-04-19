@@ -1,22 +1,24 @@
 import random
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import BaseModel
 
 
-class Code(BaseModel):
-    value: int
+def join(*args: str) -> str:
+    return ";".join([str(arg) for arg in args])
 
-    def __init__(self, value: int):
-        super().__init__(value=value)
+
+class Code(BaseModel):
+    value: list[int]
+
+    def __init__(self, value: Union[int, list[int]]):
+        if isinstance(value, int):
+            super().__init__(value=[value])
+        else:
+            super().__init__(value=value)
 
     def __str__(self):
-        return "%d" % self.value
-
-
-class CodeList(list):
-    def __repr__(self):
-        return ";".join([str(x) for x in self])
+        return join(*self.value)
 
 
 class Color(Code):
@@ -63,14 +65,14 @@ class Color(Code):
     @staticmethod
     def rgb(
         r: Optional[int] = None, g: Optional[int] = None, b: Optional[int] = None
-    ) -> CodeList:
-        return CodeList(
+    ) -> "Color":
+        return Color(
             [
-                Color(38),
-                Color(2),
-                Color(r) if r is not None else Color(random.randint(0, 255)),
-                Color(g) if g is not None else Color(random.randint(0, 255)),
-                Color(b) if b is not None else Color(random.randint(0, 255)),
+                38,
+                2,
+                r or random.randint(1, 255),
+                g or random.randint(1, 255),
+                b or random.randint(1, 255),
             ]
         )
 
@@ -118,11 +120,11 @@ class ANSI(str):
     CLOSE = "m"
 
     def __init__(self, text: str):
-        self.text = text
-        self.args = []
+        self.text: str = text
+        self.args: list[Code] = []
 
     def join(self) -> str:
-        return ANSI.ESCAPE + str(CodeList(self.args)) + ANSI.CLOSE
+        return ANSI.ESCAPE + join(*self.args) + ANSI.CLOSE
 
     def wrap(self, text: str) -> str:
         return self.join() + text + ANSI(Style.reset()).join()

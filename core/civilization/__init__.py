@@ -1,4 +1,5 @@
 from core.config import settings
+from core.logging import Color
 
 from .person import InviteParams
 from .person.action import Action, ActionType
@@ -19,6 +20,7 @@ class Civilization:
             instruction="",
             params=InviteParams(tools={}),
             referee=None,
+            color=Color.white(),
         )
         self.user.add_tracer(LogTracer)
 

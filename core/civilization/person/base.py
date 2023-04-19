@@ -60,8 +60,8 @@ class BasePerson(BaseModel, PersonMessageFormat):
     name: str
     instruction: str
     params: InviteParams
+    color: Color
     referee: Optional["BasePerson"] = None
-    color: Color = Color.rgb(g=255)
     tools: dict[str, BaseTool] = {}
     brain: BaseBrain = None
     friends: dict[str, "BasePerson"] = {}

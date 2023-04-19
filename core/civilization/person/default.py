@@ -1,3 +1,5 @@
+from typing import Optional
+
 from core.civilization.god.system import System
 from core.logging import Color
 
@@ -16,15 +18,16 @@ class Person(BasePerson):
         instruction: str,
         params: InviteParams,
         referee: BasePerson,
+        color: Optional[Color] = None,
     ):
         super().__init__(
             name=name,
             instruction=instruction,
             params=params,
             referee=referee,
+            color=color or Color.rgb(),
         )
         self.tools: dict[str, BaseTool] = params.tools
-        self.color = Color.rgb(g=255)
 
         self.brain = Brain(name, instruction)
 
