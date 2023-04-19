@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from core.civilization.god.system import System
-from core.civilization.person.action import Action, ActionType
-from core.logging import ANSI, Color, Style, logger
+from core.civilization.person.action import Action
 
 from .base import BasePersonTracer
 from .wrapper import PersonTracerWrapper
@@ -17,7 +15,12 @@ class Trace:
     def to_idea():
         def decorator(func):
             def wrapper(self, prompt: str):
-                idea = func(self, prompt)
+                try:
+                    idea = func(self, prompt)
+                except Exception as e:
+                    self.tracer.on_idea_error(e)
+                    return None
+
                 self.tracer.on_idea(idea)
                 return idea
 
@@ -28,7 +31,12 @@ class Trace:
     def think():
         def decorator(func):
             def wrapper(self, idea: str):
-                thought = func(self, idea)
+                try:
+                    thought = func(self, idea)
+                except Exception as e:
+                    self.tracer.on_thought_error(e)
+                    return None
+
                 self.tracer.on_thought(thought)
                 return thought
 
@@ -39,7 +47,12 @@ class Trace:
     def to_actions():
         def decorator(func):
             def wrapper(self, thought: str):
-                actions = func(self, thought)
+                try:
+                    actions = func(self, thought)
+                except Exception as e:
+                    self.tracer.on_actions_error(e)
+                    return None
+
                 self.tracer.on_actions(actions)
                 return actions
 
@@ -56,7 +69,12 @@ class Trace:
                 params: TalkParams,
             ):
                 self.tracer.on_request(sender, prompt, params)
-                result: str = func(self, sender, prompt, params)
+                try:
+                    result: str = func(self, sender, prompt, params)
+                except Exception as e:
+                    self.tracer.on_response_error(sender, e)
+                    return None
+
                 self.tracer.on_response(sender, result)
                 return result
 
@@ -68,7 +86,12 @@ class Trace:
         def decorator(func):
             def wrapper(self, action: Action):
                 self.tracer.on_act(action)
-                result = func(self, action)
+                try:
+                    result = func(self, action)
+                except Exception as e:
+                    self.tracer.on_act_error(action, e)
+                    return None
+
                 self.tracer.on_act_result(action, result)
                 return result
 

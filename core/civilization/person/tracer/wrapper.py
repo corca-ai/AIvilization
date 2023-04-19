@@ -28,17 +28,33 @@ class PersonTracerWrapper(BasePersonTracer):
         for tracer in self.tracers:
             tracer.on_idea(idea)
 
+    def on_idea_error(self, error: Exception):
+        for tracer in self.tracers:
+            tracer.on_idea_error(error)
+
     def on_thought(self, thought: str):
         for tracer in self.tracers:
             tracer.on_thought(thought)
+
+    def on_thought_error(self, error: Exception):
+        for tracer in self.tracers:
+            tracer.on_thought_error(error)
 
     def on_actions(self, actions: list[Action]):
         for tracer in self.tracers:
             tracer.on_actions(actions)
 
+    def on_actions_error(self, error: Exception):
+        for tracer in self.tracers:
+            tracer.on_actions_error(error)
+
     def on_act(self, action: Action):
         for tracer in self.tracers:
             tracer.on_act(action)
+
+    def on_act_error(self, action: Action, error: Exception):
+        for tracer in self.tracers:
+            tracer.on_act_error(action, error)
 
     def on_act_result(self, action: Action, result: str):
         for tracer in self.tracers:
@@ -47,3 +63,7 @@ class PersonTracerWrapper(BasePersonTracer):
     def on_response(self, sender: BasePerson, response: str):
         for tracer in self.tracers:
             tracer.on_response(sender, response)
+
+    def on_response_error(self, sender: BasePerson, error: Exception):
+        for tracer in self.tracers:
+            tracer.on_response_error(sender, error)

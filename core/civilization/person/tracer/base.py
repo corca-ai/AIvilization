@@ -20,17 +20,32 @@ class BasePersonTracer:
     def on_idea(self, idea: str):
         pass
 
+    def on_idea_error(self, error: Exception):
+        pass
+
     def on_thought(self, thought: str):
+        pass
+
+    def on_thought_error(self, error: Exception):
         pass
 
     def on_actions(self, actions: list[Action]):
         pass
 
+    def on_actions_error(self, error: Exception):
+        pass
+
     def on_act(self, action: Action):
+        pass
+
+    def on_act_error(self, eaction: Action, error: Exception):
         pass
 
     def on_act_result(self, action: Action, result: str):
         pass
 
     def on_response(self, sender: BasePerson, response: str):
+        pass
+
+    def on_response_error(self, sender: BasePerson, error: Exception):
         pass

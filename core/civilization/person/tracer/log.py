@@ -25,8 +25,11 @@ class LogTracer(BasePersonTracer):
             + ANSI(str(target)).to(Color.green(), Style.bold())
             + " | "
             + ANSI(action.instruction).to(Color.white())
-            + "\n"
-            + ANSI(action.extra).to(Style.dim())
+            + (
+                ANSI("\n... extra: " + action.extra).to(Style.dim())
+                if action.extra
+                else ""
+            )
         )
 
     def on_request(self, sender: BasePerson, prompt: str, params: TalkParams):
@@ -35,8 +38,14 @@ class LogTracer(BasePersonTracer):
     def on_idea(self, idea: str):
         logger.debug(ANSI("[idea] ").to(Color.rgb(0xF6, 0xBA, 0x6F)) + idea)
 
+    def on_idea_error(self, error: Exception):
+        logger.exception(error)
+
     def on_thought(self, thought: str):
         logger.debug(ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4)) + thought)
+
+    def on_thought_error(self, error: Exception):
+        logger.exception(error)
 
     def on_actions(self, actions: list[Action]):
         logger.debug(
@@ -44,13 +53,20 @@ class LogTracer(BasePersonTracer):
             + ", ".join([str(action.type) for action in actions])
         )
 
+    def on_actions_error(self, error: Exception):
+        logger.exception(error)
+
     def on_act(self, action: Action):
         if action.type in [ActionType.Talk, ActionType.Use]:
             logger.info(self.format_act(action))
 
+    def on_act_error(self, action: Action, error: Exception):
+        logger.exception(error)
+
     def on_act_result(self, action: Action, result: str):
         if action.type in [ActionType.Invite, ActionType.Build]:
             logger.info(self.format_act(action))
+        logger.info(ANSI(action.name + " result: ").to(Color.cyan()) + result)
 
     def on_response(self, sender: BasePerson, response: str):
         logger.info(
@@ -60,3 +76,6 @@ class LogTracer(BasePersonTracer):
             + " | "
             + ANSI(response.split(System.PROMPT_SEPARATOR)[1].strip()).to(Color.white())
         )
+
+    def on_response_error(self, sender: BasePerson, error: Exception):
+        logger.exception(error)
