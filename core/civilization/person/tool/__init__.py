@@ -21,7 +21,7 @@ default_tools = {
         (
             "Write code for anything. "
             "Instruction should be a path to a file. "
-            "Extra should be a valid python code. "
+            "Extra should be a valid code. "
             "Output will be the 'success' or 'error'. "
         ),
     ),
