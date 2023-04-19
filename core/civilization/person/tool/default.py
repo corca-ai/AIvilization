@@ -15,13 +15,9 @@ class Terminal(BaseTool):
         pass
 
     def use(self, prompt: str, params: UseParams) -> str:
-        match = re.search(r"`(.*?)`", prompt)
-
-        if not match:
-            return "Invalid command!"
-
         process = subprocess.Popen(
-            prompt.split(" "),
+            prompt,
+            shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             cwd=PLAYGROUND_DIR,

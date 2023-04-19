@@ -66,7 +66,7 @@ class Person(BasePerson):
             method = getattr(self, action.type.value.lower())
             return method(action.name, action.instruction, action.extra)
         except KeyError:
-            raise ValueError(f"Unknown action type '{type}'")
+            return f"Unknown action type '{action.type}'"
 
     def invite(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:

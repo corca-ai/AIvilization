@@ -41,7 +41,8 @@ class ToolMessageFormat:
         return (
             System.MESSAGE_SEPARATOR
             + "\n"
-            + f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n{result}"
+            + f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n{result}\n\n"
+            + "Look at the tool's response and think about what action you should take."
         )
 
 

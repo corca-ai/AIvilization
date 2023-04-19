@@ -1,3 +1,5 @@
+import re
+
 import openai
 import pinecone
 
@@ -7,8 +9,6 @@ from .base import BaseMemory
 from .vector.openai import OpenAIVector
 
 openai.api_key = settings["OPENAI_API_KEY"]
-
-import re
 
 
 class LongTermMemory(BaseMemory):

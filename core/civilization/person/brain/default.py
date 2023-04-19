@@ -10,13 +10,14 @@ class Brain(BaseBrain):
         super().__init__(
             llm=OpenAILLM(),
             memory=[
-                ShortTermMemory(name, instruction),
                 LongTermMemory(name, instruction),
+                ShortTermMemory(name, instruction),
             ],
         )
 
     @BaseBrain.use_memory
     def think(self, idea: str) -> str:
+        print(idea)
         return self.llm.chat_completion(idea)
 
     def memo(self, plan: list[str]) -> str:
