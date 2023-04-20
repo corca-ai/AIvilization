@@ -1,3 +1,4 @@
+from typing import Generator
 
 from .base import BaseBrain
 from .llm.openai import OpenAILLM
@@ -14,9 +15,16 @@ class Brain(BaseBrain):
             ],
         )
 
-    @BaseBrain.use_memory
-    def think(self, idea: str) -> str:
-        return self.llm.chat_completion(idea)
+    def think(self, idea: str) -> Generator:
+        decorated_idea = idea
+        for m in self.memory[::-1]:
+            decorated_idea = m.load(decorated_idea)
+
+        thought = self.llm.chat_completion(decorated_idea)
+        # for m in self.memory:
+        #     m.save(idea, thought)
+
+        return thought
 
     def memo(self, plan: list[str]) -> str:
         pass

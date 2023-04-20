@@ -1,4 +1,4 @@
-import logging
+from typing import Generator
 
 import openai
 from pydantic import BaseModel
@@ -28,14 +28,12 @@ class OpenAILLM(BaseLLM, BaseModel):
         tries=MAX_RETRIES,
         delay=DELAY,
     )
-    def chat_completion(self, messages: list[dict]) -> str:
-        level = logger.level
-        logger.setLevel(logging.ERROR)
-        result = openai.ChatCompletion.create(
-            model=self.model,
+    @logger.disable
+    def chat_completion(self, messages: list[dict]) -> Generator:
+        return openai.ChatCompletion.create(
+            model="gpt-4",
             messages=messages,
             temperature=0.7,
             max_tokens=2048,
-        )["choices"][0]["message"]["content"]
-        logger.setLevel(level)
-        return result
+            stream=True,
+        )

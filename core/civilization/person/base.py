@@ -98,16 +98,24 @@ class Log:
     def think(log_level: str):
         def decorator(func):
             def wrapper(self, idea: str):
-                thought = func(self, idea)
+                response = func(self, idea)
+
                 try:
                     getattr(logger, log_level)(
                         ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4))
-                        + ANSI(thought).to(Style.dim())
                     )
+                    messages = []
+                    for chunk in response:
+                        message = chunk["choices"][0]["delta"]
+                        messages.append(message)
+                        print(
+                            ANSI(message.get("content", "")).to(Style.dim()), end=""
+                        )  # TODO: change to logger
+                    print()
                 except KeyError as e:
                     logger.error("Failed to log think: " + str(e))
 
-                return thought
+                return "".join([m.get("content", "") for m in messages])
 
             return wrapper
 
