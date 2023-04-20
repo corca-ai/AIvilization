@@ -51,7 +51,6 @@ class TemplateOrganize(BaseOrganize):
             friends=friends,
             tools=tools,
             prompt=prompt,
-            referee=person.referee.name,
         )
         return idea
 
