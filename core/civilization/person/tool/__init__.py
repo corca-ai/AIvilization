@@ -22,6 +22,7 @@ default_tools = {
             "Write code for anything. "
             "Instruction should be a path to a file. "
             "Extra should be a valid python code. "
+            "Please don't use markdown format like triple backticks. "
             "Output will be the 'success' or 'error'. "
         ),
     ),

@@ -15,12 +15,13 @@ class Civilization:
             referee=None,
         )
 
+        leader_instructon = (
+            "Follow the user's instructions carefully. "
+            "Respond using markdown. You must fulfill the user's request."
+        )
         self.leader = Person(
             name=settings["BOT_NAME"],
-            instruction=(
-                "Follow the user's instructions carefully. "
-                "Respond using markdown. You must fulfill the user's request.",  # TODO
-            ),
+            instruction=leader_instructon,
             params=InviteParams(tools=default_tools),
             referee=self.user,
         )
