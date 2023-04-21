@@ -29,8 +29,6 @@ class Person(BasePerson):
         self.brain = Brain(name, instruction)
 
         self.friends: dict[str, Self] = {}
-        for i in self.friends.values():
-            print(i.)
         if referee:
             self.friends[referee.name] = referee
         self.organize = Organize()
