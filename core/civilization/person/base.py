@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Self
 
 from pydantic import BaseModel
 
@@ -60,11 +60,11 @@ class BasePerson(BaseModel, PersonMessageFormat):
     name: str
     instruction: str
     params: InviteParams
-    referee: Optional["BasePerson"] = None
+    referee: Optional[Self] = None
     color: Color = Color.rgb(g=255)
     tools: dict[str, BaseTool] = {}
     brain: BaseBrain = None
-    friends: dict[str, "BasePerson"] = {}
+    friends: dict[str, Self] = {}
     organize: BaseOrganize = None
 
     def __str__(self):

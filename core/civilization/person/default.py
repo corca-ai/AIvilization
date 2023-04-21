@@ -1,3 +1,5 @@
+from typing import Self
+
 from core.civilization.god.system import System
 from core.logging import Color
 
@@ -22,18 +24,19 @@ class Person(BasePerson):
             params=params,
             referee=referee,
         )
-        self.tools: dict[str, BaseTool] = params.tools
         self.color = Color.rgb(g=255)
 
         self.brain = Brain(name, instruction)
 
-        self.friends: dict[str, "Person"] = {}
+        self.friends: dict[str, Self] = {}
+        for i in self.friends.values():
+            print(i.)
         if referee:
             self.friends[referee.name] = referee
         self.organize = Organize()
 
     @Log.respond(log_level="info")
-    def respond(self, sender: "Person", prompt: str, params: TalkParams) -> str:
+    def respond(self, sender: Self, prompt: str, params: TalkParams) -> str:
         while True:
             idea = self.to_idea(prompt)
             thought = self.think(idea)
