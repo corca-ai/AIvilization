@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import Generator, List
 
 from pydantic import BaseModel
 
@@ -13,7 +13,7 @@ class BaseBrain(BaseModel, ABC):
     # If much earlier,  much further to LLM. load last and save first.
 
     @abstractmethod
-    def think(self, prompt: str) -> str:
+    def think(self, prompt: str) -> Generator:
         pass
 
     @classmethod

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Self
 
 from core.civilization.god.system import System
 from core.logging import Color
@@ -31,13 +31,13 @@ class Person(BasePerson):
 
         self.brain = Brain(name, instruction)
 
-        self.friends: dict[str, "Person"] = {}
+        self.friends: dict[str, Self] = {}
         if referee:
             self.friends[referee.name] = referee
         self.organize = Organize()
 
     @Trace.respond()
-    def respond(self, sender: "Person", prompt: str, params: TalkParams) -> str:
+    def respond(self, sender: Self, prompt: str, params: TalkParams) -> str:
         while True:
             idea = self.to_idea(prompt)
             thought = self.think(idea)

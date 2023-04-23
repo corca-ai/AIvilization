@@ -5,11 +5,15 @@ from .base import BaseMemory
 
 class ShortTermMemory(BaseMemory):
     def __init__(self, name: str, instruction: str):
+
         super().__init__(
             name=name,
             instruction=instruction,
             storage=[
-                {"role": "system", "content": f"Your name is {name}. {instruction}"}
+                {
+                    "role": "system",
+                    "content": f"Your name is {name}. {instruction}",
+                }
             ],
             change_to_memory=lambda x: x,
         )

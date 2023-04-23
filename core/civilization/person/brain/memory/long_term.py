@@ -50,3 +50,11 @@ class LongTermMemory(BaseMemory):
     @staticmethod
     def get_plan_id(name: str, index: int) -> str:
         return f"{name}-plan#{index}"
+
+    def __del__(self):
+        result = self.storage.query(
+            self.change_to_memory("None"), top_k=10000, filter={"name": self.name}
+        )
+        self.storage.delete(
+            ids=[match["id"] for match in result["matches"]], filter={"name": self.name}
+        )

@@ -7,11 +7,6 @@ from .person.default import Person as Person
 from .person.tool import default_tools
 from .person.tracer.log import LogTracer
 
-# TODO
-INSTRUCTION = """Follow the user's instructions carefully. 
-Respond using markdown. You must fulfill the user's request.
-"""
-
 
 class Civilization:
     def __init__(self):
@@ -24,9 +19,13 @@ class Civilization:
         )
         self.user.add_tracer(LogTracer)
 
+        leader_instructon = (
+            "Follow the user's instructions carefully. "
+            "Respond using markdown. You must fulfill the user's request."
+        )
         self.leader = Person(
             name=settings["BOT_NAME"],
-            instruction=INSTRUCTION,
+            instruction=leader_instructon,
             params=InviteParams(tools=default_tools),
             referee=self.user,
         )
