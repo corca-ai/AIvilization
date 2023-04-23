@@ -1,13 +1,14 @@
-from typing import Self
+from typing import Generator, Optional, Self
 
 from core.civilization.god.system import System
 from core.logging import Color
 
 from .action import Action, ActionType
-from .base import BasePerson, InviteParams, Log, TalkParams
+from .base import BasePerson, InviteParams, TalkParams
 from .brain.default import Brain
 from .organize.template import TemplateOrganize as Organize
 from .tool import BaseTool, BuildParams, CodedTool, UseParams
+from .tracer import Trace
 
 
 class Person(BasePerson):
@@ -17,14 +18,16 @@ class Person(BasePerson):
         instruction: str,
         params: InviteParams,
         referee: BasePerson,
+        color: Optional[Color] = None,
     ):
         super().__init__(
             name=name,
             instruction=instruction,
             params=params,
             referee=referee,
+            color=color or Color.rgb(),
         )
-        self.color = Color.rgb(g=255)
+        self.tools: dict[str, BaseTool] = params.tools
 
         self.brain = Brain(name, instruction)
 
@@ -33,11 +36,11 @@ class Person(BasePerson):
             self.friends[referee.name] = referee
         self.organize = Organize()
 
-    @Log.respond(log_level="info")
+    @Trace.respond()
     def respond(self, sender: Self, prompt: str, params: TalkParams) -> str:
         while True:
             idea = self.to_idea(prompt)
-            thought = self.think(idea)
+            thought = "".join([t for t in self.think(idea)])
             actions = self.to_actions(thought)
             next_action = actions[0]
             if next_action.type == ActionType.Talk and next_action.name == sender.name:
@@ -45,19 +48,19 @@ class Person(BasePerson):
             result = self.act(next_action)
             prompt = result
 
-    @Log.to_idea(log_level="debug")
+    @Trace.to_idea()
     def to_idea(self, prompt: str) -> str:
         return self.organize.from_prompt(self, prompt)
 
-    @Log.think(log_level="debug")
-    def think(self, idea: str) -> str:
+    @Trace.think()
+    def think(self, idea: str) -> Generator[str, None, None]:
         return self.brain.think(idea)
 
-    @Log.to_actions(log_level="debug")
+    @Trace.to_actions()
     def to_actions(self, thought: str) -> list[Action]:
         return self.organize.to_actions(self, thought)
 
-    @Log.act(log_level="info")
+    @Trace.act()
     def act(self, action: Action) -> str:
         try:
             method = getattr(self, action.type.value.lower())

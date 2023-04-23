@@ -15,16 +15,13 @@ class Brain(BaseBrain):
             ],
         )
 
-    def think(self, idea: str) -> Generator:
+    def think(self, idea: str) -> Generator[str, None, None]:
         decorated_idea = idea
         for m in self.memory[::-1]:
             decorated_idea = m.load(decorated_idea)
 
-        thought = self.llm.chat_completion(decorated_idea)
-        # for m in self.memory:
-        #     m.save(idea, thought)
-
-        return thought
+        for thought in self.llm.chat_completion(decorated_idea):
+            yield thought["choices"][0]["delta"].get("content", "")
 
     def memo(self, plan: list[str]) -> str:
         pass

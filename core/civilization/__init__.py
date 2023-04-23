@@ -1,9 +1,11 @@
 from core.config import settings
+from core.logging import Color
 
 from .person import InviteParams
 from .person.action import Action, ActionType
 from .person.default import Person as Person
 from .person.tool import default_tools
+from .person.tracer.log import LogTracer
 
 
 class Civilization:
@@ -13,7 +15,9 @@ class Civilization:
             instruction="",
             params=InviteParams(tools={}),
             referee=None,
+            color=Color.white(),
         )
+        self.user.add_tracer(LogTracer)
 
         leader_instructon = (
             "Follow the user's instructions carefully. "
@@ -25,6 +29,7 @@ class Civilization:
             params=InviteParams(tools=default_tools),
             referee=self.user,
         )
+        self.leader.add_tracer(LogTracer)
 
         self.user.friends[self.leader.name] = self.leader
 

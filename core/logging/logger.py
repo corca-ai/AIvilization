@@ -4,7 +4,7 @@ from typing import Callable
 from core.config import settings
 
 logger = logging.getLogger()
-formatter = logging.Formatter("%(message)s")
+formatter = logging.Formatter("%(levelname)s: %(message)s")
 ch = logging.StreamHandler()
 ch.setFormatter(formatter)
 logger.addHandler(ch)

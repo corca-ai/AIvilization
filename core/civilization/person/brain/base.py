@@ -13,7 +13,7 @@ class BaseBrain(BaseModel, ABC):
     # If much earlier,  much further to LLM. load last and save first.
 
     @abstractmethod
-    def think(self, prompt: str) -> Generator:
+    def think(self, prompt: str) -> Generator[str, None, None]:
         pass
 
     @classmethod

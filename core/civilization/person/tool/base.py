@@ -12,11 +12,15 @@ class BuildParams(BaseModel):
 
     @staticmethod
     def from_str(content: str):
-        match = re.search(r"```python(.*?)```", content, re.DOTALL)
+        match = re.search(r"(?:```(?:.*?)\n(.*?)```)|(.*)", content, re.DOTALL)
         if not match:
             return BuildParams(code="")
 
-        code = match.group(1).strip()
+        code_match = match.group(1) or match.group(2)
+        if not code_match:
+            return BuildParams(code="")
+
+        code = code_match.strip()
         return BuildParams(code=code)
 
 

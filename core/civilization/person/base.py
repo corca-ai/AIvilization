@@ -1,14 +1,14 @@
-from typing import Optional, Self
+from typing import Optional, Self, Type
 
 from pydantic import BaseModel
 
 from core.civilization.god.system import System
-from core.logging import ANSI, Color, Style, logger
+from core.logging import ANSI, Color, Style
 
-from .action import Action, ActionType
 from .brain import BaseBrain
 from .organize import BaseOrganize
 from .tool import BaseTool
+from .tracer import BasePersonTracer, PersonTracerWrapper
 
 
 class InviteParams(BaseModel):
@@ -44,7 +44,7 @@ class PersonMessageFormat:
             + f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n"
             + "Hello, I am "
             + self.name
-            + ".\nI was invited from you."
+            + ".\nYou invited me."
         )
 
     def to_format(self, message: str) -> str:
@@ -60,12 +60,23 @@ class BasePerson(BaseModel, PersonMessageFormat):
     name: str
     instruction: str
     params: InviteParams
-    referee: Optional[Self] = None
-    color: Color = Color.rgb(g=255)
+    color: Color
+    referee: Optional["BasePerson"] = None
     tools: dict[str, BaseTool] = {}
     brain: BaseBrain = None
-    friends: dict[str, Self] = {}
+    friends: dict[str, "BasePerson"] = {}
     organize: BaseOrganize = None
+    tracer: PersonTracerWrapper = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.set_tracers(tracers=[])
+
+    def set_tracers(self, tracers: list[BasePersonTracer]):
+        self.tracer = PersonTracerWrapper(person=self, tracers=tracers)
+
+    def add_tracer(self, Tracer: Type[BasePersonTracer]):
+        self.tracer.add(Tracer)
 
     def __str__(self):
         return ANSI((f"{self.name}({self.__class__.__name__})").center(20)).to(
@@ -74,142 +85,3 @@ class BasePerson(BaseModel, PersonMessageFormat):
 
     class Config:
         arbitrary_types_allowed = True
-
-
-class Log:
-    def to_idea(log_level: str):
-        def decorator(func):
-            def wrapper(self, prompt: str):
-                idea = func(self, prompt)
-                try:
-                    getattr(logger, log_level)(
-                        ANSI("[idea] ").to(Color.rgb(0xF6, 0xBA, 0x6F))
-                        + ANSI(idea).to(Style.dim())
-                    )
-                except KeyError as e:
-                    logger.error("Failed to log to_idea: " + str(e))
-
-                return idea
-
-            return wrapper
-
-        return decorator
-
-    def think(log_level: str):
-        def decorator(func):
-            def wrapper(self, idea: str):
-                response = func(self, idea)
-
-                try:
-                    getattr(logger, log_level)(
-                        ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4))
-                    )
-                    messages = []
-                    for chunk in response:
-                        message = chunk["choices"][0]["delta"]
-                        messages.append(message)
-                        print(
-                            ANSI(message.get("content", "")).to(Style.dim()), end=""
-                        )  # TODO: change to logger
-                    print()
-                except KeyError as e:
-                    logger.error("Failed to log think: " + str(e))
-
-                return "".join([m.get("content", "") for m in messages])
-
-            return wrapper
-
-        return decorator
-
-    def to_actions(log_level: str):
-        def decorator(func):
-            def wrapper(self, thought: str):
-                actions = func(self, thought)
-                try:
-                    getattr(logger, log_level)(
-                        ANSI("[actions] ").to(Color.rgb(0xAD, 0xE4, 0xDB))
-                        + ANSI(", ".join([str(action.type) for action in actions])).to(
-                            Style.dim()
-                        )
-                    )
-                except KeyError as e:
-                    logger.error("Failed to log to_actions: " + str(e))
-
-                return actions
-
-            return wrapper
-
-        return decorator
-
-    def respond(log_level: str):
-        def decorator(func):
-            def wrapper(
-                self: "BasePerson",
-                sender: "BasePerson",
-                prompt: str,
-                params: TalkParams,
-            ):
-                result: str = func(self, sender, prompt, params)
-
-                try:
-                    getattr(logger, log_level)(
-                        str(self)
-                        + str(ActionType.Respond)
-                        + str(sender)
-                        + " | "
-                        + ANSI(result.split(System.PROMPT_SEPARATOR)[1].strip()).to(
-                            Color.white()
-                        )
-                    )
-                except KeyError as e:
-                    logger.error("Failed to log respond: " + str(e))
-
-                return result
-
-            return wrapper
-
-        return decorator
-
-    def act(log_level: str):
-        def get_target(self, type: ActionType, name: str):
-            if type in [ActionType.Invite, ActionType.Talk]:
-                return self.friends[name]
-            elif type in [ActionType.Build, ActionType.Use]:
-                return self.tools[name]
-
-        def decorator(func):
-            def wrapper(self, action: Action):
-                def f(target):
-                    return (
-                        str(self)
-                        + str(action.type)
-                        + ANSI(str(target)).to(Color.green(), Style.bold())
-                        + " | "
-                        + ANSI(action.instruction).to(Color.white())
-                        + "\n"
-                        + ANSI(action.extra).to(Style.dim())
-                    )
-
-                if action.type in [ActionType.Talk, ActionType.Use]:
-                    try:
-                        getattr(logger, log_level)(
-                            f(get_target(self, action.type, action.name))
-                        )
-                    except KeyError as e:
-                        logger.error("Failed to log act: " + str(e))
-
-                result = func(self, action)
-
-                if action.type in [ActionType.Invite, ActionType.Build]:
-                    try:
-                        getattr(logger, log_level)(
-                            f(get_target(self, action.type, action.name))
-                        )
-                    except KeyError as e:
-                        logger.error("Failed to log act: " + str(e))
-
-                return result
-
-            return wrapper
-
-        return decorator
