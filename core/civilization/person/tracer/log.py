@@ -38,7 +38,10 @@ class LogTracer(BasePersonTracer):
         pass
 
     def on_idea(self, idea: str):
-        logger.debug(ANSI("[idea] ").to(Color.rgb(0xF6, 0xBA, 0x6F)) + idea)
+        for line in idea.split("\n"):
+            logger.debug(
+                ANSI("[idea] ".rjust(12)).to(Color.rgb(0xF6, 0xBA, 0x6F)) + line
+            )
 
     def on_idea_error(self, error: Exception):
         logger.exception(error)
@@ -51,7 +54,7 @@ class LogTracer(BasePersonTracer):
 
         if self.thought.endswith("\n"):
             logger.debug(
-                ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4))
+                ANSI("[thought] ".rjust(12)).to(Color.rgb(0x6D, 0xA9, 0xE4))
                 + self.thought.rstrip()
             )
             self.thought = ""
@@ -64,7 +67,7 @@ class LogTracer(BasePersonTracer):
 
     def on_actions(self, actions: list[Action]):
         logger.debug(
-            ANSI("[actions] ").to(Color.rgb(0xAD, 0xE4, 0xDB))
+            ANSI("[actions] ".rjust(12)).to(Color.rgb(0xAD, 0xE4, 0xDB))
             + ", ".join([str(action.type) for action in actions])
         )
 
@@ -81,7 +84,9 @@ class LogTracer(BasePersonTracer):
     def on_act_result(self, action: Action, result: str):
         if action.type in [ActionType.Invite, ActionType.Build]:
             logger.info(self.format_act(action))
-        logger.debug(ANSI(action.name + " result: ").to(Color.cyan()) + result)
+
+        for line in result.split("\n"):
+            logger.debug(ANSI("[result] ".rjust(12)).to(Color.cyan()) + line)
 
     def on_response(self, sender: BasePerson, response: str):
         logger.info(
