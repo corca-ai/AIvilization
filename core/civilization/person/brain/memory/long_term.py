@@ -12,7 +12,7 @@ from .vector.openai import OpenAIVector
 openai.api_key = settings["OPENAI_API_KEY"]
 
 
-class LongTermMemory(BaseMemory):
+class LongTermMemory(BaseMemory[str]):
     _PLAN_PATTERN = r"- \[(?:x| )\]\s+(.+)\n"
 
     def __init__(self, name: str, instruction: str):
