@@ -32,13 +32,15 @@ class Trace:
         def decorator(func):
             def wrapper(self, idea: str):
                 try:
-                    thought = func(self, idea)
+                    self.tracer.on_thought_start()
+                    for thought in func(self, idea):
+                        self.tracer.on_thought(thought)
+                        yield thought
                 except Exception as e:
                     self.tracer.on_thought_error(e)
-                    return None
+                    yield None
 
-                self.tracer.on_thought(thought)
-                return thought
+                self.tracer.on_thought_end()
 
             return wrapper
 

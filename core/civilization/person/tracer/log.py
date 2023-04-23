@@ -13,6 +13,8 @@ from .base import BasePersonTracer
 
 
 class LogTracer(BasePersonTracer):
+    thought: str = ""
+
     def format_act(self, action: Action):
         target = None
         if action.type in [ActionType.Invite, ActionType.Talk]:
@@ -41,8 +43,21 @@ class LogTracer(BasePersonTracer):
     def on_idea_error(self, error: Exception):
         logger.exception(error)
 
+    def on_thought_start(self):
+        self.thought = ""
+
     def on_thought(self, thought: str):
-        logger.debug(ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4)) + thought)
+        self.thought += thought
+
+        if self.thought.endswith("\n"):
+            logger.debug(
+                ANSI("[thought] ").to(Color.rgb(0x6D, 0xA9, 0xE4))
+                + self.thought.rstrip()
+            )
+            self.thought = ""
+
+    def on_thought_end(self):
+        self.thought = ""
 
     def on_thought_error(self, error: Exception):
         logger.exception(error)

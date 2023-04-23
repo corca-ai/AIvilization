@@ -1,4 +1,4 @@
-from typing import Optional, Self
+from typing import Generator, Optional, Self
 
 from core.civilization.god.system import System
 from core.logging import Color
@@ -40,7 +40,7 @@ class Person(BasePerson):
     def respond(self, sender: Self, prompt: str, params: TalkParams) -> str:
         while True:
             idea = self.to_idea(prompt)
-            thought = self.think(idea)
+            thought = "".join([t for t in self.think(idea)])
             actions = self.to_actions(thought)
             next_action = actions[0]
             if next_action.type == ActionType.Talk and next_action.name == sender.name:
@@ -53,7 +53,7 @@ class Person(BasePerson):
         return self.organize.from_prompt(self, prompt)
 
     @Trace.think()
-    def think(self, idea: str) -> str:
+    def think(self, idea: str) -> Generator[str, None, None]:
         return self.brain.think(idea)
 
     @Trace.to_actions()

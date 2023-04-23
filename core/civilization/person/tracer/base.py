@@ -23,7 +23,13 @@ class BasePersonTracer:
     def on_idea_error(self, error: Exception):
         pass
 
+    def on_thought_start(self):
+        pass
+
     def on_thought(self, thought: str):
+        pass
+
+    def on_thought_end(self):
         pass
 
     def on_thought_error(self, error: Exception):

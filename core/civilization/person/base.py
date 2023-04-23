@@ -61,10 +61,10 @@ class BasePerson(BaseModel, PersonMessageFormat):
     instruction: str
     params: InviteParams
     color: Color
-    referee: Optional[Self] = None
+    referee: Optional["BasePerson"] = None
     tools: dict[str, BaseTool] = {}
     brain: BaseBrain = None
-    friends: dict[str, Self] = {}
+    friends: dict[str, "BasePerson"] = {}
     organize: BaseOrganize = None
     tracer: PersonTracerWrapper = None
 

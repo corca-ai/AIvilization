@@ -32,9 +32,17 @@ class PersonTracerWrapper(BasePersonTracer):
         for tracer in self.tracers:
             tracer.on_idea_error(error)
 
+    def on_thought_start(self):
+        for tracer in self.tracers:
+            tracer.on_thought_start()
+
     def on_thought(self, thought: str):
         for tracer in self.tracers:
             tracer.on_thought(thought)
+
+    def on_thought_end(self):
+        for tracer in self.tracers:
+            tracer.on_thought_end()
 
     def on_thought_error(self, error: Exception):
         for tracer in self.tracers:
