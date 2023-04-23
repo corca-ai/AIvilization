@@ -11,8 +11,8 @@ from .person.tracer.log import LogTracer
 class Civilization:
     def __init__(self):
         self.user = Person(
-            name="User",
-            instruction="",
+            name="David",
+            instruction=f"The person who you should give the final answer to.",
             params=InviteParams(tools={}),
             referee=None,
             color=Color.white(),
@@ -20,8 +20,8 @@ class Civilization:
         self.user.add_tracer(LogTracer)
 
         leader_instructon = (
-            "Follow the user's instructions carefully. "
-            "Respond using markdown. You must fulfill the user's request."
+            f"Follow {self.user.name}'s instructions carefully. "
+            f"Respond using markdown. You must fulfill {self.user.name}'s request."
         )
         self.leader = Person(
             name=settings["BOT_NAME"],
