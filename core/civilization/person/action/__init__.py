@@ -1,3 +1,3 @@
-from .base import Action, ActionType
+from .base import Action, ActionType, Plan
 
-__all__ = ["Action", "ActionType"]
+__all__ = ["Action", "ActionType", "Plan"]

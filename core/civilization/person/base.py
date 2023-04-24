@@ -1,4 +1,4 @@
-from typing import Optional, Self, Type
+from typing import Optional, Type
 
 from pydantic import BaseModel
 
@@ -6,7 +6,6 @@ from core.civilization.god.system import System
 from core.logging import ANSI, Color, Style
 
 from .brain import BaseBrain
-from .organize import BaseOrganize
 from .tool import BaseTool
 from .tracer import BasePersonTracer, PersonTracerWrapper
 
@@ -65,7 +64,6 @@ class BasePerson(BaseModel, PersonMessageFormat):
     tools: dict[str, BaseTool] = {}
     brain: BaseBrain = None
     friends: dict[str, "BasePerson"] = {}
-    organize: BaseOrganize = None
     tracer: PersonTracerWrapper = None
 
     def __init__(self, **data):

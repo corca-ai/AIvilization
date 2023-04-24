@@ -16,10 +16,5 @@ class ShortTermMemory(BaseMemory[list[dict[str, str]]]):
         return self.storage + [{"role": "user", "content": prompt}]
 
     def save(self, prompt: str, thought: str) -> None:
-        self.storage.append(
-            {"role": "user", "content": self.remove_guide(prompt)},
-        )
+        self.storage.append({"role": "user", "content": prompt})
         self.storage.append({"role": "assistant", "content": thought})
-
-    def remove_guide(self, content: str) -> str:
-        return content.split(System.MESSAGE_SEPARATOR)[1]

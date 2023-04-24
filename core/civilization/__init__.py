@@ -12,7 +12,7 @@ class Civilization:
     def __init__(self):
         self.user = Person(
             name="David",
-            instruction=f"The person who you should give the final answer to.",
+            instruction="The person who you should give the final answer to.",
             params=InviteParams(tools={}),
             referee=None,
             color=Color.white(),

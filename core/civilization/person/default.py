@@ -1,12 +1,12 @@
-from typing import Generator, Optional, Self
+from typing import Generator, List, Optional, Self, Tuple
 
 from core.civilization.god.system import System
+from core.civilization.person.action.base import Plan
 from core.logging import Color
 
 from .action import Action, ActionType
 from .base import BasePerson, InviteParams, TalkParams
 from .brain.default import Brain
-from .organize.template import TemplateOrganize as Organize
 from .tool import BaseTool, BuildParams, CodedTool, UseParams
 from .tracer import Trace
 
@@ -29,36 +29,49 @@ class Person(BasePerson):
         )
         self.tools: dict[str, BaseTool] = params.tools
 
-        self.brain = Brain(name, instruction)
+        self.brain = Brain(self, name, instruction)
 
         self.friends: dict[str, Self] = {}
         if referee:
             self.friends[referee.name] = referee
-        self.organize = Organize()
 
     @Trace.respond()
-    def respond(self, sender: Self, prompt: str, params: TalkParams) -> str:
+    def respond(self, sender: Self, request: str, params: TalkParams) -> str:
+        result = ""
+
         while True:
-            idea = self.to_idea(prompt)
-            thought = "".join([t for t in self.think(idea)])
-            actions = self.to_actions(thought)
-            next_action = actions[0]
-            if next_action.type == ActionType.Talk and next_action.name == sender.name:
-                return self.to_format(next_action.instruction)
-            result = self.act(next_action)
-            prompt = result
+            plans = self.plan(request, result)
+            result, is_finish = self.execute(plans[0], sender=sender)
 
-    @Trace.to_idea()
-    def to_idea(self, prompt: str) -> str:
-        return self.organize.from_prompt(self, prompt)
+            if is_finish:
+                return result
 
-    @Trace.think()
-    def think(self, idea: str) -> Generator[str, None, None]:
-        return self.brain.think(idea)
+    def plan(self, request: str, result: str) -> List[Plan]:
+        opinion = ""
+        plans = []
 
-    @Trace.to_actions()
-    def to_actions(self, thought: str) -> list[Action]:
-        return self.organize.to_actions(self, thought)
+        while True:
+            plans = self.brain.plan(request, opinion)
+            opinion, ok = self.brain.optimize(plans)
+
+            if ok:
+                return plans
+
+    def execute(self, plan: str, sender: Self) -> Tuple[str, bool]:
+        input = plan
+        opinion = ""
+
+        while True:
+            action = self.brain.execute(input, opinion)
+
+            if action.type == ActionType.Talk and action.name == sender.name:
+                return self.to_format(action.instruction), True
+
+            result = self.act(action)
+            opinion, ok = self.brain.review(action, result)
+
+            if ok:
+                return result, False
 
     @Trace.act()
     def act(self, action: Action) -> str:

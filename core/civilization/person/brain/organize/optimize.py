@@ -5,7 +5,7 @@ from core.civilization.person.action import Action, ActionType
 
 from .base import BaseOrganize
 
-_THINK_TEMPLATE = """Your response should be in the following schema:
+_TEMPLATE = """Your response should be in the following schema:
 Type: action type
 Name: action name
 Instruction: action instruction
@@ -25,16 +25,14 @@ Your tools:{tools}
 {prompt}
 """
 
-_ACTION_PATTERN = r"Type:\s*((?:\w| )+)\s+Name:\s*((?:\w| )+)\s+Instruction:\s*((?:(?!Extra:).)+)\s+Extra:\s*((?:(?!Type:).)*)\s*"
+_PATTERN = r"Type:\s*((?:\w| )+)\s+Name:\s*((?:\w| )+)\s+Instruction:\s*((?:(?!Extra:).)+)\s+Extra:\s*((?:(?!Type:).)*)\s*"
 
 
-class TemplateOrganize(BaseOrganize):
-    template = _THINK_TEMPLATE
-    action_pattern = _ACTION_PATTERN
+class Optimizer(BaseOrganize):
+    template = _TEMPLATE
+    pattern = _PATTERN
 
-    def from_prompt(self, person: BasePerson, prompt: str) -> str:
-        friend_names = ", ".join([f"'{name}'" for name in person.friends.keys()])
-        tool_names = ", ".join([f"'{name}'" for name in person.tools.keys()])
+    def stringify(self, person: BasePerson, prompt: str) -> str:
         friends = "".join(
             [
                 f"\n    {name}: {friend.instruction}"
@@ -44,16 +42,14 @@ class TemplateOrganize(BaseOrganize):
         tools = "".join(
             [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
         )
-        idea = self.template.format(
-            friend_names=friend_names,
-            tool_names=tool_names,
+        idea = self.planner_template.format(
             friends=friends,
             tools=tools,
             prompt=prompt,
         )
         return idea
 
-    def to_actions(self, person: BasePerson, thought: str) -> list[Action]:
+    def parse(self, person: BasePerson, thought: str) -> list[Action]:
         matches = re.findall(self.action_pattern, thought, re.DOTALL)
 
         if len(matches) == 0:

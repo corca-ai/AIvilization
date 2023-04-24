@@ -13,9 +13,9 @@ if TYPE_CHECKING:
 
 class BaseOrganize(BaseModel, ABC):
     @abstractmethod
-    def from_prompt(self, person: BasePerson, prompt: str) -> str:
+    def stringify(self, **kwargs):
         pass
 
     @abstractmethod
-    def to_actions(self, person: BasePerson, thought: str) -> list[Action]:
+    def parse(self, **kwargs):
         pass

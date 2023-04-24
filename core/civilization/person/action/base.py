@@ -23,3 +23,8 @@ class Action(BaseModel):
     name: str
     instruction: str
     extra: str
+
+
+class Plan(BaseModel):
+    type: ActionType
+    objective: str
