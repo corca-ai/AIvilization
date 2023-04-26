@@ -1,73 +1,49 @@
 import re
+from typing import Tuple
 
 from core.civilization.person import BasePerson
 from core.civilization.person.action import Action, ActionType
 
-from .base import BaseOrganize
+from .base import BaseOrganize, Decision, WrongSchemaException
 
 _TEMPLATE = """Your response should be in the following schema:
-Type: action type
-Name: action name
-Instruction: action instruction
-Extra: action extra
+Accepted | Rejected
+your opinion (if you rejected the plan)
 
-The action types you can use are:
-Type | Description | Name | Instruction | Extra
--|-|-|-|-
-Invite | Invite person who can do your work for you and are not your friends. | general person name | Personality | one of tools among {tool_names} that the person needs.
-Talk |  Talk to your friends. | Friend's Name (should be one of {friend_names}) | Message | Attachment File List
-Build | Build or rebuild a reusable tool when you can't do it yourself. It must have stdout, stderr messages. It should be executable with the following schema of commands: `python tools/example.py instruction extra` | Tool's Name (snake_case) | Tool's description that includes objective, instruction format, extra format, output format | Python Code for Building Tools (format: ```pythonprint("hello world")```)
-Use | Use one of your tools. | Tool's Name (should be one of {tool_names}) | Tool Instruction for using tool | Extra for using tool
 
-Your friends:{friends}
-Your tools:{tools}
+Review your execution result for executing "{plan}".
+Your action is:
+{action}
 
-{prompt}
+Your result of action is:
+{result}
+
+Review your execution!!
 """
 
-_PATTERN = r"Type:\s*((?:\w| )+)\s+Name:\s*((?:\w| )+)\s+Instruction:\s*((?:(?!Extra:).)+)\s+Extra:\s*((?:(?!Type:).)*)\s*"
+_PATTERN = rf"({Decision.ACCEPTED.value}|{Decision.REJECTED.value})(.*)"
 
 
 class Reviewer(BaseOrganize):
     template = _TEMPLATE
     pattern = _PATTERN
 
-    def stringify(self, person: BasePerson, prompt: str) -> str:
-        friends = "".join(
-            [
-                f"\n    {name}: {friend.instruction}"
-                for name, friend in person.friends.items()
-            ]
-        )
-        tools = "".join(
-            [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
-        )
-        idea = self.planner_template.format(
-            friends=friends,
-            tools=tools,
-            prompt=prompt,
-        )
-        return idea
+    def stringify(
+        self, person: BasePerson, plan: str, action: Action, result: str
+    ) -> Tuple[str, bool]:
 
-    def parse(self, person: BasePerson, thought: str) -> list[Action]:
-        matches = re.findall(self.action_pattern, thought, re.DOTALL)
+        return self.template.format(
+            plan=plan,
+            action=action,
+            result=result,
+        )
 
-        if len(matches) == 0:
-            return [
-                Action(
-                    type=ActionType.Talk,
-                    name=person.referee.name,
-                    instruction=thought,
-                    extra="",
-                )
-            ]
+    def parse(self, person: BasePerson, thought: str) -> Tuple[str, bool]:
+        matches = re.findall(self.pattern, thought, re.DOTALL)
 
-        return [
-            Action(
-                type=ActionType[match[0]],
-                name=match[1],
-                instruction=match[2],
-                extra=match[3],
-            )
-            for match in matches
-        ]
+        if len(matches) != 1:
+            raise WrongSchemaException("Your response is not in the correct schema.")
+
+        match = matches[0]
+
+        return match[1], Decision(match[0]) == Decision.ACCEPTED

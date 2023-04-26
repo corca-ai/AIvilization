@@ -37,41 +37,43 @@ class Person(BasePerson):
 
     @Trace.respond()
     def respond(self, sender: Self, request: str, params: TalkParams) -> str:
-        result = ""
+        request = request.split(System.PROMPT_SEPARATOR)[1].strip()
 
         while True:
-            plans = self.plan(request, result)
+            plans = self.plan(request)
             result, is_finish = self.execute(plans[0], sender=sender)
 
             if is_finish:
                 return result
 
-    def plan(self, request: str, result: str) -> List[Plan]:
-        opinion = ""
-        plans = []
+    def plan(self, request: str) -> List[Plan]:
+        opinions = []
 
         while True:
-            plans = self.brain.plan(request, opinion)
-            opinion, ok = self.brain.optimize(plans)
+            plans = self.brain.plan(request, opinions)
+            opinion, ok = self.brain.optimize(request, plans)
 
             if ok:
                 return plans
 
+            opinions += opinion
+
     def execute(self, plan: str, sender: Self) -> Tuple[str, bool]:
-        input = plan
-        opinion = ""
+        opinions = []
 
         while True:
-            action = self.brain.execute(input, opinion)
+            action = self.brain.execute(plan, opinions)
 
             if action.type == ActionType.Talk and action.name == sender.name:
                 return self.to_format(action.instruction), True
 
             result = self.act(action)
-            opinion, ok = self.brain.review(action, result)
+            opinion, ok = self.brain.review(plan, action, result)
 
             if ok:
                 return result, False
+
+            opinions += opinion
 
     @Trace.act()
     def act(self, action: Action) -> str:

@@ -4,11 +4,16 @@ from .base import BaseMemory
 
 
 class ShortTermMemory(BaseMemory[list[dict[str, str]]]):
-    def __init__(self, name: str, instruction: str):
+    def __init__(self, name: str, instruction: str, init_message: str):
         super().__init__(
             name=name,
             instruction=instruction,
-            storage=[],
+            storage=[
+                {
+                    "role": "system",
+                    "content": init_message.format(name=name, instruction=instruction),
+                }
+            ],
             change_to_memory=lambda x: x,
         )
 

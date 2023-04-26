@@ -1,5 +1,5 @@
 from argparse import Action
-from typing import Generator, List
+from typing import Generator, List, Tuple
 
 from core.civilization.person.action.base import Plan
 from core.civilization.person.base import BasePerson
@@ -8,6 +8,7 @@ from core.civilization.person.brain.organize.execute import Executor
 from core.civilization.person.brain.organize.optimize import Optimizer
 from core.civilization.person.brain.organize.plan import Planner
 from core.civilization.person.brain.organize.review import Reviewer
+from core.logging.ansi import ANSI, Color, Style
 
 from .base import BaseBrain
 from .llm.openai import OpenAILLM
@@ -24,48 +25,67 @@ class Brain(BaseBrain):
     executor: BaseOrganize = None
     reviewer: BaseOrganize = None
 
+    init_message: str = "Your name is {name}. {instruction}"
+
     def __init__(self, person: BasePerson, name: str, instruction: str):
         super().__init__(llm=OpenAILLM())
         self.lterm_memory = LongTermMemory(name, instruction)
-        self.sterm_memory = ShortTermMemory(name, instruction)
-        self.sterm_memory.storage.append(
-            {
-                "role": "system",
-                "content": f"Your name is {name}. {instruction}",
-            }
-        )
+        self.sterm_memory = ShortTermMemory(name, instruction, self.init_message)
+
         self.person = person
         self.planner = Planner()
         self.optimizer = Optimizer()
         self.executor = Executor()
         self.reviewer = Reviewer()
 
-    def plan(self, request: str, opinion: str) -> List[Plan]:
-        prompt = self.planner.stringify(self.person, request, opinion)
+    def plan(self, request: str, opinions: List[str]) -> List[Plan]:
+        prompt = self.planner.stringify(self.person, request, opinions)
+        print(ANSI(prompt).to(Color.rgb(236, 201, 238)))
 
-        result = "".join([t for t in self.__think(prompt)])
-        print(result)
+        result = ""
+        for t in self.__think(prompt):
+            result += t
+            print(ANSI(t).to(Style.dim()), end="")
+        print("\n")
 
         return self.planner.parse(self.person, result)
 
-    def optimize(self, plans: List[Plan]) -> str:
-        prompt = self.optimizer.stringify(self.person, plans)
+    def optimize(self, request: str, plans: List[Plan]) -> Tuple[str, bool]:
+        prompt = self.optimizer.stringify(self.person, request, plans)
+        print(ANSI(prompt).to(Color.rgb(236, 201, 238)))
 
-        result = "".join([t for t in self.__think(prompt)])
+        result = ""
+        for t in self.__think(prompt):
+            result += t
+            print(ANSI(t).to(Style.dim()), end="")
+        print("\n")
 
-        return self.optimizer.parse(self.person, result)
+        opinion, ok = self.optimizer.parse(self.person, result)
+        if ok:
+            self.sterm_memory.save(request, "\n".join(map(str, plans)))
+        return opinion, ok
 
-    def execute(self, prompt: str) -> Action:
-        prompt = self.executor.stringify(self.person, prompt)
+    def execute(self, plan: Plan, opinions: str) -> Action:
+        prompt = self.executor.stringify(self.person, plan, opinions)
+        print(ANSI(prompt).to(Color.rgb(236, 201, 238)))
 
-        result = "".join([t for t in self.__think(prompt)])
+        result = ""
+        for t in self.__think(prompt):
+            result += t
+            print(ANSI(t).to(Style.dim()), end="")
+        print("\n")
 
         return self.executor.parse(self.person, result)
 
-    def review(self, action: Action, result: str) -> str:
-        prompt = self.reviewer.stringify(self.person, action, result)
+    def review(self, plan: str, action: Action, result: str) -> Tuple[str, bool]:
+        prompt = self.reviewer.stringify(self.person, plan, action, result)
+        print(ANSI(prompt).to(Color.rgb(236, 201, 238)))
 
-        result = "".join([t for t in self.__think(prompt)])
+        result = ""
+        for t in self.__think(prompt):
+            result += t
+            print(ANSI(t).to(Style.dim()), end="")
+        print("\n")
 
         return self.reviewer.parse(self.person, result)
 

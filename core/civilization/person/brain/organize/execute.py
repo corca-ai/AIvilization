@@ -1,17 +1,23 @@
 import re
+from typing import List
 
 from core.civilization.person import BasePerson
 from core.civilization.person.action import Action, ActionType
+from core.civilization.person.action.base import Plan
 
-from .base import BaseOrganize
+from .base import BaseOrganize, WrongSchemaException
 
-_TEMPLATE = """Your response should be in the following schema:
-Type: action type
-Name: action name
-Instruction: action instruction
-Extra: action extra
+_TEMPLATE = """You must consider the following things:
+{opinions}
 
-The action types you can use are:
+You have to respond only one action and the action consists of type, name, description, and extra.
+Your response should be in the following schema:
+Type: example type
+Name: example name
+Instruction: example instruction
+Extra: example extra
+
+The type of action you can take is:
 Type | Description | Name | Instruction | Extra
 -|-|-|-|-
 Invite | Invite person who can do your work for you and are not your friends. | general person name | Personality | one of tools among {tool_names} that the person needs.
@@ -22,7 +28,7 @@ Use | Use one of your tools. | Tool's Name (should be one of {tool_names}) | Too
 Your friends:{friends}
 Your tools:{tools}
 
-{prompt}
+Execute only this "{plan}"!!
 """
 
 _PATTERN = r"Type:\s*((?:\w| )+)\s+Name:\s*((?:\w| )+)\s+Instruction:\s*((?:(?!Extra:).)+)\s+Extra:\s*((?:(?!Type:).)*)\s*"
@@ -32,7 +38,10 @@ class Executor(BaseOrganize):
     template = _TEMPLATE
     pattern = _PATTERN
 
-    def stringify(self, person: BasePerson, prompt: str) -> str:
+    def stringify(self, person: BasePerson, plan: Plan, opinions: List[str]) -> str:
+        opinions = "\n".join([f"{i}. {opinion}" for i, opinion in enumerate(opinions)])
+        friend_names = ", ".join([f"'{name}'" for name in person.friends.keys()])
+        tool_names = ", ".join([f"'{name}'" for name in person.tools.keys()])
         friends = "".join(
             [
                 f"\n    {name}: {friend.instruction}"
@@ -42,32 +51,26 @@ class Executor(BaseOrganize):
         tools = "".join(
             [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
         )
-        idea = self.planner_template.format(
+        return self.template.format(
+            plan=plan,
+            opinions=opinions,
+            friend_names=friend_names,
+            tool_names=tool_names,
             friends=friends,
             tools=tools,
-            prompt=prompt,
         )
-        return idea
 
-    def parse(self, person: BasePerson, thought: str) -> list[Action]:
-        matches = re.findall(self.action_pattern, thought, re.DOTALL)
+    def parse(self, person: BasePerson, thought: str) -> Action:
+        matches = re.findall(self.pattern, thought, re.DOTALL)
 
-        if len(matches) == 0:
-            return [
-                Action(
-                    type=ActionType.Talk,
-                    name=person.referee.name,
-                    instruction=thought,
-                    extra="",
-                )
-            ]
+        if len(matches) != 1:
+            raise WrongSchemaException("Your response is not in the correct schema.")
 
-        return [
-            Action(
-                type=ActionType[match[0]],
-                name=match[1],
-                instruction=match[2],
-                extra=match[3],
-            )
-            for match in matches
-        ]
+        match = matches[0]
+
+        return Action(
+            type=ActionType[match[0]],
+            name=match[1],
+            instruction=match[2],
+            extra=match[3],
+        )
