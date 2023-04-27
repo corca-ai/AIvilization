@@ -7,10 +7,10 @@ from core.civilization.person.action.base import Plan
 from .base import BaseOrganize, Decision, WrongSchemaException
 
 _TEMPLATE = """Your response should be in the following schema:
-
+==============================
 your opinion (is exist when you rejected the plan)
 Accepted | Rejected
-
+==============================
 
 Optimize your plan to respond to the request. Request is:
 {request}

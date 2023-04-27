@@ -11,9 +11,11 @@ _TEMPLATE = """You must consider the following things:
 {opinions}
 
 Your response should be in the following schema:
+==============================
 1. Action Type1: Objective1
 2. Action Type2: Objective2
 ...
+==============================
 
 The type of action you can take is:
 Invite: Invite person who can do your work for you and are not your friends.

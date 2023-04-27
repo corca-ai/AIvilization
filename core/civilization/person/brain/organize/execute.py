@@ -12,10 +12,12 @@ _TEMPLATE = """You must consider the following things:
 
 You have to respond only one action and the action consists of type, name, description, and extra.
 Your response should be in the following schema:
+==============================
 Type: example type
 Name: example name
 Instruction: example instruction
 Extra: example extra
+==============================
 
 The type of action you can take is:
 Type | Description | Name | Instruction | Extra

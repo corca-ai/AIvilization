@@ -26,10 +26,10 @@ class Action(BaseModel):
 
     def __str__(self):
         return (
-            f"{self.type.value}\n"
-            f"name: {self.name}\n"
-            f"instruction: {self.instruction}\n"
-            f"extra: {self.extra}\n"
+            f"Type: {self.type.value}\n"
+            f"Name: {self.name}\n"
+            f"Instruction: {self.instruction}\n"
+            f"Extra: {self.extra}\n"
         )
 
 
