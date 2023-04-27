@@ -23,3 +23,19 @@ class Action(BaseModel):
     name: str
     instruction: str
     extra: str
+
+    def __str__(self):
+        return (
+            f"Type: {self.type.value}\n"
+            f"Name: {self.name}\n"
+            f"Instruction: {self.instruction}\n"
+            f"Extra: {self.extra}\n"
+        )
+
+
+class Plan(BaseModel):
+    action_type: ActionType
+    objective: str
+
+    def __str__(self):
+        return f"{self.action_type.value}: {self.objective}"

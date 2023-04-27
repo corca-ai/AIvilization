@@ -37,7 +37,7 @@ class ToolMessageFormat:
         return (
             f"{System.MESSAGE_SEPARATOR}\n"
             f"{self.name}'s result\n{System.PROMPT_SEPARATOR}\n"
-            f"You have built a tool named {self.name}."
+            f"You have built a tool named {self.name}. "
             "Test if you can use the tool well."
         )
 

@@ -94,7 +94,7 @@ class Trace:
                     self.tracer.on_act_error(action, e)
                     return None
 
-                self.tracer.on_act_result(action, result)
+                # self.tracer.on_act_result(action, result)
                 return result
 
             return wrapper
