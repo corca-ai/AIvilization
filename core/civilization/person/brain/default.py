@@ -87,7 +87,10 @@ class Brain(BaseBrain):
             print(ANSI(t).to(Style.dim()), end="")
         print("\n")
 
-        return self.reviewer.parse(self.person, result)
+        opinion, ok = self.reviewer.parse(self.person, result)
+        if ok:
+            self.sterm_memory.save(str(action), result)
+        return opinion, ok
 
     def __think(self, prompt: str) -> Generator[str, None, None]:
         prompt = self.sterm_memory.load(prompt)

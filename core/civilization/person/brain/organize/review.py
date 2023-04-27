@@ -7,8 +7,9 @@ from core.civilization.person.action import Action, ActionType
 from .base import BaseOrganize, Decision, WrongSchemaException
 
 _TEMPLATE = """Your response should be in the following schema:
-Accepted | Rejected
+
 your opinion (if you rejected the plan)
+Accepted | Rejected
 
 
 Review your execution result for executing "{plan}".
@@ -18,10 +19,11 @@ Your action is:
 Your result of action is:
 {result}
 
+Don't execute again, just say your opinion about action and result.
 Review your execution!!
 """
 
-_PATTERN = rf"({Decision.ACCEPTED.value}|{Decision.REJECTED.value})(.*)"
+_PATTERN = rf"(.*)({Decision.ACCEPTED.value}|{Decision.REJECTED.value})"
 
 
 class Reviewer(BaseOrganize):
@@ -46,4 +48,4 @@ class Reviewer(BaseOrganize):
 
         match = matches[0]
 
-        return match[1], Decision(match[0]) == Decision.ACCEPTED
+        return match[0], Decision(match[1]) == Decision.ACCEPTED

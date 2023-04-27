@@ -8,8 +8,9 @@ from core.civilization.person.action.base import Plan
 from .base import BaseOrganize, Decision, WrongSchemaException
 
 _TEMPLATE = """Your response should be in the following schema:
-Accepted | Rejected
+
 your opinion (is exist when you rejected the plan)
+Accepted | Rejected
 
 
 Optimize your plan to respond to the request. Request is:
@@ -22,7 +23,7 @@ Your plans are:
 Optimize your plan!!
 """
 
-_PATTERN = rf"({Decision.ACCEPTED.value}|{Decision.REJECTED.value})(.*)"
+_PATTERN = rf"(.*)({Decision.ACCEPTED.value}|{Decision.REJECTED.value})"
 
 
 class Optimizer(BaseOrganize):
@@ -43,4 +44,4 @@ class Optimizer(BaseOrganize):
 
         match = matches[0]
 
-        return match[1], Decision(match[0]) == Decision.ACCEPTED
+        return match[0], Decision(match[1]) == Decision.ACCEPTED
