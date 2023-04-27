@@ -2,7 +2,7 @@ import re
 from typing import List
 
 from core.civilization.person import BasePerson
-from core.civilization.person.action import Action, ActionType
+from core.civilization.person.action import ActionType
 from core.civilization.person.action.base import Plan
 
 from .base import BaseOrganize

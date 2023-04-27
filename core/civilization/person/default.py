@@ -1,4 +1,4 @@
-from typing import Generator, List, Optional, Self, Tuple
+from typing import List, Optional, Self, Tuple
 
 from core.civilization.god.system import System
 from core.civilization.person.action.base import Plan

@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Generator, List, Tuple
+from typing import List, Tuple
 
 from pydantic import BaseModel
 
 from core.civilization.person.action.base import Plan
-from core.civilization.person.brain.organize.base import BaseOrganize
 
 from .llm import BaseLLM
 

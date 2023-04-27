@@ -2,7 +2,7 @@ import re
 from typing import Tuple
 
 from core.civilization.person import BasePerson
-from core.civilization.person.action import Action, ActionType
+from core.civilization.person.action import Action
 
 from .base import BaseOrganize, Decision, WrongSchemaException
 

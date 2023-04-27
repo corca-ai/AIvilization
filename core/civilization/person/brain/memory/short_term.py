@@ -1,4 +1,3 @@
-from core.civilization.god.system import System
 
 from .base import BaseMemory
 
