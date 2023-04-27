@@ -62,7 +62,11 @@ class Brain(BaseBrain):
 
         opinion, ok = self.optimizer.parse(self.person, result)
         if ok:
-            self.sterm_memory.save(request, "\n".join(map(str, plans)))
+            self.sterm_memory.save(
+                "You should make a plan to respond to the request. Request is:\n"
+                + request,
+                "\n".join(map(str, plans)),
+            )
         return opinion, ok
 
     def execute(self, plan: Plan, opinions: str) -> Action:
@@ -89,7 +93,7 @@ class Brain(BaseBrain):
 
         opinion, ok = self.reviewer.parse(self.person, result)
         if ok:
-            self.sterm_memory.save(str(action), result)
+            self.sterm_memory.save("Execute this plan:\n" + str(plan), result)
         return opinion, ok
 
     def __think(self, prompt: str) -> Generator[str, None, None]:

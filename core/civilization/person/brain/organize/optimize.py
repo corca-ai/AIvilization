@@ -17,10 +17,11 @@ Optimize your plan to respond to the request. Request is:
 {request}
 
 Don't remake your plan, just say your opinion about plan.
+All plans must be written up in a single line.
 Your plans are:
 {plans}
 
-Optimize your plan!!
+Check and optimize your plan!!
 """
 
 _PATTERN = rf"(.*)({Decision.ACCEPTED.value}|{Decision.REJECTED.value})"
