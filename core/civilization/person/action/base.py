@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 from pydantic import BaseModel
 
@@ -34,8 +35,11 @@ class Action(BaseModel):
 
 
 class Plan(BaseModel):
+    plan_number: int
     action_type: ActionType
     objective: str
+    preceding_plan_numbers: List[int]
 
     def __str__(self):
-        return f"{self.action_type.value}: {self.objective}"
+        preceding_plans = ", ".join([f"#{p_n}" for p_n in self.preceding_plan_numbers])
+        return f"{self.plan_number}. {self.action_type.value}: {self.objective} <{preceding_plans}>"

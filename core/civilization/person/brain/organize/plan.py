@@ -10,12 +10,14 @@ from .base import BaseOrganize
 _TEMPLATE = """You must consider the following things:
 {opinions}
 
-Your response should be in the following schema:
-==============================
-1. Action Type1: Objective1
-2. Action Type2: Objective2
-...
-==============================
+==========your response schema==========
+1. Action Type1: Objective1 <Preceding plan number>
+2. Action Type2: Objective2 <Preceding plan number>
+3. ...
+==========  response example  ==========
+1. Invite: Invite person who can do your work for you and are not your friends. <N/A>
+2. Talk: Talk to your friends. <#1>
+========================================
 
 The type of action you can take is:
 Invite: Invite person who can do your work for you and are not your friends.
@@ -32,12 +34,14 @@ You should make a plan to respond to the request. Request is:
 Make a plan!!
 """
 
-_PATTERN = r"(?:[0-9]|[1-9][0-9]). (\w*): \s*(.+)"
+_PATTERN = r"(\d+). (\w*): \s*(.+) <(#\d+(?:,(?: |)#\d+)*|N\/A)>"
+_SECOND_PATTERN = r"(?<=#)\d+"
 
 
 class Planner(BaseOrganize):
     template = _TEMPLATE
     pattern = _PATTERN
+    second_pattern = _SECOND_PATTERN
 
     def stringify(self, person: BasePerson, request: str, opinions: List[str]) -> str:
         opinions = "\n".join([f"{i}. {opinion}" for i, opinion in enumerate(opinions)])
@@ -64,8 +68,10 @@ class Planner(BaseOrganize):
         if len(matches) == 0:
             return [
                 Plan(
+                    plan_number=1,
                     action_type=ActionType.Talk,
                     objective=thought,
+                    preceding_plan_numbers=[],
                 )
             ]
 
@@ -74,8 +80,13 @@ class Planner(BaseOrganize):
             try:
                 plans.append(
                     Plan(
-                        action_type=ActionType(match[0]),
-                        objective=match[1],
+                        plan_number=int(match[0]),
+                        action_type=ActionType(match[1]),
+                        objective=match[2],
+                        preceding_plan_numbers=[
+                            int(p_n)
+                            for p_n in re.findall(self.second_pattern, match[3])
+                        ],
                     )
                 )
             except ValueError:
