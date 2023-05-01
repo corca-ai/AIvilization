@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 from core.civilization.person.action import Action
 
@@ -13,11 +13,11 @@ from .base import BasePersonTracer
 class PersonTracerWrapper(BasePersonTracer):
     tracers: list[BasePersonTracer] = []
 
-    def __init__(self, person: BasePerson, tracers: list[Type[BasePersonTracer]] = []):
+    def __init__(self, person: BasePerson, tracers: list[type[BasePersonTracer]] = []):
         super().__init__(person)
         self.tracers = tracers
 
-    def add(self, Tracer: Type[BasePersonTracer]):
+    def add(self, Tracer: type[BasePersonTracer]):
         self.tracers.append(Tracer(person=self.person))
 
     def on_request(self, sender: BasePerson, prompt: str, params: TalkParams):
