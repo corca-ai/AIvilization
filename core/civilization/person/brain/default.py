@@ -8,6 +8,7 @@ from core.civilization.person.brain.organize.execute import Executor
 from core.civilization.person.brain.organize.optimize import Optimizer
 from core.civilization.person.brain.organize.plan import Planner
 from core.civilization.person.brain.organize.review import Reviewer
+from core.config.env import settings
 from core.logging.ansi import ANSI, Color, Style
 
 from .base import BaseBrain
@@ -29,7 +30,9 @@ class Brain(BaseBrain):
 
     def __init__(self, person: BasePerson, name: str, instruction: str):
         super().__init__(llm=OpenAILLM())
-        self.lterm_memory = LongTermMemory(name, instruction)
+        self.lterm_memory = (
+            LongTermMemory(name, instruction) if settings["PINECONE_API_KEY"] else None
+        )
         self.sterm_memory = ShortTermMemory(name, instruction, self.init_message)
 
         self.person = person
