@@ -6,11 +6,16 @@ from core.civilization.person.action.base import Plan
 
 from .base import BaseOrganize, Decision, WrongSchemaException
 
-_TEMPLATE = """Your response should be in the following schema:
-==============================
+_TEMPLATE = """
+==========your response schema==========
 your opinion (is exist when you rejected the plan)
-Accepted | Rejected
-==============================
+Accept | Reject
+==========  response example  ==========
+Actually, I think that the plan is not good.
+Because it is not efficient.
+
+Reject
+========================================
 
 Optimize your plan to respond to the request. Request is:
 {request}
@@ -23,7 +28,7 @@ Your plans are:
 Check and optimize your plan!!
 """
 
-_PATTERN = rf"(.*)({Decision.ACCEPTED.value}|{Decision.REJECTED.value})"
+_PATTERN = rf"(.*)({Decision.ACCEPT.value}|{Decision.REJECT.value})"
 
 
 class Optimizer(BaseOrganize):
@@ -44,4 +49,4 @@ class Optimizer(BaseOrganize):
 
         match = matches[0]
 
-        return match[0], Decision(match[1]) == Decision.ACCEPTED
+        return match[0], Decision(match[1]) == Decision.ACCEPT

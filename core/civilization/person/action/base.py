@@ -42,4 +42,14 @@ class Plan(BaseModel):
 
     def __str__(self):
         preceding_plans = ", ".join([f"#{p_n}" for p_n in self.preceding_plan_numbers])
+        if len(preceding_plans) == 0:
+            preceding_plans = "N/A"
         return f"{self.plan_number}. {self.action_type.value}: {self.objective} <{preceding_plans}>"
+
+    def __repr__(self):
+        preceding_plans = ", ".join([f"#{p_n}" for p_n in self.preceding_plan_numbers])
+        if len(preceding_plans) == 0:
+            preceding_plans = "N/A"
+        return (
+            f"action type={self.action_type.value}, action objective={self.objective}"
+        )

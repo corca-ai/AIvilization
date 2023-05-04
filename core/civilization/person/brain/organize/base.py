@@ -4,14 +4,13 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-
 if TYPE_CHECKING:
     pass
 
 
 class Decision(Enum):
-    ACCEPTED = "Accepted"
-    REJECTED = "Rejected"
+    ACCEPT = "Accept"
+    REJECT = "Reject"
 
 
 class WrongSchemaException(Exception):

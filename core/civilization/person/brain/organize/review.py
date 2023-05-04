@@ -6,11 +6,16 @@ from core.civilization.person.action import Action
 
 from .base import BaseOrganize, Decision, WrongSchemaException
 
-_TEMPLATE = """Your response should be in the following schema:
-==============================
+_TEMPLATE = """
+==========your response schema==========
 your opinion (if you rejected the plan)
-Accepted | Rejected
-==============================
+Accept | Reject
+==========  response example  ==========
+Actually, I think that the execution result is not good.
+Why don't you try to use another tool?
+
+Reject
+========================================
 
 Review your execution result for executing "{plan}".
 Your action is:
@@ -33,7 +38,7 @@ Don't execute again, just say your opinion about action and result.
 Review your execution!!
 """
 
-_PATTERN = rf"(.*)({Decision.ACCEPTED.value}|{Decision.REJECTED.value})"
+_PATTERN = rf"(.*)({Decision.ACCEPT.value}|{Decision.REJECT.value})"
 
 
 class Reviewer(BaseOrganize):
@@ -72,4 +77,4 @@ class Reviewer(BaseOrganize):
 
         match = matches[0]
 
-        return match[0], Decision(match[1]) == Decision.ACCEPTED
+        return match[0], Decision(match[1]) == Decision.ACCEPT

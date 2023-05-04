@@ -11,13 +11,18 @@ _TEMPLATE = """You must consider the following things:
 {opinions}
 
 You have to respond only one action and the action consists of type, name, description, and extra.
-Your response should be in the following schema:
-==============================
+
+==========your response schema==========
 Type: example type
 Name: example name
 Instruction: example instruction
 Extra: example extra
-==============================
+==========  response example  ==========
+Type: Invite
+Name: John
+Instruction: The best engineer in the infinite universe.
+Extra: tool1, tool2, tool3
+========================================
 
 The type of action you can take is:
 Type | Description | Name | Instruction | Extra
@@ -30,7 +35,8 @@ Use | Use one of your tools. | Tool's Name (should be one of {tool_names}) | Too
 Your friends:{friends}
 Your tools:{tools}
 
-Execute only this "{plan}"!!
+Your plan: {plan}
+Execute only this plan!!
 """
 
 _PATTERN = r"Type:\s*((?:\w| )+)\s+Name:\s*((?:\w| )+)\s+Instruction:\s*((?:(?!Extra:).)+)\s+Extra:\s*((?:(?!Type:).)*)\s*"
@@ -54,7 +60,7 @@ class Executor(BaseOrganize):
             [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
         )
         return self.template.format(
-            plan=plan,
+            plan=repr(plan),
             opinions=opinions,
             friend_names=friend_names,
             tool_names=tool_names,
