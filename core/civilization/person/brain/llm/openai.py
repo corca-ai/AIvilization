@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Dict, Generator, List
 
 import openai
 from pydantic import BaseModel

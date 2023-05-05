@@ -47,7 +47,9 @@ class Executor(BaseOrganize):
     pattern = _PATTERN
 
     def stringify(self, person: BasePerson, plan: Plan, opinions: List[str]) -> str:
-        opinions = "\n".join([f"{i}. {opinion}" for i, opinion in enumerate(opinions)])
+        opinions = "\n".join(
+            [f"{i+1}. {opinion}" for i, opinion in enumerate(opinions)]
+        )
         friend_names = ", ".join([f"'{name}'" for name in person.friends.keys()])
         tool_names = ", ".join([f"'{name}'" for name in person.tools.keys()])
         friends = "".join(
