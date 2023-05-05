@@ -7,34 +7,36 @@ from core.civilization.person.action.base import Plan
 
 from .base import BaseOrganize
 
-_TEMPLATE = """You must consider the following things:
-{opinions}
-
-==========your response schema==========
-1. Action Type1: Objective1 <Preceding plan number>
-2. Action Type2: Objective2 <Preceding plan number>
-3. ...
-==========  response example  ==========
-1. Invite: Invite person who can do your work for you and are not your friends. <N/A>
-2. Talk: Talk to your friends. <#1>
-========================================
-If you don't need a plan, you can answer without conforming to the response schema format.
-
+_TEMPLATE = """## Background
 The type of action you can take is:
 Invite: Invite experts who can do the things you don't know how to do for you.
 Talk: Talk to your friends.
 Build: Build or rebuild a reusable tool when you can't do it yourself.
 Use: Use one of your tools.
 
-Your friends:{friends} 
+Your friends:{friends}
 Your tools:{tools}
 
-Your last plan should be talking to {referee}.
-You should make a plan to respond to the request. Plan has only a action type, objective, and preceding plan number.
-Request is:
-{request}
+## Response
+Your response is list of plans or text.
+All plans should include only action types, objectives, and plan numbers that should be preceded, and should not include instruction and extra.
+If you don't need a plan, you can answer without conforming to the response schema format.
 
-Make a plan!!
+========== your response schema==========
+1. Action Type1: Objective1 <preceded plan number>
+2. Action Type2: Objective2 <preceded plan number>
+3. ...
+==========  response example  ==========
+1. Invite: Invite person who can do your work for you and are not your friends. <N/A>
+2. Talk: Talk to your friends. <#1>
+========================================
+
+## Request
+> Request: {request}
+Considering what you have done so far, make the next plan to achieve the request.
+Talking to {referee} should be the last plan.
+You must consider the following things:
+{opinions}
 """
 
 _PATTERN = r"(\d+). (\w*): \s*(.+) <(#\d+(?:,(?: |)#\d+)*|N\/A)>"
@@ -47,7 +49,9 @@ class Planner(BaseOrganize):
     second_pattern = _SECOND_PATTERN
 
     def stringify(self, person: BasePerson, request: str, opinions: List[str]) -> str:
-        opinions = "\n".join([f"{i}. {opinion}" for i, opinion in enumerate(opinions)])
+        opinions = "\n".join(
+            [f"{i+1}. {opinion}" for i, opinion in enumerate(opinions)]
+        )
         friends = "".join(
             [
                 f"\n    {name}: {friend.instruction}"
@@ -72,7 +76,7 @@ class Planner(BaseOrganize):
         if len(matches) == 0:
             return [
                 Plan(
-                    plan_number=1,
+                    plan_number=-1,
                     action_type=ActionType.Talk,
                     objective=thought,
                     preceding_plan_numbers=[],

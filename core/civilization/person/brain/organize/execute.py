@@ -30,7 +30,7 @@ Type | Description | Name | Instruction | Extra
 Invite | Invite person who can do your work for you and are not your friends. | general person name | Personality | one of tools among {tool_names} that the person needs.
 Talk |  Talk to your friends. | Friend's Name (should be one of {friend_names}) | Message | Attachment File List
 Build | Build or rebuild a reusable tool when you can't do it yourself. It must have stdout, stderr messages. It should be executable with the following schema of commands: `python tools/example.py instruction extra` | Tool's Name (snake_case) | Tool's description that includes objective, instruction format, extra format, output format | Python Code for Building Tools (format: ```pythonprint("hello world")```)
-Use | Use one of your tools. | Tool's Name (should be one of {tool_names}) | Tool Instruction for using tool | Extra for using tool
+Use | Use one of your tools. | Tool's Name (should be one of {tool_names}) | Input for using the tool. Refer to the guide of the tool you want to use. | Extra Input for using the tool. Refer to the guide of the tool you want to use.
 
 Your friends:{friends}
 Your tools:{tools}
