@@ -9,6 +9,8 @@ from .base import BasePerson, InviteParams, TalkParams
 from .brain.default import Brain
 from .tool import BaseTool, BuildParams, CodedTool, UseParams
 from .tracer import Trace
+from .ear import Ear
+from .mouth import Mouth
 
 
 class Person(BasePerson):
@@ -34,6 +36,9 @@ class Person(BasePerson):
         self.friends: dict[str, Self] = {}
         if referee:
             self.friends[referee.name] = referee
+
+        self.ear = Ear(self)
+        self.mouth = Mouth(self)
 
     @Trace.respond()
     def respond(self, sender: Self, request: str, params: TalkParams) -> str:
@@ -97,18 +102,19 @@ class Person(BasePerson):
 
         return friend.greeting()
 
-    def talk(self, name: str, instruction: str, extra: str) -> str:
+    def talk(self, name: str, instruction: str, extra: str):
         # TODO: break a relationship with a friend
         if name not in self.friends:
             return System.error(f"Friend {name} not found.")
 
         friend = self.friends[name]
+        self.mouth.talk(friend, instruction, extra)
 
-        return friend.respond(
-            self,
-            self.to_format(instruction),
-            TalkParams.from_str(extra),
-        )
+        # return friend.respond(
+        #     self,
+        #     self.to_format(instruction),
+        #     TalkParams.from_str(extra),
+        # )
 
     def build(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:
