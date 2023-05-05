@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Dict, Generator, List
 
 import openai
 from pydantic import BaseModel
@@ -29,7 +29,7 @@ class OpenAILLM(BaseLLM, BaseModel):
         delay=DELAY,
     )
     @logger.disable
-    def chat_completion(self, messages: list[dict]) -> Generator:
+    def chat_completion(self, messages: List[Dict[str, str]]) -> Generator:
         return openai.ChatCompletion.create(
             model="gpt-4",
             messages=messages,

@@ -16,7 +16,8 @@ class CodedTool(BaseTool):
 
     def use(self, prompt: str, params: UseParams) -> str:
         process = subprocess.Popen(
-            ["python", self.file_path, prompt, params.input],
+            f"python {self.file_path} {prompt} {params.input}",
+            shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
