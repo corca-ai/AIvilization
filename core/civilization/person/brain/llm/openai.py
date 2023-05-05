@@ -39,7 +39,7 @@ class OpenAILLM(BaseLLM, BaseModel):
     @logger.disable
     def chat_completion(
         self,
-        messages: list[dict],
+        messages: List[Dict[str, str]],
         temparture: float = 0.7,
         top_p: float = 1.0,
         max_tokens: int = 2048,
