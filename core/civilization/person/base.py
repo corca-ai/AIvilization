@@ -47,18 +47,12 @@ class PersonMessageFormat:
             + ".\nYou invited me."
         )
 
-    def to_format(self, action: Action) -> str:
-        assert (
-            action.type == ActionType.Talk
-        ), "Action type must be Talk in to_format method"
-
+    def to_format(self, message: str) -> str:
         return (
             System.MESSAGE_SEPARATOR
             + "\n"
             + f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n"
-            + action.instruction
-            + "\n\nExtra: "
-            + action.extra
+            + message
         )
 
 

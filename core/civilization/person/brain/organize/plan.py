@@ -76,7 +76,7 @@ class Planner(BaseOrganize):
         if len(matches) == 0:
             return [
                 Plan(
-                    plan_number=-1,
+                    plan_number=1,
                     action_type=ActionType.Talk,
                     objective=thought,
                     preceding_plan_numbers=[],
