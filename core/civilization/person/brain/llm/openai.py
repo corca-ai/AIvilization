@@ -15,8 +15,15 @@ openai.api_key = settings["OPENAI_API_KEY"]
 class OpenAILLM(BaseLLM, BaseModel):
     MAX_RETRIES = 3
     DELAY = 3
-    model: str = "gpt-4"
 
+    def __init__(
+        self,
+        model: str = "gpt-4",
+    ) -> None:
+        super().__init__()
+        self.model = model
+
+    # https://platform.openai.com/docs/api-reference/chat/create
     @retry(
         (
             openai.error.RateLimitError,
@@ -29,11 +36,21 @@ class OpenAILLM(BaseLLM, BaseModel):
         delay=DELAY,
     )
     @logger.disable
-    def chat_completion(self, messages: list[dict]) -> Generator:
+    def chat_completion(
+        self,
+        messages: list[dict],
+        temparture: float = 0.7,
+        top_p: float = 1.0,
+        max_tokens: int = 2048,
+        stream: bool = True,
+        **kargs,
+    ) -> Generator:
         return openai.ChatCompletion.create(
-            model="gpt-4",
+            model=self.model,
             messages=messages,
-            temperature=0.7,
-            max_tokens=2048,
-            stream=True,
+            temperature=temparture,
+            top_p=top_p,
+            max_tokens=max_tokens,
+            stream=stream,
+            **kargs,
         )
