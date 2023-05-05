@@ -3,6 +3,7 @@ from typing import Optional, Type
 from pydantic import BaseModel
 
 from core.civilization.god.system import System
+from core.civilization.person.action.base import Action, ActionType
 from core.logging import ANSI, Color, Style
 
 from .brain import BaseBrain
@@ -46,12 +47,18 @@ class PersonMessageFormat:
             + ".\nYou invited me."
         )
 
-    def to_format(self, message: str) -> str:
+    def to_format(self, action: Action) -> str:
+        assert (
+            action.type == ActionType.Talk
+        ), "Action type must be Talk in to_format method"
+
         return (
             System.MESSAGE_SEPARATOR
             + "\n"
             + f"{self.name}'s talk\n{System.PROMPT_SEPARATOR}\n"
-            + message
+            + action.instruction
+            + "\n\nExtra: "
+            + action.extra
         )
 
 
