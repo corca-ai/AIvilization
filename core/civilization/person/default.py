@@ -56,9 +56,9 @@ class Person(BasePerson):
             if ok:
                 return plans
 
-            opinions += opinion
+            opinions.append(opinion)
 
-    def execute(self, plan: str, sender: Self) -> Tuple[str, bool]:
+    def execute(self, plan: Plan, sender: Self) -> Tuple[str, bool]:
         opinions = []
 
         while True:
@@ -73,7 +73,7 @@ class Person(BasePerson):
             if ok:
                 return result, False
 
-            opinions += opinion
+            opinions.append(opinion)
 
     @Trace.act()
     def act(self, action: Action) -> str:

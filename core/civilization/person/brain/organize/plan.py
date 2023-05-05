@@ -18,17 +18,20 @@ _TEMPLATE = """You must consider the following things:
 1. Invite: Invite person who can do your work for you and are not your friends. <N/A>
 2. Talk: Talk to your friends. <#1>
 ========================================
+If you don't need a plan, you can answer without conforming to the response schema format.
 
 The type of action you can take is:
-Invite: Invite person who can do your work for you and are not your friends.
+Invite: Invite experts who can do the things you don't know how to do for you.
 Talk: Talk to your friends.
 Build: Build or rebuild a reusable tool when you can't do it yourself.
 Use: Use one of your tools.
 
-Your friends:{friends}
+Your friends:{friends} 
 Your tools:{tools}
 
-You should make a plan to respond to the request. Request is:
+Your last plan should be talking to {referee}.
+You should make a plan to respond to the request. Plan has only a action type, objective, and preceding plan number.
+Request is:
 {request}
 
 Make a plan!!
@@ -60,6 +63,7 @@ class Planner(BaseOrganize):
             opinions=opinions,
             friends=friends,
             tools=tools,
+            referee=person.referee.name,
         )
 
     def parse(self, person: BasePerson, thought: str) -> List[Plan]:

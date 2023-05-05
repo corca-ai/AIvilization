@@ -8,13 +8,10 @@ from .base import BaseOrganize, Decision, WrongSchemaException
 
 _TEMPLATE = """
 ==========your response schema==========
-your opinion (if you rejected the plan)
-Accept | Reject
+[Accept | Reject] your review of the action
 ==========  response example  ==========
-Actually, I think that the execution result is not good.
-Why don't you try to use another tool?
-
-Reject
+[Reject] Actually, I think that the execution result is not good.
+Let's make a new tool
 ========================================
 
 Review your execution result for executing "{plan}".
@@ -38,7 +35,7 @@ Don't execute again, just say your opinion about action and result.
 Review your execution!!
 """
 
-_PATTERN = rf"(.*)({Decision.ACCEPT.value}|{Decision.REJECT.value})"
+_PATTERN = rf"\[({Decision.ACCEPT.value}|{Decision.REJECT.value})\](.*)"
 
 
 class Reviewer(BaseOrganize):
@@ -77,4 +74,4 @@ class Reviewer(BaseOrganize):
 
         match = matches[0]
 
-        return match[0], Decision(match[1]) == Decision.ACCEPT
+        return match[1], Decision(match[0]) == Decision.ACCEPT

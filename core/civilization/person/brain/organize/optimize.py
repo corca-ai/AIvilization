@@ -8,7 +8,7 @@ from .base import BaseOrganize, Decision, WrongSchemaException
 
 _TEMPLATE = """
 ==========your response schema==========
-your opinion (is exist when you rejected the plan)
+your opinion
 Accept | Reject
 ==========  response example  ==========
 Actually, I think that the plan is not good.

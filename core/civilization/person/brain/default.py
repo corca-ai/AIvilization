@@ -66,8 +66,7 @@ class Brain(BaseBrain):
         opinion, ok = self.optimizer.parse(self.person, result)
         if ok:
             self.sterm_memory.save(
-                "You should make a plan to respond to the request. Request is:\n"
-                + request,
+                "Make a plan to respond to the request. Request is:\n" + request,
                 "\n".join(map(str, plans)),
             )
         return opinion, ok
@@ -100,7 +99,8 @@ class Brain(BaseBrain):
         return opinion, ok
 
     def __think(self, prompt: str) -> Generator[str, None, None]:
-        prompt = self.sterm_memory.load(prompt)
+        print(self.sterm_memory.storage)
+        messages = self.sterm_memory.load(prompt)
 
-        for thought in self.llm.chat_completion(prompt):
+        for thought in self.llm.chat_completion(messages):
             yield thought["choices"][0]["delta"].get("content", "")
