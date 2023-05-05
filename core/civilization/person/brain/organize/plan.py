@@ -9,10 +9,7 @@ from .base import BaseOrganize
 
 _TEMPLATE = """## Background
 The type of action you can take is:
-Invite: Invite experts who can do the things you don't know how to do for you.
-Talk: Talk to your friends.
-Build: Build or rebuild a reusable tool when you can't do it yourself.
-Use: Use one of your tools.
+{action_types}
 
 Your friends:{friends}
 Your tools:{tools}
@@ -63,6 +60,9 @@ class Planner(BaseOrganize):
         )
 
         return self.template.format(
+            action_types="\n".join(
+                [type.__str__(1) for type in ActionType if type.description is not None]
+            ),
             request=request,
             opinions=opinions,
             friends=friends,

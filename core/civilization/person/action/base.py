@@ -6,17 +6,103 @@ from pydantic import BaseModel
 from core.logging import ANSI, Color, Style
 
 
+class ActionProperty(BaseModel):
+    description: str
+    name: str
+    instruction: str
+    extra: str
+
+
 class ActionType(Enum):
     Respond = "Respond"
-    Invite = "Invite"
-    Talk = "Talk"
-    Build = "Build"
-    Use = "Use"
+    Invite = (
+        "Invite",
+        ActionProperty(
+            description=(
+                "Invite person who can do your work for you and are not your friends. "
+                "It must have stdout, stderr messages. "
+                "It should be executable with the following schema of commands: `python tools/example.py instruction extra`"
+            ),
+            name="general person name like John, Steve",
+            instruction="Personality",
+            extra="one of tools among {tool_names} that the person needs.",
+        ),
+    )
+    Talk = (
+        "Talk",
+        ActionProperty(
+            description="Talk to your friends.",
+            name="Friend's Name (should be one of {friend_names})",
+            instruction="Message",
+            extra="Attachment File List",
+        ),
+    )
+    Build = (
+        "Build",
+        ActionProperty(
+            description=(
+                "Build or rebuild a reusable tool when you can't do it yourself. "
+                "It must have stdout, stderr messages. "
+                "It should be executable with the following schema of commands: `python tools/example.py instruction extra`"
+            ),
+            name="Tool's Name (snake_case)",
+            instruction="Tool's description that includes objective, instruction format, extra format, output format",
+            extra='Python Code for Building Tools (format: ```pythonprint("hello world")```)',
+        ),
+    )
+    Use = (
+        "Use",
+        ActionProperty(
+            description="Use one of your tools.",
+            name="Tool's Name (should be one of {tool_names})",
+            instruction="Input for using the tool. Refer to the guide of the tool you want to use.",
+            extra="Extra Input for using the tool. Refer to the guide of the tool you want to use.",
+        ),
+    )
 
-    def __str__(self):
-        return ANSI((self.value.lower() + "s ").center(12)).to(
-            Color.rgb(210, 210, 210), Style.italic(), Style.dim()
-        )
+    def __new__(cls, *args, **kwds):
+        obj = object.__new__(cls)
+        obj._value_ = args[0]
+        return obj
+
+    # ignore the first param since it's already set by __new__
+    def __init__(self, _: str, action_property: ActionProperty = None):
+        self._description_ = action_property.description if action_property else None
+        self._name_ = action_property.name if action_property else None
+        self._instruction_ = action_property.instruction if action_property else None
+        self._extra_ = action_property.extra if action_property else None
+
+    def __str__(self, verbose_level: int = 0):
+        if verbose_level == 0:
+            return ANSI((self.value.lower() + "s ").center(12)).to(
+                Color.rgb(210, 210, 210), Style.italic(), Style.dim()
+            )
+        elif verbose_level == 1:
+            return self.value + " | " + self.description
+        elif verbose_level == 2:
+            return (
+                f"{self.value} | "
+                f"{self.description} | "
+                f"{self.name} | "
+                f"{self.instruction} | "
+                f"{self.extra}"
+            )
+
+    @property
+    def description(self):
+        return self._description_
+
+    @property
+    def name(self):
+        return self._name_
+
+    @property
+    def instruction(self):
+        return self._instruction_
+
+    @property
+    def extra(self):
+        return self._extra_
 
 
 class Action(BaseModel):
