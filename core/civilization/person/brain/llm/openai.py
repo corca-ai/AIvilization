@@ -15,6 +15,7 @@ openai.api_key = settings["OPENAI_API_KEY"]
 class OpenAILLM(BaseLLM, BaseModel):
     MAX_RETRIES = 3
     DELAY = 3
+    model = "gpt-4"
 
     def __init__(
         self,
