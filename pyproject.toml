@@ -21,6 +21,7 @@ asyncio = "^3.4.3"
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
 ruff = "^0.0.261"
+tomli = "^2.0.1"
 
 [build-system]
 requires = ["poetry-core"]
