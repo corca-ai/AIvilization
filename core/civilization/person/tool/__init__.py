@@ -1,10 +1,12 @@
+from typing import Dict
+
 from .base import BaseTool, BuildParams, UseParams
 from .coded import CodedTool
 from .default import CodeWriter, Terminal
 
 __all__ = ["BaseTool", "CodedTool", "BuildParams", "UseParams", "default_tools"]
 
-default_tools = {
+default_tools: Dict[str, BaseTool] = {
     "terminal": Terminal(
         "terminal",
         (

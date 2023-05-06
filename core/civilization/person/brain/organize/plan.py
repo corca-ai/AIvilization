@@ -7,31 +7,33 @@ from core.civilization.person.action.base import Plan
 
 from .base import BaseOrganize
 
-_TEMPLATE = """You must consider the following things:
-{opinions}
+_TEMPLATE = """## Background
+The type of action you can take is:
+{action_types}
 
-==========your response schema==========
-1. Action Type1: Objective1 <Preceding plan number>
-2. Action Type2: Objective2 <Preceding plan number>
+Your friends:{friends}
+Your tools:{tools}
+
+## Response
+Your response is list of plans or text.
+All plans should include only action types, objectives, and plan numbers that should be preceded, and should not include instruction and extra.
+If you don't need a plan, you can answer without conforming to the response schema format.
+
+========== your response schema==========
+1. Action Type1: Objective1 <preceded plan number>
+2. Action Type2: Objective2 <preceded plan number>
 3. ...
 ==========  response example  ==========
 1. Invite: Invite person who can do your work for you and are not your friends. <N/A>
 2. Talk: Talk to your friends. <#1>
 ========================================
 
-The type of action you can take is:
-Invite: Invite person who can do your work for you and are not your friends.
-Talk: Talk to your friends.
-Build: Build or rebuild a reusable tool when you can't do it yourself.
-Use: Use one of your tools.
-
-Your friends:{friends}
-Your tools:{tools}
-
-You should make a plan to respond to the request. Request is:
-{request}
-
-Make a plan!!
+## Request
+> Request: {request}
+Considering what you have done so far, make the next plan to achieve the request.
+Talking to {referee} should be the last plan.
+You must consider the following things:
+{opinions}
 """
 
 _PATTERN = r"(\d+). (\w*): \s*(.+) <(#\d+(?:,(?: |)#\d+)*|N\/A)>"
@@ -44,7 +46,9 @@ class Planner(BaseOrganize):
     second_pattern = _SECOND_PATTERN
 
     def stringify(self, person: BasePerson, request: str, opinions: List[str]) -> str:
-        opinions = "\n".join([f"{i}. {opinion}" for i, opinion in enumerate(opinions)])
+        opinions = "\n".join(
+            [f"{i+1}. {opinion}" for i, opinion in enumerate(opinions)]
+        )
         friends = "".join(
             [
                 f"\n    {name}: {friend.instruction}"
@@ -56,10 +60,14 @@ class Planner(BaseOrganize):
         )
 
         return self.template.format(
+            action_types="\n".join(
+                [type.__str__(1) for type in ActionType if type.description is not None]
+            ),
             request=request,
             opinions=opinions,
             friends=friends,
             tools=tools,
+            referee=person.referee.name,
         )
 
     def parse(self, person: BasePerson, thought: str) -> List[Plan]:

@@ -6,24 +6,26 @@ from core.civilization.person.action.base import Plan
 
 from .base import BaseOrganize, Decision, WrongSchemaException
 
-_TEMPLATE = """Your response should be in the following schema:
-==============================
-your opinion (is exist when you rejected the plan)
-Accepted | Rejected
-==============================
+_TEMPLATE = """
+==========your response schema==========
+[Accept] or [Reject] your opinion
+==========  response example  ==========
+[Reject] Actually, I think that the plan is not good.
+Because it is not efficient.
+========================================
 
 Optimize your plan to respond to the request. Request is:
 {request}
 
 Don't remake your plan, just say your opinion about plan.
-All plans must be written up in a single line.
+Every plan must be written up in a single line.
 Your plans are:
 {plans}
 
 Check and optimize your plan!!
 """
 
-_PATTERN = rf"(.*)({Decision.ACCEPTED.value}|{Decision.REJECTED.value})"
+_PATTERN = rf"\[({Decision.ACCEPT.value}|{Decision.REJECT.value})\](.*)"
 
 
 class Optimizer(BaseOrganize):
@@ -44,4 +46,4 @@ class Optimizer(BaseOrganize):
 
         match = matches[0]
 
-        return match[0], Decision(match[1]) == Decision.ACCEPTED
+        return match[1].strip(), Decision(match[0]) == Decision.ACCEPT

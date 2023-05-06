@@ -1,4 +1,6 @@
-from typing import List, Optional, Self, Tuple
+from __future__ import annotations
+
+from typing import List, Optional, Tuple
 
 from core.civilization.god.system import System
 from core.civilization.person.action.base import Plan
@@ -33,7 +35,7 @@ class Person(BasePerson):
 
         self.brain = Brain(self, name, instruction)
 
-        self.friends: dict[str, Self] = {}
+        self.friends: dict[str, Person] = {}
         if referee:
             self.friends[referee.name] = referee
 
@@ -41,7 +43,7 @@ class Person(BasePerson):
         self.mouth = Mouth(self)
 
     @Trace.respond()
-    def respond(self, sender: Self, request: str, params: TalkParams):
+    def respond(self, sender: Person, request: str, params: TalkParams) -> str:
         request = request.split(System.PROMPT_SEPARATOR)[1].strip()
 
         while True:
@@ -62,9 +64,9 @@ class Person(BasePerson):
             if ok:
                 return plans
 
-            opinions += opinion
+            opinions.append(opinion)
 
-    def execute(self, plan: str, sender: Self) -> Tuple[str, bool]:
+    def execute(self, plan: Plan, sender: Person) -> Tuple[str, bool]:
         opinions = []
 
         while True:
@@ -79,7 +81,7 @@ class Person(BasePerson):
             if ok:
                 return result, False
 
-            opinions += opinion
+            opinions.append(opinion)
 
     @Trace.act()
     def act(self, action: Action) -> str:

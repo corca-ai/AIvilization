@@ -15,6 +15,7 @@ openai.api_key = settings["OPENAI_API_KEY"]
 class LongTermMemory(BaseMemory[str]):
     _PLAN_PATTERN = r"- \[(?:x| )\]\s+(.+)\n"
 
+    @logger.disable
     def __init__(self, name: str, instruction: str):
         pinecone.init(api_key=settings["PINECONE_API_KEY"], environment="us-east1-gcp")
         index = pinecone.Index(settings["PINECONE_INDEX"])

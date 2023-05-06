@@ -1,8 +1,8 @@
-
+from typing import Dict, List
 from .base import BaseMemory
 
 
-class ShortTermMemory(BaseMemory[list[dict[str, str]]]):
+class ShortTermMemory(BaseMemory[List[Dict[str, str]]]):
     def __init__(self, name: str, instruction: str, init_message: str):
         super().__init__(
             name=name,
@@ -16,7 +16,7 @@ class ShortTermMemory(BaseMemory[list[dict[str, str]]]):
             change_to_memory=lambda x: x,
         )
 
-    def load(self, prompt: str) -> list[dict[str, str]]:
+    def load(self, prompt: str) -> List[Dict[str, str]]:
         return self.storage + [{"role": "user", "content": prompt}]
 
     def save(self, prompt: str, thought: str) -> None:

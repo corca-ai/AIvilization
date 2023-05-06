@@ -6,18 +6,8 @@ from core.civilization.person.action import Action
 
 from .base import BaseOrganize, Decision, WrongSchemaException
 
-_TEMPLATE = """Your response should be in the following schema:
-==============================
-your opinion (if you rejected the plan)
-Accepted | Rejected
-==============================
-
-Review your execution result for executing "{plan}".
-Your action is:
-{action}
-Your result of action is:
-{result}
-
+_TEMPLATE = """
+## Background
 The type of action you can take is:
 Type | Description | Name | Instruction | Extra
 -|-|-|-|-
@@ -29,11 +19,26 @@ Use | Use one of your tools. | Tool's Name (should be one of {tool_names}) | Too
 Your friends:{friends}
 Your tools:{tools}
 
-Don't execute again, just say your opinion about action and result.
-Review your execution!!
+## Response
+Your response is a review of the action and its results and you need to decide whether it is Accept or Reject.
+==========your response schema==========
+[Accept] or [Reject] your review of the action
+==========  response example 1==========
+[Reject] Actually, I think that the execution result is not good.
+Let's make a new tool
+==========  response example 2==========
+[Accept] The execution result is perfect.
+========================================
+
+## Request
+Review your execution result for executing "{plan}". Don't execute again, just say your opinion about action and result.
+Your action is:
+{action}
+Your result of action is:
+{result}
 """
 
-_PATTERN = rf"(.*)({Decision.ACCEPTED.value}|{Decision.REJECTED.value})"
+_PATTERN = rf"\[({Decision.ACCEPT.value}|{Decision.REJECT.value})\](.*)"
 
 
 class Reviewer(BaseOrganize):
@@ -72,4 +77,4 @@ class Reviewer(BaseOrganize):
 
         match = matches[0]
 
-        return match[0], Decision(match[1]) == Decision.ACCEPTED
+        return match[1].strip(), Decision(match[0]) == Decision.ACCEPT

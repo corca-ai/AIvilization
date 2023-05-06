@@ -4,6 +4,7 @@ from typing import Optional, Type, Self
 from pydantic import BaseModel
 
 from core.civilization.god.system import System
+from core.civilization.person.action.base import Action, ActionType
 from core.logging import ANSI, Color, Style
 from abc import ABC, abstractmethod
 
