@@ -16,6 +16,7 @@ pydantic = "^1.10.7"
 pinecone-client = "^2.2.1"
 retry = "^0.9.2"
 asyncio = "^3.4.3"
+redis = "^4.5.4"
 
 
 [tool.poetry.group.dev.dependencies]

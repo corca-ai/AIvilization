@@ -12,6 +12,8 @@ class DotEnv(TypedDict):
     OPENAI_API_KEY: str
     PINECONE_API_KEY: str  # optional
     PINECONE_INDEX: str  # optional
+    REDIS_HOST: str  # optional
+    REDIS_PORT: str  # optional
 
 
 settings: DotEnv = {
@@ -20,4 +22,6 @@ settings: DotEnv = {
     "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY"),
     "PINECONE_API_KEY": os.getenv("PINECONE_API_KEY"),
     "PINECONE_INDEX": os.getenv("PINECONE_INDEX", "plan"),
+    "REDIS_HOST": os.getenv("REDIS_HOST", "localhost"),
+    "REDIS_PORT": os.getenv("REDIS_PORT", "6379"),
 }
