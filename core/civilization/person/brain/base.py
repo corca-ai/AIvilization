@@ -24,5 +24,5 @@ class BaseBrain(BaseModel, ABC):
         pass
 
     @abstractmethod
-    def review(self, prompt: str) -> str:
+    def review(self, prompt: str) -> Tuple[str, bool]:
         pass
