@@ -25,5 +25,5 @@ settings: DotEnv = {
     "PINECONE_INDEX": os.getenv("PINECONE_INDEX", "plan"),
     "PORT_START": int(os.getenv("PORT_START", "50000")),
     "PORT_RANGE": int(os.getenv("PORT_RANGE", "10")),
-    "HOST": os.getenv("HOST", "localhost"),
+    "HOST": os.getenv("HOST", "127.0.0.1"),
 }

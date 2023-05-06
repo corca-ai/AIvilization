@@ -15,6 +15,7 @@ from core.civilization.person.base import (
     INVALID_MESSAGE_TYPE_ERROR_MESSAGE,
     TalkParams,
 )
+from core.civilization.god.system import System
 from typing import Tuple
 from threading import Thread
 from re import sub
@@ -30,7 +31,10 @@ class Ear(BaseEar):
         self.person = person
         self.listener_socket = socket(AF_INET, SOCK_STREAM)
         if self.bind_port() == False:
-            raise Exception("No Avaialable Ports For Person's Ear")
+            # TODO what if there's no available port? We need to let llm knows about resource limitations
+            raise Exception(
+                System.error(f"No Avaialable Ports For {self.person.name}'s Ear")
+            )
         if self.person.name != "David":
             t = Thread(target=self.listen)
             t.start()
@@ -59,7 +63,6 @@ class Ear(BaseEar):
     def get_sender(self, conn: socket) -> BasePerson:
         message_sender_data = conn.recv(MESSAGE_SENTER_BYTES)
         message_sender = sub("[\0]", "", message_sender_data.decode())
-        print(message_sender)
         if message_sender not in self.person.friends:
             raise Exception(INVALID_MESSAGE_SENDER_ERROR_MESSAGE)
         return self.person.friends[message_sender]
@@ -89,17 +92,20 @@ class Ear(BaseEar):
         print(f"[{self.person.name}-Ear] : Listening On {self.port}")
         while True:
             conn, addr = self.listener_socket.accept()
-            if addr[0] != "127.0.0.1":
-                print("Unknown Message")
+            if addr[0] != settings["HOST"]:
+                print(
+                    System.announcement(f"[{self.person.name}-Ear] : Unknown Message")
+                )
                 continue
             try:
                 message_sender, _, instruction, extra = self.parse_data(conn)
             except Exception as e:
-                print(f"Something's Wrong : {e}")
+                print(
+                    System.announcement(
+                        f"[{self.person.name}-Ear] : Parsing Message Failed\n{e}"
+                    )
+                )
                 continue
-
-            print(instruction)
-            print(extra)
             self.person.respond(
                 message_sender,
                 message_sender.to_format(instruction),
@@ -108,6 +114,10 @@ class Ear(BaseEar):
 
     def wait(self):
         self.listener_socket.listen()
-        print(f"[{self.person.name}-Ear] : Waiting For Response On {self.port}")
+        print(
+            System.announcement(
+                f"[{self.person.name}-Ear] : Waiting For Response On {self.port}"
+            )
+        )
         _conn, _addr = self.listener_socket.accept()
-        print(f"[{self.person.name}-Ear] : Response Generated")
+        print(System.announcement(f"[{self.person.name}-Ear] : Response Received"))
