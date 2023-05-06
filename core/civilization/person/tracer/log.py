@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from core.civilization.god.system import System
@@ -13,7 +14,13 @@ from .base import BasePersonTracer
 
 
 class LogTracer(BasePersonTracer):
-    thought: str = ""
+    thought: str
+    logger: logging.Logger
+
+    def __init__(self, person: BasePerson):
+        super().__init__(person)
+        self.thought = ""
+        self.logger = logger
 
     def format_act(self, action: Action):
         target = None

@@ -11,11 +11,11 @@ from .base import BasePersonTracer
 
 
 class PersonTracerWrapper(BasePersonTracer):
-    tracers: list[BasePersonTracer] = []
-
     def __init__(self, person: BasePerson, tracers: list[type[BasePersonTracer]] = []):
         super().__init__(person)
-        self.tracers = tracers
+        self.tracers: list[BasePersonTracer] = []
+        for Tracer in tracers:
+            self.add(Tracer)
 
     def add(self, Tracer: type[BasePersonTracer]):
         self.tracers.append(Tracer(person=self.person))

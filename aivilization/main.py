@@ -1,11 +1,12 @@
 import readline
 
 from core.civilization import Civilization
+from core.civilization.person.tracer.log import LogTracer
 from core.logging import logger
 
 
 def main():
-    civilization = Civilization()
+    civilization = Civilization(default_tracers=[LogTracer])
     while True:
         try:
             problem = input(">>> ")
