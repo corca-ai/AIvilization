@@ -103,7 +103,6 @@ class Brain(BaseBrain):
         return opinion, ok
 
     def __think(self, prompt: str) -> Generator[str, None, None]:
-        print(self.sterm_memory.storage)
         messages = self.sterm_memory.load(prompt)
 
         for thought in self.llm.chat_completion(messages):
