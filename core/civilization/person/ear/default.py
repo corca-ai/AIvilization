@@ -16,7 +16,8 @@ from core.civilization.person.base import (
     TalkParams,
 )
 from typing import Tuple
-from asyncio import run
+from threading import Thread
+from re import sub
 
 
 class Ear(BaseEar):
@@ -30,8 +31,9 @@ class Ear(BaseEar):
         self.listener_socket = socket(AF_INET, SOCK_STREAM)
         if self.bind_port() == False:
             raise Exception("No Avaialable Ports For Person's Ear")
-        if self.person.name == "David":
-            run(self.listen())
+        if self.person.name != "David":
+            t = Thread(target=self.listen)
+            t.start()
 
     def bind_port(self):
         port_start = settings["PORT_START"]
@@ -48,15 +50,16 @@ class Ear(BaseEar):
 
     def get_instruction_length(self, conn: socket) -> int:
         instruction_length_data = conn.recv(INSTRUCTION_LENGTH_BYTES)
-        return unpack(">Q", instruction_length_data)[0]
+        return unpack(">I", instruction_length_data)[0]
 
     def get_extra_length(self, conn: socket) -> int:
         extra_length_data = conn.recv(EXTRA_LENGTH_BYTES)
-        return unpack(">Q", extra_length_data)[0]
+        return unpack(">I", extra_length_data)[0]
 
     def get_sender(self, conn: socket) -> BasePerson:
         message_sender_data = conn.recv(MESSAGE_SENTER_BYTES)
-        message_sender = message_sender_data.decode()
+        message_sender = sub("[\0]", "", message_sender_data.decode())
+        print(message_sender)
         if message_sender not in self.person.friends:
             raise Exception(INVALID_MESSAGE_SENDER_ERROR_MESSAGE)
         return self.person.friends[message_sender]
@@ -64,9 +67,9 @@ class Ear(BaseEar):
     def get_message_type(self, conn: socket) -> MessageType:
         message_type_data = conn.recv(MESSAGE_TYPE_BYTES)
         message_type = (unpack(">I", message_type_data))[0]
-        if message_type not in MessageType.__members__.values():
+        if message_type not in [e.value for e in MessageType]:
             raise Exception(INVALID_MESSAGE_TYPE_ERROR_MESSAGE)
-        return MessageType((unpack(">I", message_type_data))[0])
+        return MessageType(message_type)
 
     def get_message(self, conn: socket, message_length: int) -> str:
         message_body_data = conn.recv(message_length)
@@ -81,7 +84,9 @@ class Ear(BaseEar):
         extra = self.get_message(conn, extra_length)
         return (sender, message_type, instruction, extra)
 
-    async def listen(self):
+    def listen(self):
+        self.listener_socket.listen()
+        print(f"[{self.person.name}-Ear] : Listening On {self.port}")
         while True:
             conn, addr = self.listener_socket.accept()
             if addr[0] != "127.0.0.1":
@@ -93,14 +98,16 @@ class Ear(BaseEar):
                 print(f"Something's Wrong : {e}")
                 continue
 
-            self.person.respond(message_sender, instruction, TalkParams.from_str(extra))
+            print(instruction)
+            print(extra)
+            self.person.respond(
+                message_sender,
+                message_sender.to_format(instruction),
+                TalkParams.from_str(extra),
+            )
 
     def wait(self):
+        self.listener_socket.listen()
+        print(f"[{self.person.name}-Ear] : Waiting For Response On {self.port}")
         _conn, _addr = self.listener_socket.accept()
-        # if addr[0] != "127.0.0.1":
-        #     raise Exception("Unknown Message")
-        # try:
-        #     message_sender, _, instruction, extra = self.parse_data(conn)
-        # except Exception as e:
-        #     raise Exception(f"Something's Wrong : {e}")
-        # self.person.respond(message_sender, instruction, TalkParams.from_str(extra))
+        print(f"[{self.person.name}-Ear] : Response Generated")

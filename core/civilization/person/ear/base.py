@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from socket import socket
-from core.civilization.person.base import BasePerson
+
+# from core.civilization.person.base import BasePerson
 
 
 class MessageType(Enum):
@@ -9,15 +10,15 @@ class MessageType(Enum):
 
 
 class BaseEar(ABC):
-    listner_socket: socket
-    person: BasePerson
+    listener_socket: socket
+    # person: BasePerson
     port: int
 
     def __init__(self):
         pass
 
     @abstractmethod
-    async def listen(self):
+    def listen(self):
         pass
 
     @abstractmethod

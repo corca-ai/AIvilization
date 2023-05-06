@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from core.civilization.person.base import BasePerson, MessageType
+
+# from core.civilization.person.base import BasePerson, MessageType
 
 
 class BaseMouth(ABC):
@@ -7,11 +8,5 @@ class BaseMouth(ABC):
         pass
 
     @abstractmethod
-    def talk(
-        self,
-        listener: BasePerson,
-        instruction: str,
-        extra: str,
-        message_type: MessageType = MessageType.Default,
-    ):
+    def talk(self, to: int, instruction: str, extra: str):
         pass

@@ -9,8 +9,8 @@ from .base import BasePerson, InviteParams, TalkParams
 from .brain.default import Brain
 from .tool import BaseTool, BuildParams, CodedTool, UseParams
 from .tracer import Trace
-from .ear import Ear
-from .mouth import Mouth
+from .ear.default import Ear
+from .mouth.default import Mouth
 
 
 class Person(BasePerson):
@@ -41,7 +41,7 @@ class Person(BasePerson):
         self.mouth = Mouth(self)
 
     @Trace.respond()
-    def respond(self, sender: Self, request: str, params: TalkParams) -> str:
+    def respond(self, sender: Self, request: str, params: TalkParams):
         request = request.split(System.PROMPT_SEPARATOR)[1].strip()
 
         while True:
@@ -49,6 +49,7 @@ class Person(BasePerson):
             result, is_finish = self.execute(plans[0], sender=sender)
 
             if is_finish:
+                self.mouth.talk(sender.ear.port, result, "")
                 return result
 
     def plan(self, request: str) -> List[Plan]:
@@ -108,13 +109,7 @@ class Person(BasePerson):
             return System.error(f"Friend {name} not found.")
 
         friend = self.friends[name]
-        self.mouth.talk(friend, instruction, extra)
-
-        # return friend.respond(
-        #     self,
-        #     self.to_format(instruction),
-        #     TalkParams.from_str(extra),
-        # )
+        self.mouth.talk(friend.ear.port, instruction, extra)
 
     def build(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:

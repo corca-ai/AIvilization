@@ -2,7 +2,7 @@ from .base import BaseMouth
 from socket import socket, AF_INET, SOCK_STREAM
 from core.config import settings
 from struct import pack
-from core.civilization.person.base import BasePerson, MessageType
+from core.civilization.person.base import BasePerson, MessageType, MESSAGE_SENTER_BYTES
 
 
 class Mouth(BaseMouth):
@@ -18,13 +18,12 @@ class Mouth(BaseMouth):
         extra: str,
         message_type: MessageType = MessageType.Default,
     ) -> bytes:
-        sender_data = self.person.name.encode()
+        sender_data = self.person.name.rjust(MESSAGE_SENTER_BYTES, "\0").encode()
         message_type_data = pack(">I", message_type.value)
         instruction_data = message_instruction.encode()
-        instruction_length_data = pack(">Q", len(instruction_data))
+        instruction_length_data = pack(">I", len(instruction_data))
         extra_data = extra.encode()
-        extra_length_data = pack(">Q", len(extra_data))
-
+        extra_length_data = pack(">I", len(extra_data))
         return (
             instruction_length_data
             + extra_length_data
@@ -36,13 +35,12 @@ class Mouth(BaseMouth):
 
     def talk(
         self,
-        listener: BasePerson,
+        to: int,
         instruction: str,
         extra: str,
-        message_type: MessageType = MessageType.Default,
     ):
-        data = self.construct_data(instruction, extra, message_type)
+        data = self.construct_data(instruction, extra)
         client = socket(AF_INET, SOCK_STREAM)
-        client.connect((settings["HOST"], listener.ear.port))
+        client.connect((settings["HOST"], to))
         client.send(data)
         client.close()
