@@ -12,16 +12,16 @@ _TEMPLATE = """You must consider the following things:
 
 You have to respond only one action and the action consists of type, name, description, and extra.
 
-==========your response schema==========
+==========desired format==========
 Type: example type
 Name: example name
 Instruction: example instruction
 Extra: example extra
-==========  response example  ==========
+==========response examples==========
 Type: Invite
 Name: John
-Instruction: The best engineer in the infinite universe.
-Extra: tool1, tool2, tool3
+Instruction: The best engineer in at front-end development.
+Extra: tool1, tool2
 ========================================
 
 The type of action you can take is:

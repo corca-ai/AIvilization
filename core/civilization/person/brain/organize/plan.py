@@ -7,7 +7,8 @@ from core.civilization.person.action.base import Plan
 
 from .base import BaseOrganize
 
-_TEMPLATE = """## Background
+_TEMPLATE = """
+## Background
 The type of action you can take is:
 {action_types}
 
@@ -19,13 +20,14 @@ Your response is list of plans or text.
 All plans should include only action types, objectives, and plan numbers that should be preceded, and should not include instruction and extra.
 If you don't need a plan, you can answer without conforming to the response schema format.
 
-========== your response schema==========
+==========desired format==========
 1. Action Type1: Objective1 <preceded plan number>
 2. Action Type2: Objective2 <preceded plan number>
 3. ...
-==========  response example  ==========
-1. Invite: Invite person who can do your work for you and are not your friends. <N/A>
-2. Talk: Talk to your friends. <#1>
+==========response example==========
+1. Invite: Invite person who can do your work for you and are not your friends. <#1>
+2. Talk: Talk to your friends. <#2>
+3. Use: Set up the tools you need. <#3>
 ========================================
 
 ## Request

@@ -7,11 +7,14 @@ from core.civilization.person.action.base import Plan
 from .base import BaseOrganize, Decision, WrongSchemaException
 
 _TEMPLATE = """
-==========your response schema==========
-[Accept] or [Reject] your opinion
-==========  response example  ==========
-[Reject] Actually, I think that the plan is not good.
-Because it is not efficient.
+==========desired format==========
+You must wrap your Accept/Reject with [].
+[Accept/Reject]: Reason
+==========response examples==========
+[Accept]: The plan is well-structured, comprehensive, and addresses all key aspects of the project.
+[Reject]: The plan does not provide a clear timeline or allocation of resources, making it difficult to assess its feasibility.
+[Accept]: The plan demonstrates a thorough understanding of the problem and proposes innovative solutions to address it.
+[Reject]: The plan relies on unrealistic assumptions and does not provide alternative strategies in case of setbacks.
 ========================================
 
 Optimize your plan to respond to the request. Request is:

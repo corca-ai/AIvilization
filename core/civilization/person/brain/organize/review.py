@@ -21,13 +21,12 @@ Your tools:{tools}
 
 ## Response
 Your response is a review of the action and its results and you need to decide whether it is Accept or Reject.
-==========your response schema==========
-[Accept] or [Reject] your review of the action
-==========  response example 1==========
-[Reject] Actually, I think that the execution result is not good.
-Let's make a new tool
-==========  response example 2==========
+==========desired format==========
+You must wrap your Accept/Reject with [].
+[Accept/Reject] your review of the action
+==========response examples==========
 [Accept] The execution result is perfect.
+[Reject] Actually, I think that the execution result is not good. Let's make a new tool.
 ========================================
 
 ## Request
