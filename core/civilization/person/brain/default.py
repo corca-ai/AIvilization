@@ -43,25 +43,19 @@ class Brain(BaseBrain):
 
     def plan(self, request: str, opinions: List[str]) -> List[Plan]:
         prompt = self.planner.stringify(self.person, request, opinions)
-        print(ANSI(prompt).to(Color.rgb(236, 201, 238)))
 
         thought = ""
-        for t in self.__think(prompt):
+        for t in self._think(prompt):
             thought += t
-            print(ANSI(t).to(Style.dim()), end="")
-        print("\n")
 
         return self.planner.parse(self.person, thought)
 
     def optimize(self, request: str, plans: List[Plan]) -> Tuple[str, bool]:
         prompt = self.optimizer.stringify(self.person, request, plans)
-        print(ANSI(prompt).to(Color.rgb(236, 201, 238)))
 
         thought = ""
-        for t in self.__think(prompt):
+        for t in self._think(prompt):
             thought += t
-            print(ANSI(t).to(Style.dim()), end="")
-        print("\n")
 
         opinion, ok = self.optimizer.parse(self.person, thought)
         if ok:
@@ -74,25 +68,19 @@ class Brain(BaseBrain):
 
     def execute(self, plan: Plan, opinions: str) -> Action:
         prompt = self.executor.stringify(self.person, plan, opinions)
-        print(ANSI(prompt).to(Color.rgb(236, 201, 238)))
 
         thought = ""
-        for t in self.__think(prompt):
+        for t in self._think(prompt):
             thought += t
-            print(ANSI(t).to(Style.dim()), end="")
-        print("\n")
 
         return self.executor.parse(self.person, thought)
 
     def review(self, plan: str, action: Action, result: str) -> Tuple[str, bool]:
         prompt = self.reviewer.stringify(self.person, plan, action, result)
-        print(ANSI(prompt).to(Color.rgb(236, 201, 238)))
 
         thought = ""
-        for t in self.__think(prompt):
+        for t in self._think(prompt):
             thought += t
-            print(ANSI(t).to(Style.dim()), end="")
-        print("\n")
 
         opinion, ok = self.reviewer.parse(self.person, thought)
         if ok:
@@ -102,7 +90,7 @@ class Brain(BaseBrain):
             )
         return opinion, ok
 
-    def __think(self, prompt: str) -> Generator[str, None, None]:
+    def _think(self, prompt: str) -> Generator[str, None, None]:
         messages = self.sterm_memory.load(prompt)
 
         for thought in self.llm.chat_completion(messages):

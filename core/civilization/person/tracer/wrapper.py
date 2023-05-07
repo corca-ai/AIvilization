@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from core.civilization.person.action import Action
+from core.civilization.person.action import Action, Plan
 
 if TYPE_CHECKING:
     from core.civilization.person import BasePerson, TalkParams
@@ -11,11 +11,11 @@ from .base import BasePersonTracer
 
 
 class PersonTracerWrapper(BasePersonTracer):
-    tracers: list[BasePersonTracer] = []
-
     def __init__(self, person: BasePerson, tracers: list[type[BasePersonTracer]] = []):
         super().__init__(person)
-        self.tracers = tracers
+        self.tracers: list[BasePersonTracer] = []
+        for Tracer in tracers:
+            self.add(Tracer)
 
     def add(self, Tracer: type[BasePersonTracer]):
         self.tracers.append(Tracer(person=self.person))
@@ -23,14 +23,6 @@ class PersonTracerWrapper(BasePersonTracer):
     def on_request(self, sender: BasePerson, prompt: str, params: TalkParams):
         for tracer in self.tracers:
             tracer.on_request(sender, prompt, params)
-
-    def on_idea(self, idea: str):
-        for tracer in self.tracers:
-            tracer.on_idea(idea)
-
-    def on_idea_error(self, error: Exception):
-        for tracer in self.tracers:
-            tracer.on_idea_error(error)
 
     def on_thought_start(self):
         for tracer in self.tracers:
@@ -48,13 +40,13 @@ class PersonTracerWrapper(BasePersonTracer):
         for tracer in self.tracers:
             tracer.on_thought_error(error)
 
-    def on_actions(self, actions: list[Action]):
+    def on_plans(self, plans: list[Plan]):
         for tracer in self.tracers:
-            tracer.on_actions(actions)
+            tracer.on_plans(plans)
 
-    def on_actions_error(self, error: Exception):
+    def on_optimize(self, opinion: str, ok: bool):
         for tracer in self.tracers:
-            tracer.on_actions_error(error)
+            tracer.on_optimize(opinion, ok)
 
     def on_act(self, action: Action):
         for tracer in self.tracers:
@@ -67,6 +59,10 @@ class PersonTracerWrapper(BasePersonTracer):
     def on_act_result(self, action: Action, result: str):
         for tracer in self.tracers:
             tracer.on_act_result(action, result)
+
+    def on_review(self, opinion: str, ok: bool):
+        for tracer in self.tracers:
+            tracer.on_review(opinion, ok)
 
     def on_response(self, sender: BasePerson, response: str):
         for tracer in self.tracers:
