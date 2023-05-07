@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from core.civilization.person.ear import BaseEar
 
 
 class BaseMouth(ABC):
@@ -6,5 +7,5 @@ class BaseMouth(ABC):
         pass
 
     @abstractmethod
-    def talk(self, to: int, instruction: str, extra: str):
+    def talk(self, to: BaseEar, instruction: str, extra: str):
         pass

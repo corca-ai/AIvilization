@@ -51,7 +51,7 @@ class Person(BasePerson):
             result, is_finish = self.execute(plans[0], sender=sender)
 
             if is_finish:
-                self.mouth.talk(sender.ear.port, result, "")
+                self.mouth.talk(sender.ear, result, "")
                 return result
 
     def plan(self, request: str) -> List[Plan]:
@@ -111,7 +111,7 @@ class Person(BasePerson):
             return System.error(f"Friend {name} not found.")
 
         friend = self.friends[name]
-        self.mouth.talk(friend.ear.port, instruction, extra)
+        self.mouth.talk(friend.ear, instruction, extra)
 
     def build(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:
