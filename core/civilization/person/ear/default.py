@@ -10,7 +10,7 @@ from core.civilization.person.base import (
     INSTRUCTION_LENGTH_BYTES,
     EXTRA_LENGTH_BYTES,
     MESSAGE_TYPE_BYTES,
-    MESSAGE_SENTER_BYTES,
+    MESSAGE_SENDER_BYTES,
     INVALID_MESSAGE_SENDER_ERROR_MESSAGE,
     INVALID_MESSAGE_TYPE_ERROR_MESSAGE,
     TalkParams,
@@ -61,7 +61,7 @@ class Ear(BaseEar):
         return unpack(">I", extra_length_data)[0]
 
     def get_sender(self, conn: socket) -> BasePerson:
-        message_sender_data = conn.recv(MESSAGE_SENTER_BYTES)
+        message_sender_data = conn.recv(MESSAGE_SENDER_BYTES)
         message_sender = sub("[\0]", "", message_sender_data.decode())
         if message_sender not in self.person.friends:
             raise Exception(INVALID_MESSAGE_SENDER_ERROR_MESSAGE)
