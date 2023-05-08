@@ -13,6 +13,8 @@ _TEMPLATE = """You must consider the following things:
 You have to respond only one action and the action consists of type, name, description, and extra.
 
 ==========desired format==========
+You must adhere to a format that includes Type, Name, Instruction, and Extra.
+If you don't have anything to write in Extra, don't erase Extra by writing a space after Extra.
 Type: example type
 Name: example name
 Instruction: example instruction
