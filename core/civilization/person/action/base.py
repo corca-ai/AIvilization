@@ -39,16 +39,16 @@ class ActionType(Enum):
     )
     Build = (
         "Build",
-        ActionProperty(
-            description=(
-                "Build or rebuild a reusable tool when you can't do it yourself. "
-                "It must have stdout, stderr messages. "
-                "It should be executable with the following schema of commands: `python tools/example.py instruction extra`"
-            ),
-            name="Tool's Name (snake_case)",
-            instruction="Tool's description that includes objective, instruction format, extra format, output format",
-            extra='Python Code for Building Tools (format: ```pythonprint("hello world")```)',
-        ),
+        # ActionProperty(
+        #     description=(
+        #         "Build or rebuild a reusable tool when you can't do it yourself. "
+        #         "It must have stdout, stderr messages. "
+        #         "It should be executable with the following schema of commands: `python tools/example.py instruction extra`"
+        #     ),
+        #     name="Tool's Name (snake_case)",
+        #     instruction="Tool's description that includes objective, instruction format, extra format, output format",
+        #     extra='Python Code for Building Tools (format: ```pythonprint("hello world")```)',
+        # ),
     )
     Use = (
         "Use",

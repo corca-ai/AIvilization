@@ -21,6 +21,7 @@ Your tools:{tools}
 
 ## Response
 Your response is a review of the action and its results and you need to decide whether it is Accept or Reject.
+Accept if the plan seems strange and write down your opinion. That opinion will be reflected and the plan will be redrawn.
 ==========your response schema==========
 [Accept] or [Reject] your review of the action
 ==========  response example 1==========
@@ -73,7 +74,7 @@ class Reviewer(BaseOrganize):
         matches = re.findall(self.pattern, thought, re.DOTALL)
 
         if len(matches) != 1:
-            raise WrongSchemaException("Your response is not in the correct schema.")
+            return "Your response is not in the correct schema.", False
 
         match = matches[0]
 

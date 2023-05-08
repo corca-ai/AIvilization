@@ -20,8 +20,8 @@ All plans should include only action types, objectives, and plan numbers that sh
 If you don't need a plan, you can answer without conforming to the response schema format.
 
 ========== your response schema==========
-1. Action Type1: Objective1 <preceded plan number>
-2. Action Type2: Objective2 <preceded plan number>
+1. Type1: Objective1 <preceded plan number>
+2. Type2: Objective2 <preceded plan number>
 3. ...
 ==========  response example  ==========
 1. Invite: Invite person who can do your work for you and are not your friends. <N/A>
