@@ -101,7 +101,7 @@ class Browser(BaseTool):
 
         self.action_chains.click(element).perform()
         self._init_css_selector()
-        self.browser.implicitly_wait(3)
+        self.driver.implicitly_wait(3)
 
     def write(self, contents: str):
         try:

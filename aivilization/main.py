@@ -7,7 +7,7 @@ from core.logging import logger
 
 
 def main():
-    civilization = Civilization(default_tracers=[LogTracer, RedisTracer])
+    civilization = Civilization(default_tracers=[LogTracer])
     while True:
         try:
             problem = input(">>> ")
