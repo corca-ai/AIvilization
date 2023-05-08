@@ -19,6 +19,7 @@ asyncio = "^3.4.3"
 selenium = "^4.9.0"
 pytesseract = "^0.3.10"
 pandas = "^2.0.1"
+redis = "^4.5.4"
 
 
 [tool.poetry.group.dev.dependencies]
