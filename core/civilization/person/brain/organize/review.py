@@ -22,8 +22,9 @@ Your tools:{tools}
 ## Response
 Your response is a review of the action and its results and you need to decide whether it is Accept or Reject.
 Accept if the plan seems strange and write down your opinion. That opinion will be reflected and the plan will be redrawn.
-==========your response schema==========
-[Accept] or [Reject] your review of the action
+==========desired format==========
+You must wrap your Accept/Reject with [].
+[Accept/Reject] your review of the action
 ==========  response example 1==========
 [Reject] Actually, I think that the execution result is not good.
 Let's make a new tool
