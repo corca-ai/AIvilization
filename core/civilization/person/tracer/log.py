@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from core.civilization.god.system import System
 from core.civilization.person.action import Action, ActionType, Plan
+from core.civilization.person.brain.organize.base import Decision
 from core.logging import ANSI, Color, Style, logger
 
 if TYPE_CHECKING:
@@ -73,7 +74,7 @@ class LogTracer(BasePersonTracer):
     def on_optimize(self, opinion: str, ok: bool):
         logger.debug(
             ANSI("[optimize] ".rjust(12)).to(Color.rgb(0xAD, 0xE4, 0xDB))
-            + ("OK" if ok else "NO")
+            + str(Decision.ACCEPT if ok else Decision.REJECT)
             + ": "
             + opinion
         )
@@ -94,8 +95,8 @@ class LogTracer(BasePersonTracer):
 
     def on_review(self, opinion: str, ok: bool):
         logger.debug(
-            ANSI("[optimize] ".rjust(12)).to(Color.rgb(0xAD, 0xE4, 0xDB))
-            + ("OK" if ok else "NO")
+            ANSI("[review] ".rjust(12)).to(Color.rgb(0xF0, 0xCE, 0xFF))
+            + str(Decision.ACCEPT if ok else Decision.REJECT)
             + ": "
             + opinion
         )

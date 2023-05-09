@@ -6,6 +6,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.remote_connection import LOGGER, logging
 
 from core.civilization.person.tool.base import BaseTool, BuildParams, UseParams
+from core.logging import logger
 
 LOGGER.setLevel(logging.WARNING)
 
@@ -38,6 +39,7 @@ class Browser(BaseTool):
     }"""
     writable_tag = {"textarea": "placeholder", "input": "type"}
 
+    @logger.disable
     def __init__(self, name: str, description: str):
         super().__init__(name, description)
 
@@ -51,6 +53,7 @@ class Browser(BaseTool):
     def build(self, params: BuildParams) -> str:
         pass
 
+    @logger.disable
     def use(self, command: str, params: UseParams) -> str:
         # command: [open, scroll, move, click, write, close] # TODO: send_keys
         # params: [url, position, css selector, css selector, {css selector: input}, empty]
@@ -191,23 +194,25 @@ class Browser(BaseTool):
 
         contents = []
         contents.append(
-            "This is information on the elements of url below, and contains the coordinates, contents, and css_selector of each element. "
-            "You can move, click, and write with css_selector."
+            "This is information on the elements of url below, and contains id, contents of each element. "
+            "You can move, click, and write with id."
         )
-        contents.append(self.driver.current_url)
+        contents.append(f"url: {self.driver.current_url}")
         contents.append(f"page height, width: {page_height}, {page_width}")
         contents.append(f"current x, y, height, width: {x}, {y}, {height}, {width}")
-        contents.append("\n[contents] css_selector (x, y, height, width)")
+        contents.append("\nid. contents")
 
         self._init_css_selector()
 
-        for (element, content) in elements:
+        for i, (element, content) in enumerate(elements):
             css_selector = self.driver.execute_script(
                 f"{self.css_selector}; return cssSelector(arguments[0]);", element
             )
             position = f"{element.location['x']}, {element.location['y']}, {element.size['height']}, {element.size['width']}"
-            self.css_selectors[css_selector] = element
-            contents.append(f"[{content}] {css_selector} ({position})")
+            # contents.append(f"[{content}] {css_selector} ({position})")
+            contents.append(f"{i}. {content}")
+
+            self.css_selectors[str(i)] = element
 
         contents = "\n".join(contents)
         if contents == self.before_contents:

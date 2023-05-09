@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
+from core.logging.ansi import ANSI, Color
+
 if TYPE_CHECKING:
     pass
 
@@ -11,6 +13,12 @@ if TYPE_CHECKING:
 class Decision(Enum):
     ACCEPT = "Accept"
     REJECT = "Reject"
+
+    def __str__(self):
+        if self == Decision.ACCEPT:
+            return ANSI(self.value).to(Color.green())
+        elif self == Decision.REJECT:
+            return ANSI(self.value).to(Color.red())
 
 
 class WrongSchemaException(Exception):
