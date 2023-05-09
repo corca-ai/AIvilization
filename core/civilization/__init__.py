@@ -43,5 +43,7 @@ class Civilization:
             )
         )
 
+        self.user.ear.wait()
+
 
 __all__ = ["Civilization"]
