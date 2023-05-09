@@ -18,9 +18,10 @@ Your tools:{tools}
 2. Type2: Objective2 <preceded plan number>
 
 ## Response
+==========desired format==========
 You need to decide whether it is Accept or Reject.
-==========   response schema  ==========
-[Accept] or [Reject] your opinion
+You must wrap your Accept/Reject with [].
+[Accept/Reject] your opinion
 ==========  response example  ==========
 [Reject] Actually, I think that the plan is not good.
 Because it is not efficient.
