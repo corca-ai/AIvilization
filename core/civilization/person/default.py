@@ -10,6 +10,8 @@ from .action import Action, ActionType
 from .base import BasePerson, InviteParams, TalkParams
 from .brain.default import Brain
 from .tool import BaseTool, BuildParams, CodedTool, UseParams
+from .ear.default import Ear
+from .mouth.default import Mouth
 
 
 class Person(BasePerson):
@@ -36,6 +38,9 @@ class Person(BasePerson):
         if referee:
             self.friends[referee.name] = referee
 
+        self.ear = Ear(self)
+        self.mouth = Mouth(self)
+
     def respond(self, sender: Person, request: str, params: TalkParams) -> str:
         self.tracer.on_request(sender, request, params)
 
@@ -46,6 +51,7 @@ class Person(BasePerson):
             result, is_finish = self.execute(plans[0], sender=sender)
 
             if is_finish:
+                self.mouth.talk(sender.ear, result, "")
                 self.tracer.on_response(sender, result)
                 return result
 
@@ -116,12 +122,9 @@ class Person(BasePerson):
             return System.error(f"Friend {name} not found.")
 
         friend = self.friends[name]
+        self.mouth.talk(friend.ear, instruction, extra)
 
-        return friend.respond(
-            self,
-            self.to_format(instruction),
-            TalkParams.from_str(extra),
-        )
+        return System.announcement(f"{self.name} talks to {name}")
 
     def build(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:

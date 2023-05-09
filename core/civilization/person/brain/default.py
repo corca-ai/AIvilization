@@ -63,6 +63,7 @@ class Brain(BaseBrain):
                 "Make a plan to respond to the request. Request is:\n" + request,
                 "\n".join(map(str, plans)),
             )
+
         return opinion, ok
 
     def execute(self, plan: Plan, opinions: str) -> Action:

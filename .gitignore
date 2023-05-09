@@ -6,3 +6,6 @@ __pycache__/
 
 playground/
 tools/
+
+.vscode
+log
