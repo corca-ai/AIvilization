@@ -2,9 +2,12 @@ import json
 
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.remote.remote_connection import LOGGER, logging
 
 from core.civilization.person.tool.base import BaseTool, BuildParams, UseParams
+
+LOGGER.setLevel(logging.WARNING)
 
 
 class Browser(BaseTool):
@@ -49,14 +52,14 @@ class Browser(BaseTool):
         pass
 
     def use(self, command: str, params: UseParams) -> str:
-        # command: [open, scroll, move, click, write, close]
+        # command: [open, scroll, move, click, write, close] # TODO: send_keys
         # params: [url, position, css selector, css selector, {css selector: input}, empty]
 
         try:
             method = getattr(self, command)
             method(params.input)
             return self._read()
-        except KeyError:
+        except AttributeError:
             return f"Unknown command type '{command}', expected one of: open, scroll, move, click, write, close"
 
     def open(self, url: str):
@@ -77,9 +80,9 @@ class Browser(BaseTool):
 
         position_x, position_y = map(
             int,
-            self.driver.execute_script("window.scrollX + ',' + window.scrollY").split(
-                ","
-            ),
+            self.driver.execute_script(
+                "return window.scrollX + ',' + window.scrollY"
+            ).split(","),
         )
         self.driver.execute_script(
             f"window.scrollTo({position_x + delta_x},{position_y + delta_y})"
@@ -147,19 +150,27 @@ class Browser(BaseTool):
 
         elements = []
         for element in self.driver.find_elements(
-            "xpath", "//*[not(self::script) and not(self::style)]"
+            "xpath",
+            (
+                "//*[((not(contains(@style,'display:none')) "
+                "and not(self::script) and not(self::style) "
+                "and string-length(normalize-space(text())) > 0))"
+                " or (self::textarea or self::input)]"
+            ),
         ):
+            location = element.location
+            size = element.size
             is_included = (
-                element.location["x"] > x
-                and element.location["y"] > y
-                and element.location["x"] + element.size["width"] < x + width
-                and element.location["y"] + element.size["height"] < y + height
-                and element.location["x"] > 0
-                and element.location["y"] > 0
-                and element.size["height"] > 0
-                and element.size["width"] > 0
+                location["x"] > x
+                and location["y"] > y
+                and location["x"] + size["width"] < x + width
+                and location["y"] + size["height"] < y + height
+                and location["x"] > 0
+                and location["y"] > 0
+                and size["height"] > 0
+                and size["width"] > 0
             )
-            if not is_included:
+            if not is_included or not is_included:
                 continue
             if element.tag_name in self.writable_tag.keys():
                 elements.append(
@@ -169,8 +180,14 @@ class Browser(BaseTool):
                     )
                 )
             elif element.text != "":
-                if len(element.find_elements("xpath", "./child::*")) == 0:
-                    elements.append((element, element.text))
+                child = element.find_elements("xpath", "./*")
+                element_text = (
+                    element.text.split(child[0].text)[0]
+                    if len(child) > 0 and len(child[0].text) > 0
+                    else element.text
+                )
+                if element_text != "":
+                    elements.append((element, element_text))
 
         contents = []
         contents.append(
@@ -179,18 +196,18 @@ class Browser(BaseTool):
         )
         contents.append(self.driver.current_url)
         contents.append(f"page height, width: {page_height}, {page_width}")
-        contents.append(f"scroll x, y, height, width: {x}, {y}, {height}, {width}")
-        contents.append("\n(x, y, height, width) contents, css_selector")
+        contents.append(f"current x, y, height, width: {x}, {y}, {height}, {width}")
+        contents.append("\n[contents] css_selector (x, y, height, width)")
 
         self._init_css_selector()
 
         for (element, content) in elements:
-            position = f"({element.location['x']}, {element.location['y']}, {element.size['height']}, {element.size['width']})"
             css_selector = self.driver.execute_script(
                 f"{self.css_selector}; return cssSelector(arguments[0]);", element
             )
+            position = f"{element.location['x']}, {element.location['y']}, {element.size['height']}, {element.size['width']}"
             self.css_selectors[css_selector] = element
-            contents.append(f"{position} {content}, {css_selector}")
+            contents.append(f"[{content}] {css_selector} ({position})")
 
         contents = "\n".join(contents)
         if contents == self.before_contents:

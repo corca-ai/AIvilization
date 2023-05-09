@@ -35,8 +35,9 @@ default_tools: Dict[str, BaseTool] = {
             "Surfing the web on a browser. "
             "Instruction should be one valid command. (ex. open, scroll, move, click, write, close) "
             "Extra should be a valid input for that command. "
+            # "You can also enter the key directly through the write command, such as Keys.RETURN and Keys.SHIFT. " # TODO
             "open: <url>, scroll: <position>, move: <css selector>, click: <css selector>, write: <{css selector: input}>, close: <empty> "
-            'ex. open: https://www.google.com, scroll: 0,0, move: #hplogo, click: #hplogo, write: {"#hplogo": "hello"}, close: '
+            'ex. open: https://www.google.com, scroll: 0,0, move: div#iur > div[1] > div > h3[1], click: div#jZ2SBf > div[1] > span > b, write: {"textarea#APjFqb": "hello"}, close: '
             "Output will be the page's contents. "
         ),
     ),
