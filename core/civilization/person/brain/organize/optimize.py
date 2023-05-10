@@ -15,9 +15,9 @@ The type of action you can take is:
 Your friends:{friends}
 Your tools:{tools}
 
-==========your response schema==========
+==========desired format==========
 [Accept] or [Reject] your opinion
-==========  response example  ==========
+==========response example==========
 [Reject] Actually, I think that the plan is not good.
 Because it is not efficient.
 ========================================

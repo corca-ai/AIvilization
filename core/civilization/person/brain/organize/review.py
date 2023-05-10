@@ -21,11 +21,11 @@ Your response is a review on the action whether it achieved a plan or not. Which
 Review must be harsh and clear. If you Accept, you will tell which condition is satisfied and there are no more things to do to achieve a goal.
 If you Reject, you will tell what condition is not satisfied and what should be done to achieve a goal. It will be a constraint for the next plans and actions. 
 
-==========your response schema==========
+==========desired format==========
 [Accept] or [Reject] review of a action whether achieved a plan or not.
-==========  response example 1==========
+==========response example 1==========
 [Reject] "Code must be executed not just written."
-==========  response example 2==========
+==========response example 2==========
 [Accept] Action seems valid to achieve a goal you made. Action achieves goal "run a code and get output hello world" by 1) executing `python playgrounds/example.py` and 2) printing "hello world".
 ========================================
 

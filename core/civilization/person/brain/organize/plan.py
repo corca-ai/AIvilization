@@ -19,7 +19,7 @@ Your response is list of plans or text.
 All plans should include only action types, objectives, and plan numbers that should be preceded, and should not include instruction and extra.
 If you don't need a plan, you can answer without conforming to the response schema format.
 
-========== your response schema==========
+==========desired format==========
 1. Action Type1: Objective1 <preceded plan number>
 - precondition: <preconditions>
 - efffect: <changes from previous state>
@@ -29,7 +29,7 @@ If you don't need a plan, you can answer without conforming to the response sche
 - efffect: <changes from previous state>
 - constraint: <constraints>
 3. ...
-==========  response example  ==========
+==========response example==========
 1. Invite: Invite person who can do your work for you and are not your friends. <N/A>
 - precondition: None
 - efffect: You will have a new friend.
