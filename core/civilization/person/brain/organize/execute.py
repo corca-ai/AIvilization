@@ -7,10 +7,8 @@ from core.civilization.person.action.base import Plan
 
 from .base import BaseOrganize, WrongSchemaException
 
-_TEMPLATE = """You must consider the following things:
-{opinions}
-
-You have to respond only one action and the action consists of type, name, description, and extra.
+_TEMPLATE = """
+You must respond only one action and the action consists of type, name, description, and extra.
 
 ==========your response schema==========
 Type: example type
@@ -24,6 +22,9 @@ Instruction: The best engineer in the infinite universe.
 Extra: tool1, tool2, tool3
 ========================================
 
+You must consider the following opinions before you execute the action.
+opinions: {opinions}
+
 The type of action you can take is:
 Type | Description | Name | Instruction | Extra
 -|-|-|-|-
@@ -33,7 +34,8 @@ Your friends:{friends}
 Your tools:{tools}
 
 Your plan: {plan}
-Execute only this plan!!
+
+Make action based on opinions and your plan. Don't execute action you made.
 """
 
 _PATTERN = r"Type:\s*((?:\w| )+)\s+Name:\s*((?:\w| )+)\s+Instruction:\s*((?:(?!Extra:).)+)\s+Extra:\s*((?:(?!Type:).)*)\s*"
@@ -46,7 +48,8 @@ class Executor(BaseOrganize):
     def stringify(self, person: BasePerson, plan: Plan, opinions: List[str]) -> str:
         opinions = "\n".join(
             [f"{i+1}. {opinion}" for i, opinion in enumerate(opinions)]
-        )
+        ) if len(opinions) > 0 else "N/A"
+
         friend_names = ", ".join([f"'{name}'" for name in person.friends.keys()])
         tool_names = ", ".join([f"'{name}'" for name in person.tools.keys()])
         friends = "".join(

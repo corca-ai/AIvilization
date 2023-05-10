@@ -21,22 +21,40 @@ If you don't need a plan, you can answer without conforming to the response sche
 
 ========== your response schema==========
 1. Action Type1: Objective1 <preceded plan number>
+- precondition: <preconditions>
+- efffect: <changes from previous state>
+- constraint: <constraints>
 2. Action Type2: Objective2 <preceded plan number>
+- precondition: <preconditions>
+- efffect: <changes from previous state>
+- constraint: <constraints>
 3. ...
 ==========  response example  ==========
 1. Invite: Invite person who can do your work for you and are not your friends. <N/A>
-2. Talk: Talk to your friends. <#1>
+- precondition: None
+- efffect: You will have a new friend.
+- constraint: You have to know the person's name.
+2. Talk: Talk to your friend. <#1>
+- precondition: You have a friend.
+- efffect: Your friend will solve your problem.
+- constraint: You have to invite a friend first
 ========================================
 
 ## Request
 > Request: {request}
 Considering what you have done so far, make the next plan to achieve the request.
 Talking to {referee} should be the last plan.
-You must consider the following things:
+
+These are the constraints you have to consider when making a plan. If you don't consider the constraints, you will fail to achieve the request.:
+{constraints}
+
+When creating a plan, you should assume that nothing is done yet. 
+
+You must consider the following opinions when making a plan:
 {opinions}
 """
 
-_PATTERN = r"(\d+). (\w*): \s*(.+) <(#\d+(?:,(?: |)#\d+)*|N\/A)>"
+_PATTERN = r"(\d+). (\w*): \s*(.+) <(#\d+(?:,(?: |)#\d+)*|N\/A)>\n- precondition: (.+)\n- effect: (.+)\n- constraint: (.+)"
 _SECOND_PATTERN = r"(?<=#)\d+"
 
 
@@ -45,10 +63,10 @@ class Planner(BaseOrganize):
     pattern = _PATTERN
     second_pattern = _SECOND_PATTERN
 
-    def stringify(self, person: BasePerson, request: str, opinions: List[str]) -> str:
+    def stringify(self, person: BasePerson, request: str, opinions: List[str], constraints: List[str]) -> str:
         opinions = "\n".join(
             [f"{i+1}. {opinion}" for i, opinion in enumerate(opinions)]
-        )
+        ) if len(opinions) > 0 else "-"
         friends = "".join(
             [
                 f"\n    {name}: {friend.instruction}"
@@ -58,6 +76,9 @@ class Planner(BaseOrganize):
         tools = "".join(
             [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
         )
+        constraints = "".join(
+            [f"{i}. {constraint}" for i, constraint in enumerate(constraints)]
+        ) if len(constraints) > 0 else "-"
 
         return self.template.format(
             action_types="\n".join(
@@ -68,6 +89,7 @@ class Planner(BaseOrganize):
             friends=friends,
             tools=tools,
             referee=person.referee.name,
+            constraints=constraints,
         )
 
     def parse(self, person: BasePerson, thought: str) -> List[Plan]:
@@ -95,6 +117,9 @@ class Planner(BaseOrganize):
                             int(p_n)
                             for p_n in re.findall(self.second_pattern, match[3])
                         ],
+                        precondition=match[4],
+                        effect=match[5],
+                        constraint=match[6],
                     )
                 )
             except ValueError:

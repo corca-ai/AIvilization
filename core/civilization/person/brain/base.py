@@ -12,7 +12,7 @@ class BaseBrain(BaseModel, ABC):
     llm: BaseLLM = None
 
     @abstractmethod
-    def plan(self, request: str, opinion: str) -> List[Plan]:
+    def plan(self, request: str, opinion: str, constraints: List[str]) -> List[Plan]:
         pass
 
     @abstractmethod
@@ -24,5 +24,5 @@ class BaseBrain(BaseModel, ABC):
         pass
 
     @abstractmethod
-    def review(self, prompt: str) -> str:
+    def review(self, prompt: str) -> Tuple[str, bool]:
         pass

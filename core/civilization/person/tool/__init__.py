@@ -23,8 +23,10 @@ default_tools: Dict[str, BaseTool] = {
         (
             "Write code for anything. "
             "Instruction should be a path to a file. "
+            "Written code will be save to playground/<path to file>. "
             "Extra should be a valid code. "
             "Output will be the 'success' or 'error'. "
+            "code_writer can only write one file per use."
         ),
     ),
 }
