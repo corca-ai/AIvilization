@@ -6,7 +6,7 @@ from core.civilization.god.system import System
 from core.civilization.person.action.base import Plan
 from core.logging import Color
 
-from .action import Action, ActionType
+from .action import Action
 from .base import BasePerson, InviteParams, TalkParams
 from .brain.default import Brain
 from .tool import BaseTool, BuildParams, CodedTool, UseParams
@@ -65,7 +65,7 @@ class Person(BasePerson):
             self.tracer.on_response(sender, result)
             return result
 
-    def plan(self, request: str, constraints: List[str]) -> List[Plan]:
+    def plan(self, request: str, constraints: list[str]) -> list[Plan]:
         opinions = []
 
         while True:

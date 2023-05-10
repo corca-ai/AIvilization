@@ -54,7 +54,7 @@ You must consider the following opinions when making a plan:
 {opinions}
 """
 
-_PATTERN = r"(\d+). (\w*): \s*(.+) <(#\d+(?:,(?: |)#\d+)*|N\/A)>\n- precondition: (.+)\n- effect: (.+)\n- constraint: (.+)"
+_PATTERN = r"(\d+). (.+): \s*(.+) <(#\d+(?:,(?: |)#\d+)*|N\/A)>\n- precondition: (.+)\n- effect: (.+)\n- constraint: (.+)"
 _SECOND_PATTERN = r"(?<=#)\d+"
 
 

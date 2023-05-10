@@ -123,17 +123,20 @@ class Plan(BaseModel):
     action_type: ActionType
     objective: str
     preceding_plan_numbers: List[int]
+    precondition: str
+    constraint: str
+    effect: str
 
     def __str__(self):
         preceding_plans = ", ".join([f"#{p_n}" for p_n in self.preceding_plan_numbers])
         if len(preceding_plans) == 0:
             preceding_plans = "N/A"
-        return f"{self.plan_number}. {self.action_type.value}: {self.objective} <{preceding_plans}>"
+        return f"{self.plan_number}. {self.action_type.value}: {self.objective} <{preceding_plans}>\n- precondition: {self.precondition}\n- constraint: {self.constraint}\n- effect: {self.effect}"
 
     def __repr__(self):
         preceding_plans = ", ".join([f"#{p_n}" for p_n in self.preceding_plan_numbers])
         if len(preceding_plans) == 0:
             preceding_plans = "N/A"
         return (
-            f"action type={self.action_type.value}, action objective={self.objective}"
+            f"action type={self.action_type.value}, action objective={self.objective}, action precondition={self.precondition}, action constraint={self.constraint}, action effect={self.effect}"
         )
