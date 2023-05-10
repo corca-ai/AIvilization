@@ -77,7 +77,7 @@ class Reviewer(BaseOrganize):
         matches = re.findall(self.pattern, thought, re.DOTALL)
 
         if len(matches) != 1:
-            raise WrongSchemaException("Your response is not in the correct schema.")
+            return "Your response is not in the correct schema.", False
 
         match = matches[0]
 

@@ -19,9 +19,7 @@ class ActionType(Enum):
         "Invite",
         ActionProperty(
             description=(
-                "Invite person who can do your work for you and are not your friends. "
-                "It must have stdout, stderr messages. "
-                "It should be executable with the following schema of commands: `python tools/example.py instruction extra`"
+                "Invite experts, when you want to discuss it with someone else"
             ),
             name="general person name like John, Steve",
             instruction="Personality",
@@ -39,16 +37,16 @@ class ActionType(Enum):
     )
     Build = (
         "Build",
-        ActionProperty(
-            description=(
-                "Build or rebuild a reusable tool when you can't do it yourself. "
-                "It must have stdout, stderr messages. "
-                "It should be executable with the following schema of commands: `python tools/example.py instruction extra`"
-            ),
-            name="Tool's Name (snake_case)",
-            instruction="Tool's description that includes objective, instruction format, extra format, output format",
-            extra='Python Code for Building Tools (format: ```pythonprint("hello world")```)',
-        ),
+        # ActionProperty(
+        #     description=(
+        #         "Build or rebuild a reusable tool when you can't do it yourself. "
+        #         "It must have stdout, stderr messages. "
+        #         "It should be executable with the following schema of commands: `python tools/example.py instruction extra`"
+        #     ),
+        #     name="Tool's Name (snake_case)",
+        #     instruction="Tool's description that includes objective, instruction format, extra format, output format",
+        #     extra='Python Code for Building Tools (format: ```pythonprint("hello world")```)',
+        # ),
     )
     Use = (
         "Use",

@@ -9,7 +9,6 @@ from core.civilization.person.brain.organize.optimize import Optimizer
 from core.civilization.person.brain.organize.plan import Planner
 from core.civilization.person.brain.organize.review import Reviewer
 from core.config.env import settings
-from core.logging import ANSI, Color, Style, logger
 
 from .base import BaseBrain
 from .llm.openai import OpenAILLM
@@ -43,23 +42,19 @@ class Brain(BaseBrain):
 
     def plan(self, request: str, opinions: List[str], constraints: List[str]) -> List[Plan]:
         prompt = self.planner.stringify(self.person, request, opinions, constraints)
-        logger.debug(ANSI("[plan]\n" + prompt).to(Color.rgb(236, 201, 238)))
 
         thought = ""
-        for t in self.__think(prompt):
+        for t in self._think(prompt):
             thought += t
-        logger.debug(ANSI(thought).to(Style.dim()))
 
         return self.planner.parse(self.person, thought)
 
-    def optimize(self, request: str, plans: List[Plan]) -> Tuple[str, bool]:
+    def optimize(self, request: str, plans: List[Plan], constraints: List[str]) -> Tuple[str, bool]:
         prompt = self.optimizer.stringify(self.person, request, plans, constraints)
-        logger.debug(ANSI("[optimize]\n" + prompt).to(Color.rgb(123, 201, 238)))
 
         thought = ""
-        for t in self.__think(prompt):
+        for t in self._think(prompt):
             thought += t
-        logger.debug(ANSI(thought).to(Style.dim()))
 
         opinion, ok = self.optimizer.parse(self.person, thought)
         if ok:
@@ -67,27 +62,24 @@ class Brain(BaseBrain):
                 "Make a plan to respond to the request. Request is:\n" + request,
                 "\n".join(map(str, plans)),
             )
+
         return opinion, ok
 
     def execute(self, plan: Plan, opinions: str) -> Action:
         prompt = self.executor.stringify(self.person, plan, opinions)
-        logger.debug(ANSI("[execute]\n" + prompt).to(Color.rgb(0, 201, 238)))
 
         thought = ""
-        for t in self.__think(prompt):
+        for t in self._think(prompt):
             thought += t
-        logger.debug(ANSI(thought).to(Style.dim()))
 
         return self.executor.parse(self.person, thought)
 
     def review(self, plan: str, action: Action, result: str) -> Tuple[str, bool]:
         prompt = self.reviewer.stringify(self.person, plan, action, result)
-        logger.debug(ANSI("[review]\n" + prompt).to(Color.rgb(236, 0, 238)))
 
         thought = ""
-        for t in self.__think(prompt):
+        for t in self._think(prompt):
             thought += t
-        logger.debug(ANSI(thought).to(Style.dim()))
 
         opinion, ok = self.reviewer.parse(self.person, thought)
         if ok:
@@ -97,11 +89,7 @@ class Brain(BaseBrain):
             )
         return opinion, ok
 
-    def __think(self, prompt: str) -> Generator[str, None, None]:
-        for i, message in enumerate(self.sterm_memory.storage):
-            logger.debug(f"[#{i}] role: {message['role']}")
-            logger.debug(message)
-
+    def _think(self, prompt: str) -> Generator[str, None, None]:
         messages = self.sterm_memory.load(prompt)
 
         for thought in self.llm.chat_completion(messages):

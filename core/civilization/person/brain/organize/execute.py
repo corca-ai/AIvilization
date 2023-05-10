@@ -10,7 +10,9 @@ from .base import BaseOrganize, WrongSchemaException
 _TEMPLATE = """
 You must respond only one action and the action consists of type, name, description, and extra.
 
-==========your response schema==========
+==========desired format==========
+You must adhere to a format that includes Type, Name, Instruction, and Extra.
+If you don't have anything to write in Extra, don't erase Extra by writing a space after Extra.
 Type: example type
 Name: example name
 Instruction: example instruction

@@ -10,7 +10,8 @@ from .action import Action, ActionType
 from .base import BasePerson, InviteParams, TalkParams
 from .brain.default import Brain
 from .tool import BaseTool, BuildParams, CodedTool, UseParams
-from .tracer import Trace
+from .ear.default import Ear
+from .mouth.default import Mouth
 
 
 class Person(BasePerson):
@@ -37,8 +38,12 @@ class Person(BasePerson):
         if referee:
             self.friends[referee.name] = referee
 
-    @Trace.respond()
+        self.ear = Ear(self)
+        self.mouth = Mouth(self)
+
     def respond(self, sender: Person, request: str, params: TalkParams) -> str:
+        self.tracer.on_request(sender, request, params)
+
         request = request.split(System.PROMPT_SEPARATOR)[1].strip()
 
         constraints = []
@@ -56,6 +61,8 @@ class Person(BasePerson):
                 constraints.append(result)
                 continue
 
+            self.mouth.talk(sender.ear, result, "")
+            self.tracer.on_response(sender, result)
             return result
 
     def plan(self, request: str, constraints: List[str]) -> List[Plan]:
@@ -63,7 +70,9 @@ class Person(BasePerson):
 
         while True:
             plans = self.brain.plan(request, opinions, constraints)
+            self.tracer.on_plans(plans)
             opinion, ok = self.brain.optimize(request, plans)
+            self.tracer.on_optimize(opinion, ok)
 
             if ok:
                 return plans
@@ -76,24 +85,28 @@ class Person(BasePerson):
 
         action = self.brain.execute(plan, opinions)
 
-        if action.type == ActionType.Talk and action.name == sender.name:
-            return self.to_format(action.instruction), True
-
         result = self.act(action)
         opinion, ok = self.brain.review(plan, action, result)
+        self.tracer.on_review(opinion, ok)
 
         if ok:
             return result, True
 
         return opinion, False
 
-    @Trace.act()
     def act(self, action: Action) -> str:
+        self.tracer.on_act(action)
         try:
             method = getattr(self, action.type.value.lower())
-            return method(action.name, action.instruction, action.extra)
-        except KeyError:
+            result = method(action.name, action.instruction, action.extra)
+            self.tracer.on_act_result(action, result)
+            return result
+        except KeyError as e:
+            self.tracer.on_act_error(action, e)
             return f"Unknown action type '{action.type}'"
+        except Exception as e:
+            self.tracer.on_act_error(action, e)
+            return f"Error while execution: {e}"
 
     def invite(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:
@@ -115,12 +128,9 @@ class Person(BasePerson):
             return System.error(f"Friend {name} not found.")
 
         friend = self.friends[name]
+        self.mouth.talk(friend.ear, instruction, extra)
 
-        return friend.respond(
-            self,
-            self.to_format(instruction),
-            TalkParams.from_str(extra),
-        )
+        return System.announcement(f"{self.name} talks to {name}")
 
     def build(self, name: str, instruction: str, extra: str) -> str:
         if name in self.friends:

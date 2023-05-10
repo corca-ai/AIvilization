@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from core.civilization.god.system import System
-from core.civilization.person.action import Action, ActionType
+from core.civilization.person.action import Action, ActionType, Plan
+from core.civilization.person.brain.organize.base import Decision
 from core.logging import ANSI, Color, Style, logger
 
 if TYPE_CHECKING:
@@ -13,14 +15,16 @@ from .base import BasePersonTracer
 
 
 class LogTracer(BasePersonTracer):
-    thought: str = ""
+    thought: str
+    logger: logging.Logger
+
+    def __init__(self, person: BasePerson):
+        super().__init__(person)
+        self.thought = ""
+        self.logger = logger
 
     def format_act(self, action: Action):
-        target = None
-        if action.type in [ActionType.Invite, ActionType.Talk]:
-            target = self.person.friends[action.name]
-        elif action.type in [ActionType.Build, ActionType.Use]:
-            target = self.person.tools[action.name]
+        target = self.get_target(action)
         return (
             str(self.person)
             + str(action.type)
@@ -36,15 +40,6 @@ class LogTracer(BasePersonTracer):
 
     def on_request(self, sender: BasePerson, prompt: str, params: TalkParams):
         pass
-
-    def on_idea(self, idea: str):
-        for line in idea.split("\n"):
-            logger.debug(
-                ANSI("[idea] ".rjust(12)).to(Color.rgb(0xF6, 0xBA, 0x6F)) + line
-            )
-
-    def on_idea_error(self, error: Exception):
-        logger.exception(error)
 
     def on_thought_start(self):
         self.thought = ""
@@ -65,14 +60,24 @@ class LogTracer(BasePersonTracer):
     def on_thought_error(self, error: Exception):
         logger.exception(error)
 
-    def on_actions(self, actions: list[Action]):
-        logger.debug(
-            ANSI("[actions] ".rjust(12)).to(Color.rgb(0xAD, 0xE4, 0xDB))
-            + ", ".join([str(action.type) for action in actions])
-        )
+    def on_plans(self, plans: list[Plan]):
+        for plan in plans:
+            logger.debug(
+                ANSI(f"[plan {plan.plan_number}] ".rjust(12)).to(
+                    Color.rgb(0xF6, 0xBA, 0x6F)
+                )
+                + plan.action_type.value
+                + ": "
+                + plan.objective
+            )
 
-    def on_actions_error(self, error: Exception):
-        logger.exception(error)
+    def on_optimize(self, opinion: str, ok: bool):
+        logger.debug(
+            ANSI("[optimize] ".rjust(12)).to(Color.rgb(0xAD, 0xE4, 0xDB))
+            + str(Decision.ACCEPT if ok else Decision.REJECT)
+            + ": "
+            + opinion
+        )
 
     def on_act(self, action: Action):
         if action.type in [ActionType.Talk, ActionType.Use]:
@@ -87,6 +92,14 @@ class LogTracer(BasePersonTracer):
 
         for line in result.split("\n"):
             logger.debug(ANSI("[result] ".rjust(12)).to(Color.cyan()) + line)
+
+    def on_review(self, opinion: str, ok: bool):
+        logger.debug(
+            ANSI("[review] ".rjust(12)).to(Color.rgb(0xF0, 0xCE, 0xFF))
+            + str(Decision.ACCEPT if ok else Decision.REJECT)
+            + ": "
+            + opinion
+        )
 
     def on_response(self, sender: BasePerson, response: str):
         logger.info(

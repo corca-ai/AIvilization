@@ -2,22 +2,14 @@ import logging
 from typing import Callable
 
 from core.config import settings
-import datetime
+from core.logging.handlers.stream import stream_handler
+
+log_level = logging.DEBUG if settings["LOG_LEVEL"] == "DEBUG" else logging.INFO
 
 logger = logging.getLogger()
-formatter = logging.Formatter("[%(filename)s:%(lineno)s] %(message)s")
-ch = logging.StreamHandler()
-ch.setFormatter(formatter)
-logger.addHandler(ch)
-logger.setLevel(logging.DEBUG if settings["LOG_LEVEL"] == "DEBUG" else logging.INFO)
 
-
-filename = 'logs/{date:%Y-%m-%d_%H:%M:%S}.ansi'.format(date=datetime.datetime.now())
-file_handler = logging.FileHandler(filename)
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-
+logger.addHandler(stream_handler)
+logger.setLevel(log_level)
 
 def decorator(func):
     def wrapper(*args, **kwargs):

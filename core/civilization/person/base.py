@@ -1,14 +1,17 @@
-from typing import Optional, Type
+from enum import Enum
+from typing import Optional, Self
 
 from pydantic import BaseModel
 
 from core.civilization.god.system import System
-from core.civilization.person.action.base import Action, ActionType
 from core.logging import ANSI, Color, Style
+from abc import ABC, abstractmethod
 
 from .brain import BaseBrain
 from .tool import BaseTool
 from .tracer import BasePersonTracer, PersonTracerWrapper
+from .ear import BaseEar
+from .mouth import BaseMouth
 
 
 class InviteParams(BaseModel):
@@ -56,7 +59,29 @@ class PersonMessageFormat:
         )
 
 
-class BasePerson(BaseModel, PersonMessageFormat):
+class MessageType(Enum):
+    Default = 1
+
+
+INSTRUCTION_LENGTH_BYTES = 4
+EXTRA_LENGTH_BYTES = 4
+MESSAGE_SENDER_BYTES = 12
+MESSAGE_TYPE_BYTES = 4
+
+
+INVALID_MESSAGE_SENDER_ERROR_MESSAGE = "Invalid Message Sender"
+INVALID_MESSAGE_TYPE_ERROR_MESSAGE = "Invalid Message Type"
+
+
+DEFAULT_TRACERS: list[type[BasePersonTracer]] = []
+
+
+def set_default_tracers(tracers: list[type[BasePersonTracer]]):
+    global DEFAULT_TRACERS
+    DEFAULT_TRACERS = tracers
+
+
+class BasePerson(BaseModel, PersonMessageFormat, ABC):
     name: str
     instruction: str
     params: InviteParams
@@ -66,21 +91,27 @@ class BasePerson(BaseModel, PersonMessageFormat):
     brain: BaseBrain = None
     friends: dict[str, "BasePerson"] = {}
     tracer: PersonTracerWrapper = None
+    ear: BaseEar = None
+    mouth: BaseMouth = None
 
     def __init__(self, **data):
         super().__init__(**data)
-        self.set_tracers(tracers=[])
+        self.set_tracers(tracers=DEFAULT_TRACERS)
 
     def set_tracers(self, tracers: list[BasePersonTracer]):
         self.tracer = PersonTracerWrapper(person=self, tracers=tracers)
 
-    def add_tracer(self, Tracer: Type[BasePersonTracer]):
+    def add_tracer(self, Tracer: type[BasePersonTracer]):
         self.tracer.add(Tracer)
 
     def __str__(self):
         return ANSI((f"{self.name}({self.__class__.__name__})").center(20)).to(
             self.color, Style.bold()
         )
+
+    @abstractmethod
+    def respond(self, sender: Self, request: str, params: TalkParams) -> str:
+        pass
 
     class Config:
         arbitrary_types_allowed = True

@@ -1,5 +1,6 @@
 __pycache__/
 .venv/
+.ipynb_checkpoints/
 
 .env
 
@@ -7,3 +8,5 @@ playground/
 tools/
 
 logs/
+.vscode
+log

@@ -1,15 +1,17 @@
 from core.config import settings
 from core.logging import Color
 
-from .person import InviteParams
+from .person import InviteParams, set_default_tracers
 from .person.action import Action, ActionType
 from .person.default import Person as Person
 from .person.tool import default_tools
-from .person.tracer.log import LogTracer
+from .person.tracer import BasePersonTracer
 
 
 class Civilization:
-    def __init__(self):
+    def __init__(self, default_tracers: list[type[BasePersonTracer]] = []):
+        set_default_tracers(default_tracers)
+
         self.user = Person(
             name="David",
             instruction="The person who you should give the final answer to.",
@@ -17,7 +19,6 @@ class Civilization:
             referee=None,
             color=Color.white(),
         )
-        self.user.add_tracer(LogTracer)
 
         leader_instructon = (
             f"Follow {self.user.name}'s instructions carefully. "
@@ -29,7 +30,6 @@ class Civilization:
             params=InviteParams(tools=default_tools),
             referee=self.user,
         )
-        self.leader.add_tracer(LogTracer)
 
         self.user.friends[self.leader.name] = self.leader
 
@@ -42,6 +42,8 @@ class Civilization:
                 extra="",
             )
         )
+
+        self.user.ear.wait()
 
 
 __all__ = ["Civilization"]
