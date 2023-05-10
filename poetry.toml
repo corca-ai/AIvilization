@@ -1,0 +1,7 @@
+[virtualenvs]
+in-project = true
+create = true
+path = ".venv"
+
+[installer]
+max-workers = 10
