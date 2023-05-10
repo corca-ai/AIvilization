@@ -49,8 +49,8 @@ class Brain(BaseBrain):
 
         return self.planner.parse(self.person, thought)
 
-    def optimize(self, request: str, plans: List[Plan], constraints: List[str]) -> Tuple[str, bool]:
-        prompt = self.optimizer.stringify(self.person, request, plans, constraints)
+    def optimize(self, request: str, plans: List[Plan]) -> Tuple[str, bool]:
+        prompt = self.optimizer.stringify(self.person, request, plans)
 
         thought = ""
         for t in self._think(prompt):
