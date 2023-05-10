@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Self
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -110,7 +110,7 @@ class BasePerson(BaseModel, PersonMessageFormat, ABC):
         )
 
     @abstractmethod
-    def respond(self, sender: Self, request: str, params: TalkParams) -> str:
+    def respond(self, sender: "BasePerson", request: str, params: TalkParams) -> str:
         pass
 
     class Config:
