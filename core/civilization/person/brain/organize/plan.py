@@ -10,6 +10,7 @@ from .base import BaseOrganize
 _TEMPLATE = """## Background
 The type of action you can take is:
 {action_types}
+Action Type must be one of the above.
 
 Your friends:{friends}
 Your tools:{tools}
@@ -20,11 +21,11 @@ All plans should include only action types, objectives, and plan numbers that sh
 If you don't need a plan, you can answer without conforming to the response schema format.
 
 ==========desired format==========
-1. Action Type1: Objective1 <preceded plan number>
+1. Type of Action1: Objective1 <preceded plan number>
 - precondition: <preconditions>
 - efffect: <changes from previous state>
 - constraint: <constraints>
-2. Action Type2: Objective2 <preceded plan number>
+2. Type of Action2: Objective2 <preceded plan number>
 - precondition: <preconditions>
 - efffect: <changes from previous state>
 - constraint: <constraints>
@@ -94,6 +95,7 @@ class Planner(BaseOrganize):
 
     def parse(self, person: BasePerson, thought: str) -> List[Plan]:
         matches = re.findall(self.pattern, thought)
+        print(thought)
 
         if len(matches) == 0:
             return [

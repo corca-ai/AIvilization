@@ -28,7 +28,7 @@ default_tools: Dict[str, BaseTool] = {
             "Written code will be save to playground/<path to file>. "
             "Extra should be a valid code. "
             "Output will be the 'success' or 'error'. "
-            "code_writer can used multiple times in plan, but writes only one file per one use"
+            "code_writer can writes only one file per Use"
         ),
     ),
     "browser": Browser(

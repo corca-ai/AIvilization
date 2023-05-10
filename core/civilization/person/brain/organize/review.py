@@ -17,7 +17,7 @@ Your friends:{friends}
 Your tools:{tools}
 
 ## Response
-Your response is a review on the action whether it achieved a plan or not. Which means goal was achieved by a single action.
+Your response is a review on the action whether it achieved a plan or not. Which means goal was achieved by a single action. Given action is very detailed and specific.
 Review must be harsh and clear. If you Accept, you will tell which condition is satisfied and there are no more things to do to achieve a goal.
 If you Reject, you will tell what condition is not satisfied and what should be done to achieve a goal. It will be a constraint for the next plans and actions. 
 
