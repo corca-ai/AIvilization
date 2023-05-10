@@ -2,7 +2,7 @@ import re
 from typing import Tuple
 
 from core.civilization.person import BasePerson
-from core.civilization.person.action import Action
+from core.civilization.person.action import Action, ActionType
 
 from .base import BaseOrganize, Decision, WrongSchemaException
 
@@ -11,10 +11,7 @@ _TEMPLATE = """
 The type of action you can take is:
 Type | Description | Name | Instruction | Extra
 -|-|-|-|-
-Invite | Invite person who can do your work for you and are not your friends. | general person name | Personality | one of tools among {tool_names} that the person needs.
-Talk |  Talk to your friends. | Friend's Name (should be one of {friend_names}) | Message | Attachment File List
-Build | Build or rebuild a reusable tool when you can't do it yourself. It must have stdout, stderr messages. It should be executable with the following schema of commands: `python tools/example.py instruction extra` | Tool's Name (snake_case) | Tool's description that includes objective, instruction format, extra format, output format | Python Code for Building Tools (format: ```pythonprint("hello world")```)
-Use | Use one of your tools. | Tool's Name (should be one of {tool_names}) | Tool Instruction for using tool | Extra for using tool
+{action_types}
 
 Your friends:{friends}
 Your tools:{tools}
@@ -62,6 +59,9 @@ class Reviewer(BaseOrganize):
             [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
         )
         return self.template.format(
+            action_types="\n".join(
+                [type.__str__(2) for type in ActionType if type.description is not None]
+            ),
             plan=plan,
             action=action,
             result=result,

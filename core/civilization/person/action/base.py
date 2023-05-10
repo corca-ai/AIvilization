@@ -19,9 +19,7 @@ class ActionType(Enum):
         "Invite",
         ActionProperty(
             description=(
-                "Invite person who can do your work for you and are not your friends. "
-                "It must have stdout, stderr messages. "
-                "It should be executable with the following schema of commands: `python tools/example.py instruction extra`"
+                "Invite experts, when you want to discuss it with someone else"
             ),
             name="general person name like John, Steve",
             instruction="Personality",
