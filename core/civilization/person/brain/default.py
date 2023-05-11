@@ -9,7 +9,6 @@ from core.civilization.person.brain.organize.optimize import Optimizer
 from core.civilization.person.brain.organize.plan import Planner
 from core.civilization.person.brain.organize.review import Reviewer
 from core.config.env import settings
-from core.logging.ansi import ANSI, Color, Style
 
 from .base import BaseBrain
 from .llm.openai import OpenAILLM
@@ -41,8 +40,8 @@ class Brain(BaseBrain):
         self.executor = Executor()
         self.reviewer = Reviewer()
 
-    def plan(self, request: str, opinions: List[str]) -> List[Plan]:
-        prompt = self.planner.stringify(self.person, request, opinions)
+    def plan(self, request: str, opinions: List[str], constraints: List[str]) -> List[Plan]:
+        prompt = self.planner.stringify(self.person, request, opinions, constraints)
 
         thought = ""
         for t in self._think(prompt):

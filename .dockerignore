@@ -1,0 +1,6 @@
+.venv/
+__pycache__
+logs/
+
+playground/
+tools/

@@ -69,6 +69,10 @@ class LogTracer(BasePersonTracer):
                 + plan.action_type.value
                 + ": "
                 + plan.objective
+                + "\n"
+                + ANSI("\tprecondition: " + plan.precondition + "\n").to(Color.rgb(0xC0, 0xC0, 0xC0))
+                + ANSI("\teffect: " + plan.effect + "\n").to(Color.rgb(0xC0, 0xC0, 0xC0))
+                + ANSI("\tconstraint: " + plan.constraint).to(Color.rgb(0xC0, 0xC0, 0xC0))
             )
 
     def on_optimize(self, opinion: str, ok: bool):

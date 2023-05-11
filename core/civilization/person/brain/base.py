@@ -12,7 +12,7 @@ class BaseBrain(BaseModel, ABC):
     llm: BaseLLM = None
 
     @abstractmethod
-    def plan(self, request: str, opinion: str) -> List[Plan]:
+    def plan(self, request: str, opinion: str, constraints: List[str]) -> List[Plan]:
         pass
 
     @abstractmethod

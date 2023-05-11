@@ -17,23 +17,27 @@ Your friends:{friends}
 Your tools:{tools}
 
 ## Response
-Your response is a review of the action and its results and you need to decide whether it is Accept or Reject.
-Accept if the plan seems strange and write down your opinion. That opinion will be reflected and the plan will be redrawn.
+Your response is a review on the action whether it achieved a plan or not. Which means goal was achieved by a single action. Given action is very detailed and specific.
+Review must be harsh and clear. If you Accept, you will tell which condition is satisfied and there are no more things to do to achieve a goal.
+If you Reject, you will tell what condition is not satisfied and what should be done to achieve a goal. It will be a constraint for the next plans and actions. 
+
 ==========desired format==========
-You must wrap your Accept/Reject with [].
-[Accept/Reject] your review of the action
-==========  response example 1==========
-[Reject] Actually, I think that the execution result is not good.
-Let's make a new tool
-==========  response example 2==========
-[Accept] The execution result is perfect.
+[Accept] or [Reject] review of a action whether achieved a plan or not.
+==========response example 1==========
+[Reject] "Code must be executed not just written."
+==========response example 2==========
+[Accept] Action seems valid to achieve a goal you made. Action achieves goal "run a code and get output hello world" by 1) executing `python playgrounds/example.py` and 2) printing "hello world".
 ========================================
 
 ## Request
-Review your execution result for executing "{plan}". Don't execute again, just say your opinion about action and result.
+Check your action was valid for achieving following goal. Don't execute again, just say your opinion about action and result.
+
+Your goal:
+{goal}
+
 Your action is:
 {action}
-Your result of action is:
+Result of your action is:
 {result}
 """
 
@@ -48,7 +52,6 @@ class Reviewer(BaseOrganize):
         self, person: BasePerson, plan: str, action: Action, result: str
     ) -> Tuple[str, bool]:
         friend_names = ", ".join([f"'{name}'" for name in person.friends.keys()])
-        tool_names = ", ".join([f"'{name}'" for name in person.tools.keys()])
         friends = "".join(
             [
                 f"\n    {name}: {friend.instruction}"
@@ -59,14 +62,13 @@ class Reviewer(BaseOrganize):
             [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
         )
         return self.template.format(
-            action_types="\n".join(
-                [type.__str__(2) for type in ActionType if type.description is not None]
-            ),
-            plan=plan,
+            goal=plan,
             action=action,
             result=result,
             friend_names=friend_names,
-            tool_names=tool_names,
+            action_types="\n".join(
+                [type.__str__(1) for type in ActionType if type.description is not None]
+            ),
             friends=friends,
             tools=tools,
         )

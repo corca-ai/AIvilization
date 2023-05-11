@@ -6,7 +6,7 @@ from core.civilization.god.system import System
 from core.civilization.person.action.base import Plan
 from core.logging import Color
 
-from .action import Action, ActionType
+from .action import Action
 from .base import BasePerson, InviteParams, TalkParams
 from .brain.default import Brain
 from .tool import BaseTool, BuildParams, CodedTool, UseParams
@@ -46,20 +46,30 @@ class Person(BasePerson):
 
         request = request.split(System.PROMPT_SEPARATOR)[1].strip()
 
+        constraints = []
         while True:
-            plans = self.plan(request)
-            result, is_finish = self.execute(plans[0], sender=sender)
+            plans = self.plan(request, constraints)
+            is_plan_valid = True
 
-            if is_finish:
-                self.mouth.talk(sender.ear, result, "")
-                self.tracer.on_response(sender, result)
-                return result
+            for plan in plans:
+                result, is_plan_valid = self.execute(plan, sender=sender)
 
-    def plan(self, request: str) -> List[Plan]:
+                if not is_plan_valid:
+                    break
+
+            if not is_plan_valid:
+                constraints.append(result)
+                continue
+
+            self.mouth.talk(sender.ear, result, "")
+            self.tracer.on_response(sender, result)
+            return result
+
+    def plan(self, request: str, constraints: list[str]) -> list[Plan]:
         opinions = []
 
         while True:
-            plans = self.brain.plan(request, opinions)
+            plans = self.brain.plan(request, opinions, constraints)
             self.tracer.on_plans(plans)
             opinion, ok = self.brain.optimize(request, plans)
             self.tracer.on_optimize(opinion, ok)
@@ -72,21 +82,17 @@ class Person(BasePerson):
     def execute(self, plan: Plan, sender: Person) -> Tuple[str, bool]:
         opinions = []
 
-        while True:
-            action = self.brain.execute(plan, opinions)
 
-            if action.type == ActionType.Talk and action.name == sender.name:
-                return self.to_format(action.instruction), True
+        action = self.brain.execute(plan, opinions)
 
-            result = self.act(action)
+        result = self.act(action)
+        opinion, ok = self.brain.review(plan, action, result)
+        self.tracer.on_review(opinion, ok)
 
-            opinion, ok = self.brain.review(plan, action, result)
-            self.tracer.on_review(opinion, ok)
+        if ok:
+            return result, True
 
-            if ok:
-                return result, False
-
-            opinions.append(opinion)
+        return opinion, False
 
     def act(self, action: Action) -> str:
         self.tracer.on_act(action)

@@ -11,7 +11,6 @@ logger = logging.getLogger()
 logger.addHandler(stream_handler)
 logger.setLevel(log_level)
 
-
 def decorator(func):
     def wrapper(*args, **kwargs):
         level = logger.level

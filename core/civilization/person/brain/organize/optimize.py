@@ -2,39 +2,42 @@ import re
 from typing import List, Tuple
 
 from core.civilization.person import BasePerson
-from core.civilization.person.action.base import ActionType, Plan
+from core.civilization.person.action import ActionType
+from core.civilization.person.action.base import Plan
 
-from .base import BaseOrganize, Decision, WrongSchemaException
+from .base import BaseOrganize, Decision
 
-_TEMPLATE = """## Background
+_TEMPLATE = """
+## Background
 The type of action you can take is:
 {action_types}
 
 Your friends:{friends}
 Your tools:{tools}
 
-<plan schema>
-1. Type1: Objective1 <preceded plan number>
-2. Type2: Objective2 <preceded plan number>
-
-## Response
 ==========desired format==========
-You need to decide whether it is Accept or Reject.
-You must wrap your Accept/Reject with [].
-[Accept/Reject] your opinion
-==========  response example  ==========
+[Accept] or [Reject] your opinion
+==========response example==========
 [Reject] Actually, I think that the plan is not good.
 Because it is not efficient.
 ========================================
 
-## Request
-> Request: {request}
+Check your affordance of plan on request. Request is:
+{request}
 
+You must not remake plan, just say opinion to increase affordance plan. Opinion is harsh, but it is the best way to increase affordance of plan.
+If you Reject, you will tell which condition is not satisfied for request.
+If you Accept, you will tell which condition is satisfied for request
+
+You can consider following things.
+- constraint: constraints must be satisfied with plan. ex) tools are in path tools/, code is in path playground/, etc.
+- tool: you can only use tool once per action of plan. ex) you can't use code_writer to write html and js and python code in one action
+
+Every plan must be written up in a single line.
 Your plans are:
 {plans}
 
-Check the feasibility, detail, and suit the plan schema of the plans.
-You must follow the response schema.
+Check and increase affordance of your plan on request.
 """
 
 _PATTERN = rf"\[({Decision.ACCEPT.value}|{Decision.REJECT.value})\](.*)"
