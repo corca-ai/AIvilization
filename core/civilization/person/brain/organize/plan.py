@@ -64,10 +64,18 @@ class Planner(BaseOrganize):
     pattern = _PATTERN
     second_pattern = _SECOND_PATTERN
 
-    def stringify(self, person: BasePerson, request: str, opinions: List[str], constraints: List[str]) -> str:
-        opinions = "\n".join(
-            [f"{i+1}. {opinion}" for i, opinion in enumerate(opinions)]
-        ) if len(opinions) > 0 else "-"
+    def stringify(
+        self,
+        person: BasePerson,
+        request: str,
+        opinions: List[str],
+        constraints: List[str],
+    ) -> str:
+        opinions = (
+            "\n".join([f"{i+1}. {opinion}" for i, opinion in enumerate(opinions)])
+            if len(opinions) > 0
+            else "-"
+        )
         friends = "".join(
             [
                 f"\n    {name}: {friend.instruction}"
@@ -77,9 +85,11 @@ class Planner(BaseOrganize):
         tools = "".join(
             [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
         )
-        constraints = "".join(
-            [f"{i}. {constraint}" for i, constraint in enumerate(constraints)]
-        ) if len(constraints) > 0 else "-"
+        constraints = (
+            "".join([f"{i}. {constraint}" for i, constraint in enumerate(constraints)])
+            if len(constraints) > 0
+            else "-"
+        )
 
         return self.template.format(
             action_types="\n".join(
@@ -95,7 +105,6 @@ class Planner(BaseOrganize):
 
     def parse(self, person: BasePerson, thought: str) -> List[Plan]:
         matches = re.findall(self.pattern, thought)
-        print(thought)
 
         if len(matches) == 0:
             return [
