@@ -2,6 +2,7 @@ import os
 import subprocess
 
 from core.logging import ANSI, Style, logger
+from core.logging.ansi import Color
 from core.terminal.tracer import StdoutTracer
 
 from .base import BaseTool, BuildParams, UseParams
@@ -10,6 +11,17 @@ PLAYGROUND_DIR = "playground"
 
 
 class Terminal(BaseTool):
+    name = "terminal"
+    description = (
+        "Executes commands in a computer terminal. "
+        "If linux errno occurs, we have to solve "
+        "the problem with the computer terminal. "
+        "Instruction should be one valid command. (ex. pip install numpy) "
+        "Extra should be empty. "
+        "Output will be any output from running that command."
+    )
+    color = Color.rgb(255, 0, 0)
+
     def build(self, params: BuildParams):
         pass
 
@@ -33,6 +45,17 @@ class Terminal(BaseTool):
 
 
 class CodeWriter(BaseTool):
+    name = "code_writer"
+    description = (
+        "Write code for anything. "
+        "Instruction should be a path to a file. "
+        "Written code will be save to playground/<path to file>. "
+        "Extra should be a valid code. "
+        "Output will be the 'success' or 'error'. "
+        "code_writer can writes only one file per Use"
+    )
+    color = Color.rgb(0, 255, 0)
+
     def build(self, params: BuildParams):
         pass
 

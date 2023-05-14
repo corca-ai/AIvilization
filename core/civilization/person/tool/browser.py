@@ -7,11 +7,24 @@ from selenium.webdriver.remote.remote_connection import LOGGER, logging
 
 from core.civilization.person.tool.base import BaseTool, BuildParams, UseParams
 from core.logging import logger
+from core.logging.ansi import Color
 
 LOGGER.setLevel(logging.WARNING)
 
 
 class Browser(BaseTool):
+    name = "browser"
+    description = (
+        "Surfing the web on a browser. "
+        "Instruction should be one valid command. (ex. open, scroll, move, click, write, close) "
+        "Extra should be a valid input for that command. "
+        # "You can also enter the key directly through the write command, such as Keys.RETURN and Keys.SHIFT. " # TODO
+        "open: <url>, scroll: <position>, move: <id>, click: <id>, write: <{id: input}>, close: <empty> "
+        'ex. open: https://www.google.com, scroll: 0,0, move: 3, click: 4, write: {5: "hello"}, close: '
+        "Output will be the page's contents. "
+    )
+    color = Color.rgb(0, 0, 255)
+
     css_selector = """var cssSelector = function(el) {
         if (!(el instanceof Element)) 
             return;
@@ -39,16 +52,15 @@ class Browser(BaseTool):
     }"""
     writable_tag = {"textarea": "placeholder", "input": "type"}
 
-    @logger.disable
-    def __init__(self, name: str, description: str):
-        super().__init__(name, description)
+    _options: webdriver.ChromeOptions = webdriver.ChromeOptions()
+    _options.add_experimental_option("prefs", {"intl.accept_languages": "en-GB"})
 
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option("prefs", {"intl.accept_languages": "en-GB"})
-        self.driver = webdriver.Chrome(executable_path="chromedriver", options=options)
-        self.action_chains = ActionChains(self.driver)
-        self.css_selectors = {}
-        self.before_contents = ""
+    _driver: webdriver.Chrome = webdriver.Chrome(
+        executable_path="chromedriver", options=_options
+    )
+    _action_chains: ActionChains = ActionChains(_driver)
+    css_selectors = {}
+    before_contents = ""
 
     def build(self, params: BuildParams) -> str:
         pass
@@ -66,14 +78,14 @@ class Browser(BaseTool):
             return f"Unknown command type '{command}', expected one of: open, scroll, move, click, write, close"
 
     def open(self, url: str):
-        for handle in self.driver.window_handles:
-            self.driver.switch_to.window(handle)
-            if self.driver.current_url == url:
+        for handle in self._driver.window_handles:
+            self._driver.switch_to.window(handle)
+            if self._driver.current_url == url:
                 return
 
-        if self.driver.current_url != "data:,":
-            self.driver.execute_script("window.open('');")
-        self.driver.get(url)
+        if self._driver.current_url != "data:,":
+            self._driver.execute_script("window.open('');")
+        self._driver.get(url)
 
     def scroll(self, position: str):
         try:
@@ -83,11 +95,11 @@ class Browser(BaseTool):
 
         position_x, position_y = map(
             int,
-            self.driver.execute_script(
+            self._driver.execute_script(
                 "return window.scrollX + ',' + window.scrollY"
             ).split(","),
         )
-        self.driver.execute_script(
+        self._driver.execute_script(
             f"window.scrollTo({position_x + delta_x},{position_y + delta_y})"
         )
 
@@ -97,7 +109,7 @@ class Browser(BaseTool):
         except KeyError:
             return f"Unknown css selector '{css_selector}'"
 
-        self.action_chains.move_to_element(element).perform()
+        self._action_chains.move_to_element(element).perform()
 
     def click(self, css_selector: str):
         try:
@@ -105,9 +117,9 @@ class Browser(BaseTool):
         except KeyError:
             return f"Unknown css selector '{css_selector}'"
 
-        self.action_chains.click(element).perform()
+        self._action_chains.click(element).perform()
         self._init_css_selector()
-        self.driver.implicitly_wait(3)
+        self._driver.implicitly_wait(3)
 
     def write(self, contents: str):
         try:
@@ -131,8 +143,8 @@ class Browser(BaseTool):
                 return f"Unknown tag name '{element.tag_name}'"
 
     def close(self, _: str):
-        self.driver.close()
-        self.driver.switch_to.window(self.driver.window_handles[-1])
+        self._driver.close()
+        self._driver.switch_to.window(self._driver.window_handles[-1])
 
     def _init_css_selector(self):
         self.css_selectors = {}
@@ -140,19 +152,19 @@ class Browser(BaseTool):
     def _read(self):
         x, y, height, width = map(
             int,
-            self.driver.execute_script(
+            self._driver.execute_script(
                 "return window.scrollX + ',' + window.scrollY + ',' + window.innerHeight + ',' + window.innerWidth"
             ).split(","),
         )
         page_height, page_width = map(
             int,
-            self.driver.execute_script(
+            self._driver.execute_script(
                 "return document.body.clientHeight + ',' + document.body.clientWidth"
             ).split(","),
         )
 
         elements = []
-        for element in self.driver.find_elements(
+        for element in self._driver.find_elements(
             "xpath",
             (
                 "//*[((not(contains(@style,'display:none')) "
@@ -197,7 +209,7 @@ class Browser(BaseTool):
             "This is information on the elements of url below, and contains id, contents of each element. "
             "You can move, click, and write with id."
         )
-        contents.append(f"url: {self.driver.current_url}")
+        contents.append(f"url: {self._driver.current_url}")
         contents.append(f"page height, width: {page_height}, {page_width}")
         contents.append(f"current x, y, height, width: {x}, {y}, {height}, {width}")
         contents.append("\nid. contents")
@@ -205,7 +217,7 @@ class Browser(BaseTool):
         self._init_css_selector()
 
         for i, (element, content) in enumerate(elements):
-            css_selector = self.driver.execute_script(
+            css_selector = self._driver.execute_script(
                 f"{self.css_selector}; return cssSelector(arguments[0]);", element
             )
             position = f"{element.location['x']}, {element.location['y']}, {element.size['height']}, {element.size['width']}"

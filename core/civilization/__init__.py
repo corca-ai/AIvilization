@@ -1,10 +1,11 @@
+from core.civilization.person.tool.browser import Browser
+from core.civilization.person.tool.default import CodeWriter, Terminal
 from core.config import settings
 from core.logging import Color
 
 from .person import InviteParams, set_default_tracers
 from .person.action import Action, ActionType
 from .person.default import Person as Person
-from .person.tool import default_tools
 from .person.tracer import BasePersonTracer
 
 
@@ -27,11 +28,37 @@ class Civilization:
         self.leader = Person(
             name=settings["BOT_NAME"],
             instruction=leader_instructon,
-            params=InviteParams(tools=default_tools),
+            params=InviteParams(tools={}),
             referee=self.user,
         )
 
+        follower_instruction = (
+            f"Follow {self.leader.name}'s instructions carefully. "
+            f"Respond using markdown. You must fulfill {self.leader.name}'s request."
+        )
+        self.ann = Person(
+            name="Ann",
+            instruction=follower_instruction,
+            params=InviteParams(tools={"terminal": Terminal()}),
+            referee=self.leader,
+        )
+        self.mark = Person(
+            name="Mark",
+            instruction=follower_instruction,
+            params=InviteParams(tools={"code_writer": CodeWriter()}),
+            referee=self.leader,
+        )
+        self.john = Person(
+            name="John",
+            instruction=follower_instruction,
+            params=InviteParams(tools={"broswer": Browser()}),
+            referee=self.leader,
+        )
+
         self.user.friends[self.leader.name] = self.leader
+        self.leader.friends[self.ann.name] = self.ann
+        self.leader.friends[self.mark.name] = self.mark
+        self.leader.friends[self.john.name] = self.john
 
     def solve(self, problem: str):
         self.user.act(

@@ -1,7 +1,9 @@
 import re
 from abc import ABC, abstractmethod
+from turtle import st
+from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 from core.civilization.god.system import System
 from core.logging import ANSI, Color, Style
@@ -49,11 +51,10 @@ class ToolMessageFormat:
         )
 
 
-class BaseTool(ABC, ToolMessageFormat):
-    def __init__(self, name: str, instruction: str):
-        self.name = name
-        self.instruction = instruction
-        self.color = Color.rgb(g=0)
+class BaseTool(BaseModel, ABC, ToolMessageFormat, extra=Extra.allow):
+    name: str
+    description: str
+    color: Color
 
     def __str__(self):
         return ANSI((f"{self.name}({self.__class__.__name__})").center(20)).to(
