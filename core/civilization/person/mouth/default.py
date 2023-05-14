@@ -1,9 +1,11 @@
-from .base import BaseMouth
-from socket import socket, AF_INET, SOCK_STREAM
-from core.config import settings
+from socket import AF_INET, SOCK_STREAM, socket
 from struct import pack
-from core.civilization.person.base import BasePerson, MessageType, MESSAGE_SENDER_BYTES
+
+from core.civilization.person.base import MESSAGE_SENDER_BYTES, BasePerson, MessageType
 from core.civilization.person.ear import BaseEar
+from core.config import settings
+
+from .base import BaseMouth
 
 
 class Mouth(BaseMouth):
@@ -42,6 +44,6 @@ class Mouth(BaseMouth):
     ):
         data = self.construct_data(instruction, extra)
         client = socket(AF_INET, SOCK_STREAM)
-        client.connect((settings["HOST"], to.port))
+        client.connect((settings.HOST, to.port))
         client.send(data)
         client.close()

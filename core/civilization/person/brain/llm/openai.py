@@ -9,7 +9,7 @@ from core.logging import logger
 
 from .base import BaseLLM
 
-openai.api_key = settings["OPENAI_API_KEY"]
+openai.api_key = settings.OPENAI_API_KEY
 
 
 class OpenAILLM(BaseLLM, BaseModel):

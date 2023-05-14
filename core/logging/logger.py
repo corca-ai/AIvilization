@@ -4,7 +4,7 @@ from typing import Callable
 from core.config import settings
 from core.logging.handlers.stream import stream_handler
 
-log_level = logging.DEBUG if settings["LOG_LEVEL"] == "DEBUG" else logging.INFO
+log_level = logging.DEBUG if settings.LOG_LEVEL== "DEBUG" else logging.INFO
 
 logger = logging.getLogger()
 

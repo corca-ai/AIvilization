@@ -8,7 +8,7 @@ from core.logging import logger
 
 from .base import BaseVector
 
-openai.api_key = settings["OPENAI_API_KEY"]
+openai.api_key = settings.OPENAI_API_KEY
 
 
 class OpenAIVector(BaseVector, BaseModel):

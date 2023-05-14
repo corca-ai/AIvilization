@@ -9,7 +9,7 @@ from core.logging import logger
 
 def get_default_tracers():
     default_tracers = [LogTracer]
-    if settings["REDIS_HOST"]:
+    if settings.REDIS_HOST:
         default_tracers.append(RedisTracer)
     return default_tracers
 

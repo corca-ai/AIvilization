@@ -1,6 +1,5 @@
 from core.civilization.person.tool.browser import Browser
 from core.civilization.person.tool.default import CodeWriter, Terminal
-from core.config import settings
 from core.logging import Color
 
 from .person import InviteParams, set_default_tracers
@@ -26,7 +25,7 @@ class Civilization:
             f"Respond using markdown. You must fulfill {self.user.name}'s request."
         )
         self.leader = Person(
-            name=settings["BOT_NAME"],
+            name="Steve",
             instruction=leader_instructon,
             params=InviteParams(tools={}),
             referee=self.user,

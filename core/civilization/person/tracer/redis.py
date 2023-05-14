@@ -21,7 +21,7 @@ class RedisTracer(BasePersonTracer):
         super().__init__(person)
         self.thought = ""
         self.redis = redis.Redis(
-            host=settings["REDIS_HOST"], port=settings["REDIS_PORT"], db=0
+            host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0
         )
         self.key = f"person:{self.person.name}"
         self.redis.delete(self.key)

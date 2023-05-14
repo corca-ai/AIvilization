@@ -1,24 +1,25 @@
-from .base import (
-    BaseEar,
-    MessageType,
-)
-from socket import socket, AF_INET, SOCK_STREAM, error as socket_error
-from core.config import settings
+from re import sub
+from socket import AF_INET, SOCK_STREAM
+from socket import error as socket_error
+from socket import socket
 from struct import unpack
+from threading import Thread
+from typing import Tuple
+
+from core.civilization.god.system import System
 from core.civilization.person.base import (
-    BasePerson,
-    INSTRUCTION_LENGTH_BYTES,
     EXTRA_LENGTH_BYTES,
-    MESSAGE_TYPE_BYTES,
-    MESSAGE_SENDER_BYTES,
+    INSTRUCTION_LENGTH_BYTES,
     INVALID_MESSAGE_SENDER_ERROR_MESSAGE,
     INVALID_MESSAGE_TYPE_ERROR_MESSAGE,
+    MESSAGE_SENDER_BYTES,
+    MESSAGE_TYPE_BYTES,
+    BasePerson,
     TalkParams,
 )
-from core.civilization.god.system import System
-from typing import Tuple
-from threading import Thread
-from re import sub
+from core.config import settings
+
+from .base import BaseEar, MessageType
 
 
 class Ear(BaseEar):
@@ -40,9 +41,9 @@ class Ear(BaseEar):
             t.start()
 
     def bind_port(self):
-        port_start = settings["PORT_START"]
-        port_range = settings["PORT_RANGE"]
-        host = settings["HOST"]
+        port_start = settings.PORT_START
+        port_range = settings.PORT_RANGE
+        host = settings.HOST
         for port in range(port_start, port_start + port_range):
             try:
                 self.listener_socket.bind((host, port))
@@ -92,7 +93,7 @@ class Ear(BaseEar):
         print(f"[{self.person.name}-Ear] : Listening On {self.port}")
         while True:
             conn, addr = self.listener_socket.accept()
-            if addr[0] != settings["HOST"]:
+            if addr[0] != settings.HOST:
                 print(
                     System.announcement(f"[{self.person.name}-Ear] : Unknown Message")
                 )

@@ -9,7 +9,7 @@ from core.logging import logger
 from .base import BaseMemory
 from .vector.openai import OpenAIVector
 
-openai.api_key = settings["OPENAI_API_KEY"]
+openai.api_key = settings.OPENAI_API_KEY
 
 
 class LongTermMemory(BaseMemory[str]):
@@ -17,8 +17,8 @@ class LongTermMemory(BaseMemory[str]):
 
     @logger.disable
     def __init__(self, name: str, instruction: str):
-        pinecone.init(api_key=settings["PINECONE_API_KEY"], environment="us-east1-gcp")
-        index = pinecone.Index(settings["PINECONE_INDEX"])
+        pinecone.init(api_key=settings.PINECONE_API_KEY, environment="us-east1-gcp")
+        index = pinecone.Index(settings.PINECONE_INDEX)
 
         vector = OpenAIVector()
 

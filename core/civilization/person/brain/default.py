@@ -30,7 +30,7 @@ class Brain(BaseBrain):
     def __init__(self, person: BasePerson, name: str, instruction: str):
         super().__init__(llm=OpenAILLM())
         self.lterm_memory = (
-            LongTermMemory(name, instruction) if settings["PINECONE_API_KEY"] else None
+            LongTermMemory(name, instruction) if settings.PINECONE_API_KEY else None
         )
         self.sterm_memory = ShortTermMemory(name, instruction, self.init_message)
 
@@ -40,7 +40,9 @@ class Brain(BaseBrain):
         self.executor = Executor()
         self.reviewer = Reviewer()
 
-    def plan(self, request: str, opinions: List[str], constraints: List[str]) -> List[Plan]:
+    def plan(
+        self, request: str, opinions: List[str], constraints: List[str]
+    ) -> List[Plan]:
         prompt = self.planner.stringify(self.person, request, opinions, constraints)
 
         thought = ""
