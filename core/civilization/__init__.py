@@ -27,7 +27,7 @@ class Civilization:
         self.leader = Person(
             name="Steve",
             instruction=leader_instructon,
-            params=InviteParams(tools={}),
+            params=InviteParams(tools={"terminal": Terminal(), "browser": Browser(), "code_writer": CodeWriter()}),
             referee=self.user,
         )
 
@@ -38,19 +38,19 @@ class Civilization:
         self.ann = Person(
             name="Ann",
             instruction=follower_instruction,
-            params=InviteParams(tools={"terminal": Terminal()}),
+            params=InviteParams(tools={"terminal": Terminal(), "browser": Browser(), "code_writer": CodeWriter()}),
             referee=self.leader,
         )
         self.mark = Person(
             name="Mark",
             instruction=follower_instruction,
-            params=InviteParams(tools={"code_writer": CodeWriter()}),
+            params=InviteParams(tools={"terminal": Terminal(), "browser": Browser(), "code_writer": CodeWriter()}),
             referee=self.leader,
         )
         self.john = Person(
             name="John",
             instruction=follower_instruction,
-            params=InviteParams(tools={"broswer": Browser()}),
+            params=InviteParams(tools={"terminal": Terminal(), "browser": Browser(), "code_writer": CodeWriter()}),
             referee=self.leader,
         )
 

@@ -61,7 +61,7 @@ class Executor(BaseOrganize):
             ]
         )
         tools = "".join(
-            [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
+            [f"\n    {name}: {tool.description}" for name, tool in person.tools.items()]
         )
         return self.template.format(
             action_types="\n".join(
