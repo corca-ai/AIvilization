@@ -83,7 +83,7 @@ class Planner(BaseOrganize):
             ]
         )
         tools = "".join(
-            [f"\n    {name}: {tool.instruction}" for name, tool in person.tools.items()]
+            [f"\n    {name}: {tool.description}" for name, tool in person.tools.items()]
         )
         constraints = (
             "".join([f"{i}. {constraint}" for i, constraint in enumerate(constraints)])
