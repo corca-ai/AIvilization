@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Optional
 
@@ -5,13 +6,12 @@ from pydantic import BaseModel
 
 from core.civilization.god.system import System
 from core.logging import ANSI, Color, Style
-from abc import ABC, abstractmethod
 
 from .brain import BaseBrain
-from .tool import BaseTool
-from .tracer import BasePersonTracer, PersonTracerWrapper
 from .ear import BaseEar
 from .mouth import BaseMouth
+from .tool import BaseTool
+from .tracer import BasePersonTracer, PersonTracerWrapper
 
 
 class InviteParams(BaseModel):
@@ -89,7 +89,7 @@ class BasePerson(BaseModel, PersonMessageFormat, ABC):
     referee: Optional["BasePerson"] = None
     tools: dict[str, BaseTool] = {}
     brain: BaseBrain = None
-    friends: dict[str, "BasePerson"] = {}
+    experts: dict[str, "BasePerson"] = {}
     tracer: PersonTracerWrapper = None
     ear: BaseEar = None
     mouth: BaseMouth = None

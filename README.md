@@ -26,10 +26,10 @@ poetry run start
 Here's the brief diagram of the `Person`. It consists of a `Brain`, `Friends` (list of `Person`) and `Tools` (list of `Tool`). `Person` can take one of 4 actions: invite, talk, build and use. `Brain` determines which action to take and provides parameters for the action.
 
 - Invite
-  - Invite a new person to the civilization and be friends with them.
+  - Invite a new person to the civilization and be experts with them.
   - When a person invites another, they gives them a personality and tools.
 - Talk
-  - Talk to a friend.
+  - Talk to a expert.
   - They can ask something to do, notice something, or just talk.
 - Build
   - Build a new tool.

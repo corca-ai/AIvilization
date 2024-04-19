@@ -70,9 +70,13 @@ class Brain(BaseBrain):
     def execute(self, plan: Plan, opinions: str) -> Action:
         prompt = self.executor.stringify(self.person, plan, opinions)
 
+        print(prompt)
+
         thought = ""
         for t in self._think(prompt):
             thought += t
+
+        print(thought)
 
         return self.executor.parse(self.person, thought)
 

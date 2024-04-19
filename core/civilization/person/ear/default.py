@@ -64,9 +64,9 @@ class Ear(BaseEar):
     def get_sender(self, conn: socket) -> BasePerson:
         message_sender_data = conn.recv(MESSAGE_SENDER_BYTES)
         message_sender = sub("[\0]", "", message_sender_data.decode())
-        if message_sender not in self.person.friends:
+        if message_sender not in self.person.experts:
             raise Exception(INVALID_MESSAGE_SENDER_ERROR_MESSAGE)
-        return self.person.friends[message_sender]
+        return self.person.experts[message_sender]
 
     def get_message_type(self, conn: socket) -> MessageType:
         message_type_data = conn.recv(MESSAGE_TYPE_BYTES)

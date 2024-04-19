@@ -14,7 +14,7 @@ LOGGER.setLevel(logging.WARNING)
 
 class Browser(BaseTool):
     name = "browser"
-    description = (
+    instruction = (
         "Surfing the web on a browser. "
         "Instruction should be one valid command. (ex. open, scroll, move, click, write, close) "
         "Extra should be a valid input for that command. "

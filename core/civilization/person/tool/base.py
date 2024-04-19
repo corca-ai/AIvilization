@@ -53,7 +53,7 @@ class ToolMessageFormat:
 
 class BaseTool(BaseModel, ABC, ToolMessageFormat, extra=Extra.allow):
     name: str
-    description: str
+    instruction: str
     color: Color
 
     def __str__(self):

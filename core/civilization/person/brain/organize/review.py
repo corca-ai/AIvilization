@@ -13,7 +13,7 @@ Type | Description | Name | Instruction | Extra
 -|-|-|-|-
 {action_types}
 
-Your friends:{friends}
+Your experts:{experts}
 Your tools:{tools}
 
 ## Response
@@ -51,11 +51,11 @@ class Reviewer(BaseOrganize):
     def stringify(
         self, person: BasePerson, plan: str, action: Action, result: str
     ) -> Tuple[str, bool]:
-        friend_names = ", ".join([f"'{name}'" for name in person.friends.keys()])
-        friends = "".join(
+        expert_names = ", ".join([f"'{name}'" for name in person.experts.keys()])
+        experts = "".join(
             [
-                f"\n    {name}: {friend.instruction}"
-                for name, friend in person.friends.items()
+                f"\n    {name}: {expert.instruction}"
+                for name, expert in person.experts.items()
             ]
         )
         tools = "".join(
@@ -65,11 +65,11 @@ class Reviewer(BaseOrganize):
             goal=plan,
             action=action,
             result=result,
-            friend_names=friend_names,
+            expert_names=expert_names,
             action_types="\n".join(
                 [type.__str__(1) for type in ActionType if type.description is not None]
             ),
-            friends=friends,
+            experts=experts,
             tools=tools,
         )
 

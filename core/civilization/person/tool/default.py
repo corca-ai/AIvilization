@@ -12,7 +12,7 @@ PLAYGROUND_DIR = "playground"
 
 class Terminal(BaseTool):
     name = "terminal"
-    description = (
+    instruction = (
         "Executes commands in a computer terminal. "
         "If linux errno occurs, we have to solve "
         "the problem with the computer terminal. "
@@ -46,7 +46,7 @@ class Terminal(BaseTool):
 
 class CodeWriter(BaseTool):
     name = "code_writer"
-    description = (
+    instruction = (
         "Write code for anything. "
         "Instruction should be a path to a file. "
         "Written code will be save to playground/<path to file>. "

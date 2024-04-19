@@ -9,9 +9,9 @@ from core.logging import Color
 from .action import Action
 from .base import BasePerson, InviteParams, TalkParams
 from .brain.default import Brain
-from .tool import BaseTool, BuildParams, CodedTool, UseParams
 from .ear.default import Ear
 from .mouth.default import Mouth
+from .tool import BaseTool, BuildParams, CodedTool, UseParams
 
 
 class Person(BasePerson):
@@ -34,9 +34,9 @@ class Person(BasePerson):
 
         self.brain = Brain(self, name, instruction)
 
-        self.friends: dict[str, Person] = {}
+        self.experts: dict[str, Person] = {}
         if referee:
-            self.friends[referee.name] = referee
+            self.experts[referee.name] = referee
 
         self.ear = Ear(self)
         self.mouth = Mouth(self)
@@ -82,7 +82,6 @@ class Person(BasePerson):
     def execute(self, plan: Plan, sender: Person) -> Tuple[str, bool]:
         opinions = []
 
-
         action = self.brain.execute(plan, opinions)
 
         result = self.act(action)
@@ -109,31 +108,31 @@ class Person(BasePerson):
             return f"Error while execution: {e}"
 
     def invite(self, name: str, instruction: str, extra: str) -> str:
-        if name in self.friends:
+        if name in self.experts:
             return System.error(f"Friend {name} already exists.")
 
-        friend = Person(
+        expert = Person(
             name,
             instruction,
             InviteParams.from_str(extra, self.tools),
             referee=self,
         )
-        self.friends[name] = friend
+        self.experts[name] = expert
 
-        return friend.greeting()
+        return expert.greeting()
 
     def talk(self, name: str, instruction: str, extra: str) -> str:
-        # TODO: break a relationship with a friend
-        if name not in self.friends:
+        # TODO: break a relationship with a expert
+        if name not in self.experts:
             return System.error(f"Friend {name} not found.")
 
-        friend = self.friends[name]
-        self.mouth.talk(friend.ear, instruction, extra)
+        expert = self.experts[name]
+        self.mouth.talk(expert.ear, instruction, extra)
 
         return System.announcement(f"{self.name} talks to {name}")
 
     def build(self, name: str, instruction: str, extra: str) -> str:
-        if name in self.friends:
+        if name in self.experts:
             return System.error(f"Tool {name} already exists.")
 
         tool = CodedTool(name=name, instruction=instruction)

@@ -12,8 +12,8 @@ The type of action you can take is:
 {action_types}
 Action Type must be one of the above.
 
-Your friends:{friends}
-Your tools:{tools}
+Your experts: {experts}
+Your tools: {tools}
 
 ## Response
 Your response is list of plans or text.
@@ -31,14 +31,14 @@ If you don't need a plan, you can answer without conforming to the response sche
 - constraint: <constraints>
 3. ...
 ==========response example==========
-1. Invite: Invite person who can do your work for you and are not your friends. <N/A>
+1. Invite: Invite person who can do your work for you and are not your experts. <N/A>
 - precondition: None
-- efffect: You will have a new friend.
+- efffect: You will have a new expert.
 - constraint: You have to know the person's name.
-2. Talk: Talk to your friend. <#1>
-- precondition: You have a friend.
-- efffect: Your friend will solve your problem.
-- constraint: You have to invite a friend first
+2. Talk: Talk to your expert. <#1>
+- precondition: You have a expert.
+- efffect: Your expert will solve your problem.
+- constraint: You have to invite a expert first
 ========================================
 
 ## Request
@@ -76,10 +76,10 @@ class Planner(BaseOrganize):
             if len(opinions) > 0
             else "-"
         )
-        friends = "".join(
+        experts = "".join(
             [
-                f"\n    {name}: {friend.instruction}"
-                for name, friend in person.friends.items()
+                f"\n    {name}: {expert.instruction}"
+                for name, expert in person.experts.items()
             ]
         )
         tools = "".join(
@@ -97,7 +97,7 @@ class Planner(BaseOrganize):
             ),
             request=request,
             opinions=opinions,
-            friends=friends,
+            experts=experts,
             tools=tools,
             referee=person.referee.name,
             constraints=constraints,

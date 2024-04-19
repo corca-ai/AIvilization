@@ -12,7 +12,7 @@ _TEMPLATE = """
 The type of action you can take is:
 {action_types}
 
-Your friends:{friends}
+Your experts:{experts}
 Your tools:{tools}
 
 ==========desired format==========
@@ -48,10 +48,10 @@ class Optimizer(BaseOrganize):
     pattern = _PATTERN
 
     def stringify(self, person: BasePerson, request: str, plans: List[Plan]) -> str:
-        friends = "".join(
+        experts = "".join(
             [
-                f"\n    {name}: {friend.instruction}"
-                for name, friend in person.friends.items()
+                f"\n    {name}: {expert.instruction}"
+                for name, expert in person.experts.items()
             ]
         )
         tools = "".join(
@@ -62,7 +62,7 @@ class Optimizer(BaseOrganize):
                 [type.__str__(1) for type in ActionType if type.description is not None]
             ),
             request=request,
-            friends=friends,
+            experts=experts,
             tools=tools,
             plans="\n".join(map(str, plans)),
         )

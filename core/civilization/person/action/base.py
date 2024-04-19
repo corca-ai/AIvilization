@@ -23,14 +23,18 @@ class ActionType(Enum):
             ),
             name="general person name like John, Steve",
             instruction="Personality",
-            extra="one of tools among {tool_names} that the person needs.",
+            extra="one of tools among your tools that the person needs.",
         ),
     )
     Talk = (
         "Talk",
         ActionProperty(
-            description="Talk to your friends.",
-            name="Friend's Name (should be one of {friend_names})",
+            description=(
+                "Talk to your experts. "
+                "Ask the professionals to work and get the results. "
+                "They will carry out the work at any time. "
+            ),
+            name="Expert's Name (should be one of your experts)",
             instruction="Message",
             extra="Attachment File List",
         ),
@@ -52,7 +56,7 @@ class ActionType(Enum):
         "Use",
         ActionProperty(
             description="Use one of your tools.",
-            name="Tool's Name (should be one of {tool_names})",
+            name="Tool's Name (should be one of your tools)",
             instruction="Input for using the tool. Refer to the guide of the tool you want to use.",
             extra="Extra Input for using the tool. Refer to the guide of the tool you want to use.",
         ),
@@ -137,6 +141,4 @@ class Plan(BaseModel):
         preceding_plans = ", ".join([f"#{p_n}" for p_n in self.preceding_plan_numbers])
         if len(preceding_plans) == 0:
             preceding_plans = "N/A"
-        return (
-            f"action type={self.action_type.value}, action objective={self.objective}, action precondition={self.precondition}, action effect={self.effect}, action constraint={self.constraint}"
-        )
+        return f"action type={self.action_type.value}, action objective={self.objective}, action precondition={self.precondition}, action effect={self.effect}, action constraint={self.constraint}"

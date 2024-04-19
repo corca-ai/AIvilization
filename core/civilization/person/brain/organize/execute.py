@@ -32,7 +32,7 @@ Type | Description | Name | Instruction | Extra
 -|-|-|-|-
 {action_types}
 
-Your friends:{friends}
+Your experts:{experts}
 Your tools:{tools}
 
 Your plan: {plan}
@@ -48,16 +48,26 @@ class Executor(BaseOrganize):
     pattern = _PATTERN
 
     def stringify(self, person: BasePerson, plan: Plan, opinions: List[str]) -> str:
-        opinions = "\n".join(
-            [f"{i+1}. {opinion}" for i, opinion in enumerate(opinions)]
-        ) if len(opinions) > 0 else "N/A"
+        opinions = (
+            "\n".join([f"{i+1}. {opinion}" for i, opinion in enumerate(opinions)])
+            if len(opinions) > 0
+            else "N/A"
+        )
 
-        friend_names = ", ".join([f"'{name}'" for name in person.friends.keys()])
-        tool_names = ", ".join([f"'{name}'" for name in person.tools.keys()])
-        friends = "".join(
+        expert_names = (
+            ", ".join([f"'{name}'" for name in person.experts.keys()])
+            if len(person.experts) > 0
+            else "N/A"
+        )
+        tool_names = (
+            ", ".join([f"'{name}'" for name in person.tools.keys()])
+            if len(person.tools) > 0
+            else "N/A"
+        )
+        experts = "".join(
             [
-                f"\n    {name}: {friend.instruction}"
-                for name, friend in person.friends.items()
+                f"\n    {name}: {expert.instruction}"
+                for name, expert in person.experts.items()
             ]
         )
         tools = "".join(
@@ -69,9 +79,9 @@ class Executor(BaseOrganize):
             ),
             plan=repr(plan),
             opinions=opinions,
-            friend_names=friend_names,
+            expert_names=expert_names,
             tool_names=tool_names,
-            friends=friends,
+            experts=experts,
             tools=tools,
         )
 

@@ -17,7 +17,7 @@ class BasePersonTracer:
     def get_target(self, action: Action):
         target = None
         if action.type in [ActionType.Invite, ActionType.Talk]:
-            target = self.person.friends[action.name]
+            target = self.person.experts[action.name]
         elif action.type in [ActionType.Build, ActionType.Use]:
             target = self.person.tools[action.name]
         return target

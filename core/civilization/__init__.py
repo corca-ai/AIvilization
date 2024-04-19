@@ -22,12 +22,25 @@ class Civilization:
 
         leader_instructon = (
             f"Follow {self.user.name}'s instructions carefully. "
-            f"Respond using markdown. You must fulfill {self.user.name}'s request."
+            f"Respond using markdown. You must fulfill {self.user.name}'s request. "
+            "You are the leader of this civilization. "
+            "You are responsible for the survival of this civilization. "
+            "You are the only one who can communicate with the outside world. "
+            "You must lead your civilization to the right direction. "
+            "You must make the right decision. "
+            "You must manage your civilization well. "
+            "You are PM of this civilization. "
         )
         self.leader = Person(
             name="Steve",
             instruction=leader_instructon,
-            params=InviteParams(tools={"terminal": Terminal(), "browser": Browser(), "code_writer": CodeWriter()}),
+            params=InviteParams(
+                tools={
+                    "terminal": Terminal(),
+                    "browser": Browser(),
+                    "code_writer": CodeWriter(),
+                }
+            ),
             referee=self.user,
         )
 
@@ -38,26 +51,73 @@ class Civilization:
         self.ann = Person(
             name="Ann",
             instruction=follower_instruction,
-            params=InviteParams(tools={"terminal": Terminal(), "browser": Browser(), "code_writer": CodeWriter()}),
+            params=InviteParams(
+                tools={
+                    "terminal": Terminal(),
+                    "browser": Browser(),
+                    "code_writer": CodeWriter(),
+                }
+            ),
             referee=self.leader,
         )
         self.mark = Person(
             name="Mark",
             instruction=follower_instruction,
-            params=InviteParams(tools={"terminal": Terminal(), "browser": Browser(), "code_writer": CodeWriter()}),
+            params=InviteParams(
+                tools={
+                    "terminal": Terminal(),
+                    "browser": Browser(),
+                    "code_writer": CodeWriter(),
+                }
+            ),
             referee=self.leader,
         )
         self.john = Person(
             name="John",
             instruction=follower_instruction,
-            params=InviteParams(tools={"terminal": Terminal(), "browser": Browser(), "code_writer": CodeWriter()}),
+            params=InviteParams(
+                tools={
+                    "terminal": Terminal(),
+                    "browser": Browser(),
+                    "code_writer": CodeWriter(),
+                }
+            ),
             referee=self.leader,
         )
+        #     params=InviteParams(
+        #         tools={
+        #             "terminal": Terminal(),
+        #             "code_writer": CodeWriter(),
+        #             "browser": Browser(),
+        #         }
+        #     ),
+        #     referee=self.user,
+        # )
 
-        self.user.friends[self.leader.name] = self.leader
-        self.leader.friends[self.ann.name] = self.ann
-        self.leader.friends[self.mark.name] = self.mark
-        self.leader.friends[self.john.name] = self.john
+        # follower_instruction = (
+        #     f"Follow {self.leader.name}'s instructions carefully. "
+        #     f"Respond using markdown. You must fulfill {self.leader.name}'s request."
+        # )
+        # self.ann = Person(
+        #     name="Ann",
+        #     instruction=follower_instruction,
+        #     params=InviteParams(tools={"terminal": Terminal()}),
+        #     referee=self.leader,
+        # )
+        # self.mark = Person(
+        #     name="Mark",
+        #     instruction=follower_instruction,
+        #     params=InviteParams(tools={"code_writer": CodeWriter()}),
+        #     referee=self.leader,
+        # )
+        # self.john = Person(
+        #     name="John",
+        #     instruction=follower_instruction,
+        #     params=InviteParams(tools={"broswer": Browser()}),
+        #     referee=self.leader,
+        # )
+
+        self.user.experts[self.leader.name] = self.leader
 
     def solve(self, problem: str):
         self.user.act(
